@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>心灵花园 - 启蒙之光</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial Rounded MT Bold', 'Arial', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f0f8ff 0%, #fff0f5 100%);
+            color: #333;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 0;
+            position: relative;
+            min-height: 100vh;
+            background: white;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: linear-gradient(135deg, #7b68ee 0%, #ff69b4 100%);
+            color: white;
+            border-radius: 0 0 20px 20px;
+        }
+        
+        .back-button {
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        .page-title {
+            font-size: 20px;
+            text-align: center;
+            flex: 1;
+        }
+        
+        .main-content {
+            padding: 20px;
+            overflow-y: auto;
+            max-height: calc(100vh - 140px);
+        }
+        
+        .section-title {
+            font-size: 18px;
+            margin: 20px 0 15px;
+            color: #7b68ee;
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title::before {
+            content: "";
+            display: inline-block;
+            width: 5px;
+            height: 20px;
+            background: #7b68ee;
+            margin-right: 10px;
+            border-radius: 3px;
+        }
+        
+        /* AI伙伴聊天样式 */
+        .ai-companion-section {
+            background: white;
+            border-radius: 15px;
+            padding: 15px;
+            margin: 20px 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            border: 2px solid #f0f0f0;
+        }
+        
+        .companion-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .companion-avatar {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #7b68ee 0%, #ff69b4 100%);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 24px;
+            margin-right: 15px;
+        }
+        
+        .companion-info h3 {
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+        
+        .companion-info p {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .chat-container {
+            background: #f9f9f9;
+            border-radius: 15px;
+            padding: 15px;
+            height: 200px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+        }
+        
+        .chat-message {
+            margin-bottom: 15px;
+            display: flex;
+        }
+        
+        .chat-message.ai {
+            justify-content: flex-start;
+        }
+        
+        .chat-message.user {
+            justify-content: flex-end;
+        }
+        
+        .message-bubble {
+            max-width: 80%;
+            padding: 10px 15px;
+            border-radius: 18px;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+        
+        .ai .message-bubble {
+            background: white;
+            border-bottom-left-radius: 5px;
+        }
+        
+        .user .message-bubble {
+            background: #7b68ee;
+            color: white;
+            border-bottom-right-radius: 5px;
+        }
+        
+        .chat-input {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .chat-input input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            font-size: 14px;
+            outline: none;
+        }
+        
+        .chat-input input:focus {
+            border-color: #7b68ee;
+        }
+        
+        .send-button {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #7b68ee 0%, #ff69b4 100%);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        /* 心情记录样式 */
+        .mood-section {
+            background: white;
+            border-radius: 15px;
+            padding: 15px;
+            margin: 20px 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        .mood-title {
+            font-size: 16px;
+            margin-bottom: 15px;
+            color: #7b68ee;
+            display: flex;
+            align-items: center;
+        }
+        
+        .mood-title::before {
+            content: "😊";
+            margin-right: 10px;
+        }
+        
+        .mood-selector {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        
+        .mood-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 10px;
+            transition: background 0.3s;
+        }
+        
+        .mood-option:hover {
+            background: #f5f5f5;
+        }
+        
+        .mood-option.selected {
+            background: #f0f0ff;
+        }
+        
+        .mood-icon {
+            font-size: 30px;
+            margin-bottom: 5px;
+        }
+        
+        .mood-label {
+            font-size: 12px;
+        }
+        
+        .mood-diary {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 14px;
+            resize: vertical;
+            min-height: 80px;
+            margin-bottom: 15px;
+            outline: none;
+        }
+        
+        .mood-diary:focus {
+            border-color: #7b68ee;
+        }
+        
+        .save-button {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #7b68ee 0%, #ff69b4 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .save-button:hover {
+            transform: scale(1.02);
+        }
+        
+        /* 成长树洞样式 */
+        .treehole-section {
+            background: white;
+            border-radius: 15px;
+            padding: 15px;
+            margin: 20px 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            background: linear-gradient(135deg, #f8f8ff 0%, #fff8f8 100%);
+            border: 2px dashed #7b68ee;
+        }
+        
+        .treehole-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .treehole-icon {
+            font-size: 24px;
+            margin-right: 10px;
+            color: #7b68ee;
+        }
+        
+        .treehole-title {
+            font-size: 16px;
+            color: #7b68ee;
+        }
+        
+        .treehole-desc {
+            font-size: 14px;
+            margin-bottom: 15px;
+            line-height: 1.5;
+            color: #666;
+        }
+        
+        .treehole-button {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background: #7b68ee;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .treehole-button:hover {
+            transform: scale(1.02);
+        }
+        
+        /* 亲情连接样式 */
+        .family-section {
+            background: white;
+            border-radius: 15px;
+            padding: 15px;
+            margin: 20px 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        .family-title {
+            font-size: 16px;
+            margin-bottom: 15px;
+            color: #7b68ee;
+            display: flex;
+            align-items: center;
+        }
+        
+        .family-title::before {
+            content: "👨‍👩‍👧";
+            margin-right: 10px;
+        }
+        
+        .family-members {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .family-member {
+            background: #f9f9f9;
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        
+        .family-member:hover {
+            transform: translateY(-5px);
+        }
+        
+        .member-avatar {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #7b68ee 0%, #ff69b4 100%);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 24px;
+            margin: 0 auto 10px;
+        }
+        
+        .member-name {
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+        
+        .member-relation {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .message-stats {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            color: #666;
+            margin-top: 10px;
+        }
+        
+        .bottom-nav {
+            display: flex;
+            justify-content: space-around;
+            background: white;
+            padding: 15px 0;
+            border-radius: 20px 20px 0 0;
+            box-shadow: 0 -4px 12px rgba(0,0,0,0.05);
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            max-width: 480px;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        .nav-icon {
+            font-size: 24px;
+            margin-bottom: 5px;
+            color: #999;
+        }
+        
+        .nav-item.active .nav-icon {
+            color: #7b68ee;
+        }
+        
+        .nav-text {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .nav-item.active .nav-text {
+            color: #7b68ee;
+            font-weight: bold;
+        }
+        
+        /* 响应式调整 */
+        @media (max-width: 480px) {
+            .container {
+                padding-bottom: 70px;
+            }
+            
+            .family-members {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="back-button" onclick="goBack()">←</div>
+            <div class="page-title">心灵花园</div>
+            <div style="width: 24px;"></div> <!-- 占位保持对称 -->
+        </div>
+        
+        <div class="main-content">
+            <div class="section-title">AI伙伴小光</div>
+            <div class="ai-companion-section">
+                <div class="companion-header">
+                    <div class="companion-avatar">光</div>
+                    <div class="companion-info">
+                        <h3>小光</h3>
+                        <p>你的AI心灵伙伴</p>
+                    </div>
+                </div>
+                <div class="chat-container" id="chat-container">
+                    <div class="chat-message ai">
+                        <div class="message-bubble">
+                            你好呀！今天心情怎么样？想和我聊点什么吗？
+                        </div>
+                    </div>
+                    <div class="chat-message user">
+                        <div class="message-bubble">
+                            我今天在学校交到了新朋友！
+                        </div>
+                    </div>
+                    <div class="chat-message ai">
+                        <div class="message-bubble">
+                            真棒！交新朋友是件开心的事情！你们一起玩了什么？
+                        </div>
+                    </div>
+                </div>
+                <div class="chat-input">
+                    <input type="text" id="message-input" placeholder="和小光说说话...">
+                    <button class="send-button" onclick="sendMessage()">➤</button>
+                </div>
+            </div>
+            
+            <div class="section-title">心情日记</div>
+            <div class="mood-section">
+                <div class="mood-title">今天的心情</div>
+                <div class="mood-selector">
+                    <div class="mood-option" data-mood="happy" onclick="selectMood(this)">
+                        <div class="mood-icon">😄</div>
+                        <div class="mood-label">开心</div>
+                    </div>
+                    <div class="mood-option" data-mood="calm" onclick="selectMood(this)">
+                        <div class="mood-icon">😊</div>
+                        <div class="mood-label">平静</div>
+                    </div>
+                    <div class="mood-option" data-mood="sad" onclick="selectMood(this)">
+                        <div class="mood-icon">😔</div>
+                        <div class="mood-label">难过</div>
+                    </div>
+                    <div class="mood-option" data-mood="angry" onclick="selectMood(this)">
+                        <div class="mood-icon">😠</div>
+                        <div class="mood-label">生气</div>
+                    </div>
+                </div>
+                <textarea class="mood-diary" placeholder="记录今天的心情和发生的事情..."></textarea>
+                <button class="save-button" onclick="saveMood()">保存心情日记</button>
+            </div>
+            
+            <div class="section-title">成长树洞</div>
+            <div class="treehole-section">
+                <div class="treehole-header">
+                    <div class="treehole-icon">🌳</div>
+                    <div class="treehole-title">秘密倾诉空间</div>
+                </div>
+                <div class="treehole-desc">
+                    这里是只属于你的秘密空间，可以写下任何你想说的话。<br>
+                    小光会认真倾听，并为你保守秘密。
+                </div>
+                <button class="treehole-button" onclick="openTreehole()">进入树洞</button>
+            </div>
+            
+            <div class="section-title">亲情连接</div>
+            <div class="family-section">
+                <div class="family-title">家人消息</div>
+                <div class="family-members">
+                    <div class="family-member" onclick="messageFamily('mom')">
+                        <div class="member-avatar">👩</div>
+                        <div class="member-name">妈妈</div>
+                        <div class="member-relation">在外地工作</div>
+                        <div class="message-stats">
+                            <span>3条新消息</span>
+                            <span>2天前</span>
+                        </div>
+                    </div>
+                    <div class="family-member" onclick="messageFamily('dad')">
+                        <div class="member-avatar">👨</div>
+                        <div class="member-name">爸爸</div>
+                        <div class="member-relation">在外地工作</div>
+                        <div class="message-stats">
+                            <span>1条新消息</span>
+                            <span>1天前</span>
+                        </div>
+                    </div>
+                    <div class="family-member" onclick="messageFamily('grandma')">
+                        <div class="member-avatar">👵</div>
+                        <div class="member-name">奶奶</div>
+                        <div class="member-relation">在家照顾我</div>
+                        <div class="message-stats">
+                            <span>5条新消息</span>
+                            <span>今天</span>
+                        </div>
+                    </div>
+                    <div class="family-member" onclick="messageFamily('brother')">
+                        <div class="member-avatar">👦</div>
+                        <div class="member-name">哥哥</div>
+                        <div class="member-relation">在大学读书</div>
+                        <div class="message-stats">
+                            <span>0条新消息</span>
+                            <span>1周前</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bottom-nav">
+            <div class="nav-item" onclick="navigateTo('index.html')">
+                <div class="nav-icon">🏠</div>
+                <div class="nav-text">首页</div>
+            </div>
+            <div class="nav-item" onclick="navigateTo('explore.html')">
+                <div class="nav-icon">🔍</div>
+                <div class="nav-text">探索</div>
+            </div>
+            <div class="nav-item" onclick="navigateTo('create.html')">
+                <div class="nav-icon">🎨</div>
+                <div class="nav-text">创作</div>
+            </div>
+            <div class="nav-item active">
+                <div class="nav-icon">💝</div>
+                <div class="nav-text">心灵</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 重定向到新版本的心灵花园页面
+        navigateTo('mind-garden.html');
+        
+        // 保留goBack函数以避免错误
+        function goBack() {
+            navigateTo('mind-garden.html');
+        }
+        
+        // navigateTo函数由navigation-template.js提供
+        
+        // 心情选择功能
+        let selectedMood = null;
+        
+        function selectMood(element) {
+            // 移除之前的选择
+            document.querySelectorAll('.mood-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            
+            // 设置新的选择
+            element.classList.add('selected');
+            selectedMood = element.getAttribute('data-mood');
+        }
+        
+        // 保存心情日记
+        function saveMood() {
+            const diaryText = document.querySelector('.mood-diary').value;
+            
+            if (!selectedMood) {
+                alert('请先选择今天的心情！');
+                return;
+            }
+            
+            if (!diaryText.trim()) {
+                alert('请写下今天的心情或发生的事情！');
+                return;
+            }
+            
+            alert('心情日记已保存！小光会记住你的心情变化。');
+            // 在实际应用中，这里会保存数据到本地或服务器
+            
+            // 清空输入
+            document.querySelector('.mood-diary').value = '';
+            document.querySelectorAll('.mood-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            selectedMood = null;
+        }
+        
+        // 发送消息功能
+        function sendMessage() {
+            const input = document.getElementById('message-input');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            // 添加用户消息
+            addMessage(message, 'user');
+            
+            // 清空输入框
+            input.value = '';
+            
+            // 模拟AI回复
+            setTimeout(() => {
+                const responses = [
+                    "听起来很有趣！能多告诉我一些吗？",
+                    "我明白你的感受，这确实不容易。",
+                    "你真棒！继续加油！",
+                    "谢谢你和我分享这些，我很开心能听你说。",
+                    "如果有什么需要帮助的，尽管告诉我。"
+                ];
+                const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+                addMessage(randomResponse, 'ai');
+            }, 1000);
+        }
+        
+        // 添加消息到聊天窗口
+        function addMessage(text, sender) {
+            const chatContainer = document.getElementById('chat-container');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `chat-message ${sender}`;
+            
+            const bubbleDiv = document.createElement('div');
+            bubbleDiv.className = 'message-bubble';
+            bubbleDiv.textContent = text;
+            
+            messageDiv.appendChild(bubbleDiv);
+            chatContainer.appendChild(messageDiv);
+            
+            // 滚动到底部
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+        
+        // 允许按Enter键发送消息
+        document.getElementById('message-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+        
+        // 成长树洞功能
+        function openTreehole() {
+            const secret = prompt("在这里写下你的秘密，小光会认真倾听并为你保守：");
+            if (secret) {
+                alert("你的秘密已安全保存。记住，小光永远是你的朋友！");
+                // 在实际应用中，这里会加密保存秘密
+            }
+        }
+        
+        // 联系家人功能
+        function messageFamily(member) {
+            const members = {
+                'mom': '妈妈',
+                'dad': '爸爸',
+                'grandma': '奶奶',
+                'brother': '哥哥'
+            };
+            
+            const memberName = members[member];
+            alert(`准备给${memberName}发送消息...`);
+            // 在实际应用中，这里会打开消息发送界面
+        }
+        
+        // 为底部导航添加点击事件
+        document.querySelectorAll('.nav-item').forEach((item) => {
+            item.addEventListener('click', function() {
+                if (!this.classList.contains('active')) {
+                    document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+                    this.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

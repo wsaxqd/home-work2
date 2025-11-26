@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>猜猜我是谁 - AI游戏实验室 - 启蒙之光</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial Rounded MT Bold', 'Arial', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #e1f5fe 0%, #f3e5f5 100%);
+            color: #333;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 0;
+            position: relative;
+            min-height: 100vh;
+            background: white;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: linear-gradient(135deg, #00bcd4 0%, #7e57c2 100%);
+            color: white;
+            border-radius: 0 0 20px 20px;
+        }
+        
+        .back-button {
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        .page-title {
+            font-size: 20px;
+            text-align: center;
+            flex: 1;
+        }
+        
+        .game-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .score {
+            background: rgba(255,255,255,0.2);
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 14px;
+        }
+        
+        .main-content {
+            padding: 20px;
+            overflow-y: auto;
+            max-height: calc(100vh - 140px);
+        }
+        
+        .section-title {
+            font-size: 18px;
+            margin: 20px 0 15px;
+            color: #00bcd4;
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title::before {
+            content: "";
+            display: inline-block;
+            width: 5px;
+            height: 20px;
+            background: #00bcd4;
+            margin-right: 10px;
+            border-radius: 3px;
+        }
+        
+        /* 游戏区域样式 */
+        .game-area {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            border: 2px solid #e1f5fe;
+        }
+        
+        .game-progress {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .level-indicator {
+            font-size: 14px;
+            color: #7e57c2;
+            font-weight: bold;
+        }
+        
+        .progress-bar {
+            flex: 1;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            margin: 0 15px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: #00bcd4;
+            border-radius: 4px;
+            width: 30%;
+            transition: width 0.5s;
+        }
+        
+        .progress-text {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        /* 图像识别区域 */
+        .recognition-area {
+            background: #f9f9f9;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .camera-preview {
+            width: 100%;
+            height: 250px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .preview-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+        
+        .preview-placeholder {
+            font-size: 50px;
+            color: #999;
+        }
+        
+        .camera-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .camera-btn {
+            width: 60px;
+            height: 60px;
+            background: #00bcd4;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: transform 0.2s;
+        }
+        
+        .camera-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        .camera-btn.secondary {
+            background: #7e57c2;
+        }
+        
+        .recognition-result {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .result-text {
+            font-size: 16px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .confidence-bar {
+            width: 100%;
+            height: 10px;
+            background: #e0e0e0;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+        
+        .confidence-fill {
+            height: 100%;
+            background: #4caf50;
+            border-radius: 5px;
+            width: 0%;
+            transition: width 0.5s;
+        }
+        
+        .confidence-text {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        /* 学习卡片样式 */
+        .learning-cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .learning-card {
+            background: #f9f9f9;
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: 2px solid transparent;
+        }
+        
+        .learning-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .learning-card.selected {
+            border-color: #00bcd4;
+            background: #e1f5fe;
+        }
+        
+        .card-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+        
+        .card-name {
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+        
+        .card-desc {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        /* 挑战区域样式 */
+        .challenge-area {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            background: linear-gradient(135deg, #e1f5fe 0%, #f3e5f5 100%);
+            border: 2px dashed #00bcd4;
+        }
+        
+        .challenge-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .challenge-icon {
+            font-size: 24px;
+            margin-right: 10px;
+            color: #00bcd4;
+        }
+        
+        .challenge-title {
+            font-size: 16px;
+            color: #00bcd4;
+        }
+        
+        .challenge-desc {
+            font-size: 14px;
+            margin-bottom: 15px;
+            line-height: 1.5;
+            color: #666;
+        }
+        
+        .challenge-targets {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 15px;
+        }
+        
+        .target-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .target-icon {
+            font-size: 30px;
+            margin-bottom: 5px;
+        }
+        
+        .target-name {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .target-status {
+            font-size: 12px;
+            margin-top: 5px;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+        
+        .status-found {
+            background: #c8e6c9;
+            color: #2e7d32;
+        }
+        
+        .status-missing {
+            background: #ffecb3;
+            color: #ff8f00;
+        }
+        
+        /* AI原理说明样式 */
+        .explanation-area {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        .explanation-title {
+            font-size: 16px;
+            margin-bottom: 15px;
+            color: #00bcd4;
+            display: flex;
+            align-items: center;
+        }
+        
+        .explanation-title::before {
+            content: "🤖";
+            margin-right: 10px;
+        }
+        
+        .explanation-content {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #666;
+            margin-bottom: 15px;
+        }
+        
+        .neural-network {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 20px 0;
+            position: relative;
+        }
+        
+        .network-layer {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .layer-label {
+            font-size: 12px;
+            margin-bottom: 5px;
+            color: #666;
+        }
+        
+        .layer-neurons {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .neuron {
+            width: 20px;
+            height: 20px;
+            background: #00bcd4;
+            border-radius: 50%;
+            opacity: 0.7;
+        }
+        
+        .network-connections {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+        }
+        
+        .connection {
+            position: absolute;
+            background: rgba(0, 188, 212, 0.2);
+            transform-origin: 0 0;
+        }
+        
+        /* 控制按钮样式 */
+        .control-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.3s;
+        }
+        
+        .btn:disabled {
+            background: #e0e0e0;
+            color: #999;
+            cursor: not-allowed;
+        }
+        
+        .btn-primary {
+            background: #00bcd4;
+            color: white;
+        }
+        
+        .btn-primary:hover:not(:disabled) {
+            background: #0097a7;
+            transform: scale(1.03);
+        }
+        
+        .btn-secondary {
+            background: #f5f5f5;
+            color: #333;
+        }
+        
+        .btn-secondary:hover {
+            background: #e0e0e0;
+            transform: scale(1.03);
+        }
+        
+        /* 底部导航样式 */
+        .bottom-nav {
+            display: flex;
+            justify-content: space-around;
+            background: white;
+            padding: 15px 0;
+            border-radius: 20px 20px 0 0;
+            box-shadow: 0 -4px 12px rgba(0,0,0,0.05);
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            max-width: 480px;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        .nav-icon {
+            font-size: 24px;
+            margin-bottom: 5px;
+            color: #999;
+        }
+        
+        .nav-item.active .nav-icon {
+            color: #00bcd4;
+        }
+        
+        .nav-text {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .nav-item.active .nav-text {
+            color: #00bcd4;
+            font-weight: bold;
+        }
+        
+        /* 动画 */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .pulse {
+            animation: pulse 1s infinite;
+        }
+        
+        /* 响应式调整 */
+        @media (max-width: 480px) {
+            .container {
+                padding-bottom: 70px;
+            }
+            
+            .learning-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .control-buttons {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="back-button" onclick="goBack()">←</div>
+            <div class="page-title">猜猜我是谁</div>
+            <div class="game-info">
+                <div class="score">得分: <span id="score">0</span></div>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <div class="game-area">
+                <div class="game-progress">
+                    <div class="level-indicator">第 <span id="current-level">1</span> 关</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill"></div>
+                    </div>
+                    <div class="progress-text"><span id="current-progress">3</span>/10</div>
+                </div>
+                
+                <div class="section-title">AI图像识别</div>
+                <div class="recognition-area">
+                    <div class="camera-preview" id="camera-preview">
+                        <div class="preview-placeholder">📷</div>
+                        <!-- 在实际应用中，这里会显示摄像头预览或上传的图片 -->
+                    </div>
+                    
+                    <div class="camera-controls">
+                        <button class="camera-btn" onclick="takePhoto()">📸</button>
+                        <button class="camera-btn secondary" onclick="uploadPhoto()">📁</button>
+                        <button class="camera-btn" onclick="analyzeImage()">🔍</button>
+                    </div>
+                    
+                    <div class="recognition-result" id="recognition-result">
+                        <div class="result-text">拍一张照片或上传图片，AI会识别它是什么！</div>
+                    </div>
+                </div>
+                
+                <div class="control-buttons">
+                    <button class="btn btn-secondary" onclick="resetGame()">重新开始</button>
+                    <button class="btn btn-primary" id="next-btn" onclick="nextChallenge()" disabled>下一个挑战</button>
+                </div>
+            </div>
+            
+            <div class="section-title">学习卡片</div>
+            <div class="learning-cards">
+                <div class="learning-card" onclick="selectCard(this, 'animal')">
+                    <div class="card-icon">🐾</div>
+                    <div class="card-name">动物识别</div>
+                    <div class="card-desc">识别各种动物</div>
+                </div>
+                <div class="learning-card" onclick="selectCard(this, 'fruit')">
+                    <div class="card-icon">🍎</div>
+                    <div class="card-name">水果识别</div>
+                    <div class="card-desc">认识不同水果</div>
+                </div>
+                <div class="learning-card" onclick="selectCard(this, 'vehicle')">
+                    <div class="card-icon">🚗</div>
+                    <div class="card-name">交通工具</div>
+                    <div class="card-desc">识别各种车辆</div>
+                </div>
+                <div class="learning-card" onclick="selectCard(this, 'object')">
+                    <div class="card-icon">⌚</div>
+                    <div class="card-name">日常物品</div>
+                    <div class="card-desc">认识生活用品</div>
+                </div>
+            </div>
+            
+            <div class="section-title">今日挑战</div>
+            <div class="challenge-area">
+                <div class="challenge-header">
+                    <div class="challenge-icon">🎯</div>
+                    <div class="challenge-title">找到这些物品</div>
+                </div>
+                <div class="challenge-desc">
+                    用摄像头找到以下物品，完成挑战可以获得额外奖励！
+                </div>
+                <div class="challenge-targets">
+                    <div class="target-item">
+                        <div class="target-icon">🐱</div>
+                        <div class="target-name">猫</div>
+                        <div class="target-status status-missing">未找到</div>
+                    </div>
+                    <div class="target-item">
+                        <div class="target-icon">🍎</div>
+                        <div class="target-name">苹果</div>
+                        <div class="target-status status-missing">未找到</div>
+                    </div>
+                    <div class="target-item">
+                        <div class="target-icon">📱</div>
+                        <div class="target-name">手机</div>
+                        <div class="target-status status-missing">未找到</div>
+                    </div>
+                    <div class="target-item">
+                        <div class="target-icon">📚</div>
+                        <div class="target-name">书本</div>
+                        <div class="target-status status-missing">未找到</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section-title">AI原理小知识</div>
+            <div class="explanation-area">
+                <div class="explanation-title">AI是怎么认出图片的？</div>
+                <div class="explanation-content">
+                    AI通过一种叫做"神经网络"的系统来识别图像。就像我们的大脑有神经元一样，AI也有虚拟的神经元，它们一起工作来识别图片中的模式。
+                </div>
+                
+                <div class="neural-network">
+                    <div class="network-layer">
+                        <div class="layer-label">输入层</div>
+                        <div class="layer-neurons">
+                            <div class="neuron"></div>
+                            <div class="neuron"></div>
+                            <div class="neuron"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="network-layer">
+                        <div class="layer-label">隐藏层</div>
+                        <div class="layer-neurons">
+                            <div class="neuron"></div>
+                            <div class="neuron"></div>
+                            <div class="neuron"></div>
+                            <div class="neuron"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="network-layer">
+                        <div class="layer-label">输出层</div>
+                        <div class="layer-neurons">
+                            <div class="neuron"></div>
+                            <div class="neuron"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="network-connections" id="network-connections">
+                        <!-- 连接线将通过JavaScript生成 -->
+                    </div>
+                </div>
+                
+                <div class="explanation-content">
+                    AI通过分析成千上万张图片来学习，找出不同物体的特征。当你给AI看一张新图片时，它会根据学到的知识猜测图片里是什么！
+                </div>
+            </div>
+        </div>
+        
+        <div class="bottom-nav">
+            <div class="nav-item" onclick="navigateTo('index.html')">
+                <div class="nav-icon">🏠</div>
+                <div class="nav-text">首页</div>
+            </div>
+            <div class="nav-item active" onclick="navigateTo('explore.html')">
+                <div class="nav-icon">🔍</div>
+                <div class="nav-text">探索</div>
+            </div>
+            <div class="nav-item" onclick="navigateTo('create.html')">
+                <div class="nav-icon">🎨</div>
+                <div class="nav-text">创作</div>
+            </div>
+            <div class="nav-item" onclick="navigateTo('mind-garden.html')">
+                <div class="nav-icon">💝</div>
+                <div class="nav-text">心灵</div>
+            </div>
+            <div class="nav-item" onclick="navigateTo('profile.html')">
+                <div class="nav-icon">👤</div>
+                <div class="nav-text">我的</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="navigation-template.js"></script>
+    <script>
+        // 游戏状态和数据
+        let gameState = {
+            score: 0,
+            level: 1,
+            progress: 3,
+            totalChallenges: 10,
+            currentCard: '',
+            foundItems: [],
+            questionsHistory: []
+        };
+        
+        // 保存游戏状态
+        function saveGameState() {
+            try {
+                if (typeof localStorage !== 'undefined') {
+                    const gameStateToSave = {
+                        ...gameState,
+                        lastUpdated: new Date().toISOString()
+                    };
+                    localStorage.setItem('qmzg_imageGame_state', JSON.stringify(gameStateToSave));
+                    console.log('游戏状态已保存');
+                }
+            } catch (error) {
+                console.error('保存游戏状态失败:', error);
+            }
+        }
+        
+        // 加载游戏状态
+        function loadGameState() {
+            try {
+                if (typeof localStorage !== 'undefined') {
+                    const savedState = localStorage.getItem('qmzg_imageGame_state');
+                    if (savedState) {
+                        const parsedState = JSON.parse(savedState);
+                        // 检查状态是否是今天的，如果超过24小时则不恢复
+                        const lastUpdated = new Date(parsedState.lastUpdated);
+                        const now = new Date();
+                        const hoursPassed = (now - lastUpdated) / (1000 * 60 * 60);
+                        
+                        if (hoursPassed < 24) {
+                            // 只恢复部分关键状态，不包括问题历史
+                            gameState.score = parsedState.score || 0;
+                            gameState.level = parsedState.level || 1;
+                            gameState.progress = parsedState.progress || 1;
+                            gameState.foundItems = parsedState.foundItems || [];
+                            console.log('游戏状态已恢复');
+                            return true;
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('加载游戏状态失败:', error);
+            }
+            return false;
+        }
+        
+        // 保存游戏结果
+        function saveGameResult() {
+            try {
+                const timestamp = new Date().getTime();
+                const gameResult = {
+                    id: timestamp,
+                    gameType: 'image-recognition',
+                    score: gameState.score,
+                    level: gameState.level,
+                    progress: gameState.progress,
+                    totalChallenges: gameState.totalChallenges,
+                    foundItemsCount: gameState.foundItems.length,
+                    completionRate: (gameState.progress / gameState.totalChallenges * 100).toFixed(1) + '%',
+                    timestamp: new Date().toISOString()
+                };
+                
+                if (typeof localStorage !== 'undefined') {
+                    let gameHistory = JSON.parse(localStorage.getItem('qmzg_gameResults') || '[]');
+                    gameHistory.unshift(gameResult);
+                    
+                    // 保留最近的10条记录
+                    if (gameHistory.length > 10) {
+                        gameHistory = gameHistory.slice(0, 10);
+                    }
+                    
+                    localStorage.setItem('qmzg_gameResults', JSON.stringify(gameHistory));
+                }
+                
+                console.log('游戏结果已保存:', gameResult);
+            } catch (error) {
+                console.error('保存游戏结果失败:', error);
+            }
+        }
+        
+        // 导航功能
+        function goBack() {
+            // 保存当前状态
+            saveGameState();
+            window.history.back();
+        }
+        
+        // 选择学习卡片
+        function selectCard(caller, cardType) {
+            // 支持两种调用：selectCard(cardType) 或 selectCard(caller, cardType)
+            if (typeof cardType === 'undefined') {
+                cardType = caller;
+                caller = null;
+            }
+
+            // 移除之前的选择
+            document.querySelectorAll('.learning-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+
+            // 设置新的选择
+            var targetEl = null;
+            if (caller && caller.nodeType) {
+                targetEl = caller;
+            } else if (typeof event !== 'undefined' && event.target) {
+                targetEl = event.target.closest ? event.target.closest('.learning-card') : event.target;
+            }
+
+            if (targetEl) targetEl.classList.add('selected');
+            gameState.currentCard = cardType;
+
+            // 更新游戏说明
+            updateGameInstructions(cardType);
+            
+            // 保存游戏状态
+            saveGameState();
+            
+            // 检查游戏是否完成
+            if (gameState.progress >= gameState.totalChallenges) {
+                // 游戏完成，保存结果
+                saveGameResult();
+            }
+        }
+        
+        // 更新游戏说明
+        function updateGameInstructions(cardType) {
+            const instructions = {
+                'animal': '现在试试识别动物！找到猫、狗、鸟等动物。',
+                'fruit': '现在试试识别水果！找到苹果、香蕉、橙子等水果。',
+                'vehicle': '现在试试识别交通工具！找到汽车、自行车、飞机等。',
+                'object': '现在试试识别日常物品！找到手机、书本、钟表等。'
+            };
+            
+            const resultElement = document.getElementById('recognition-result');
+            resultElement.innerHTML = `<div class="result-text">${instructions[cardType] || '拍一张照片或上传图片，AI会识别它是什么！'}</div>`;
+        }
+        
+        // 拍照功能
+        function takePhoto() {
+            // 在实际应用中，这里会调用设备摄像头
+            // 这里我们模拟拍照过程
+            const preview = document.getElementById('camera-preview');
+            preview.innerHTML = '<div class="preview-placeholder pulse">📸 拍照中...</div>';
+            
+            setTimeout(() => {
+                // 模拟拍照完成
+                const randomImages = {
+                    'animal': '🐱',
+                    'fruit': '🍎',
+                    'vehicle': '🚗',
+                    'object': '📱'
+                };
+                
+                const image = gameState.currentCard ? randomImages[gameState.currentCard] : '🖼️';
+                preview.innerHTML = `<div class="preview-placeholder">${image}</div>`;
+                
+                // 显示提示
+                const resultElement = document.getElementById('recognition-result');
+                resultElement.innerHTML = `
+                    <div class="result-text">照片已拍摄！点击分析按钮识别图片内容。</div>
+                `;
+            }, 1500);
+        }
+        
+        // 上传照片
+        function uploadPhoto() {
+            // 在实际应用中，这里会打开文件选择器
+            // 这里我们模拟上传过程
+            const preview = document.getElementById('camera-preview');
+            preview.innerHTML = '<div class="preview-placeholder pulse">📁 上传中...</div>';
+            
+            setTimeout(() => {
+                // 模拟上传完成
+                const randomImages = {
+                    'animal': '🐶',
+                    'fruit': '🍌',
+                    'vehicle': '🚲',
+                    'object': '📚'
+                };
+                
+                const image = gameState.currentCard ? randomImages[gameState.currentCard] : '🖼️';
+                preview.innerHTML = `<div class="preview-placeholder">${image}</div>`;
+                
+                // 显示提示
+                const resultElement = document.getElementById('recognition-result');
+                resultElement.innerHTML = `
+                    <div class="result-text">图片已上传！点击分析按钮识别图片内容。</div>
+                `;
+            }, 1500);
+        }
+        
+        // 分析图像
+        function analyzeImage() {
+            const preview = document.getElementById('camera-preview');
+            const placeholder = preview.querySelector('.preview-placeholder');
+            
+            if (!placeholder || placeholder.textContent.includes('📷')) {
+                alert('请先拍摄或上传一张图片！');
+                return;
+            }
+            
+            // 显示分析中
+            const resultElement = document.getElementById('recognition-result');
+            resultElement.innerHTML = `
+                <div class="result-text">AI正在分析图片...</div>
+                <div class="confidence-bar">
+                    <div class="confidence-fill" id="confidence-fill" style="width: 0%"></div>
+                </div>
+                <div class="confidence-text">分析进度: <span id="confidence-text">0%</span></div>
+            `;
+            
+            // 模拟AI分析过程
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 5;
+                document.getElementById('confidence-fill').style.width = progress + '%';
+                document.getElementById('confidence-text').textContent = progress + '%';
+                
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    showRecognitionResult();
+                }
+            }, 100);
+        }
+        
+        // 显示识别结果
+        function showRecognitionResult() {
+            const resultElement = document.getElementById('recognition-result');
+            
+            // 根据当前选择的卡片类型生成结果
+            const results = {
+                'animal': {
+                    name: '猫咪',
+                    confidence: 92,
+                    description: 'AI识别出这是一只可爱的猫咪！'
+                },
+                'fruit': {
+                    name: '苹果',
+                    confidence: 88,
+                    description: 'AI识别出这是一个红苹果！'
+                },
+                'vehicle': {
+                    name: '汽车',
+                    confidence: 85,
+                    description: 'AI识别出这是一辆小汽车！'
+                },
+                'object': {
+                    name: '手机',
+                    confidence: 90,
+                    description: 'AI识别出这是一部智能手机！'
+                }
+            };
+            
+            const defaultResult = {
+                name: '未知物体',
+                confidence: 65,
+                description: 'AI不太确定这是什么，你能告诉我吗？'
+            };
+            
+            const result = gameState.currentCard ? results[gameState.currentCard] : defaultResult;
+            
+            resultElement.innerHTML = `
+                <div class="result-text">${result.description}</div>
+                <div class="confidence-bar">
+                    <div class="confidence-fill" style="width: ${result.confidence}%"></div>
+                </div>
+                <div class="confidence-text">AI置信度: ${result.confidence}%</div>
+            `;
+            
+            // 更新分数和进度
+            updateScore(result.confidence);
+            
+            // 检查是否找到挑战物品
+            checkChallengeItems(result.name);
+            
+            // 启用下一个按钮
+            document.getElementById('next-btn').disabled = false;
+        }
+        
+        // 更新分数
+        function updateScore(confidence) {
+            const points = Math.floor(confidence / 10);
+            gameState.score += points;
+            document.getElementById('score').textContent = gameState.score;
+        }
+        
+        // 检查挑战物品
+        function checkChallengeItems(itemName) {
+            const challengeItems = ['猫', '苹果', '手机', '书本'];
+            const targetElements = document.querySelectorAll('.target-name');
+            
+            targetElements.forEach((element, index) => {
+                if (element.textContent === itemName && !gameState.foundItems.includes(itemName)) {
+                    gameState.foundItems.push(itemName);
+                    const statusElement = element.parentElement.querySelector('.target-status');
+                    statusElement.textContent = '已找到';
+                    statusElement.className = 'target-status status-found';
+                    
+                    // 额外加分
+                    gameState.score += 20;
+                    document.getElementById('score').textContent = gameState.score;
+                }
+            });
+        }
+        
+        // 下一个挑战
+        function nextChallenge() {
+            gameState.progress++;
+            
+            if (gameState.progress > gameState.totalChallenges) {
+                gameState.level++;
+                gameState.progress = 1;
+            }
+            
+            // 更新进度显示
+            document.getElementById('current-level').textContent = gameState.level;
+            document.getElementById('current-progress').textContent = gameState.progress;
+            document.getElementById('progress-fill').style.width = (gameState.progress / gameState.totalChallenges * 100) + '%';
+            
+            // 重置识别区域
+            document.getElementById('camera-preview').innerHTML = '<div class="preview-placeholder">📷</div>';
+            document.getElementById('recognition-result').innerHTML = '<div class="result-text">拍一张照片或上传图片，AI会识别它是什么！</div>';
+            
+            // 禁用下一个按钮
+            document.getElementById('next-btn').disabled = true;
+            
+            // 显示鼓励信息
+            if (gameState.progress === 1 && gameState.level > 1) {
+                alert(`恭喜！你已升级到第${gameState.level}关！继续加油！`);
+            }
+        }
+        
+        // 重置游戏
+        function resetGame() {
+            if (confirm('确定要重新开始游戏吗？当前进度将丢失。')) {
+                gameState = {
+                    score: 0,
+                    level: 1,
+                    progress: 1,
+                    totalChallenges: 10,
+                    currentCard: '',
+                    foundItems: []
+                };
+                
+                // 重置UI
+                document.getElementById('score').textContent = '0';
+                document.getElementById('current-level').textContent = '1';
+                document.getElementById('current-progress').textContent = '1';
+                document.getElementById('progress-fill').style.width = '10%';
+                document.getElementById('camera-preview').innerHTML = '<div class="preview-placeholder">📷</div>';
+                document.getElementById('recognition-result').innerHTML = '<div class="result-text">拍一张照片或上传图片，AI会识别它是什么！</div>';
+                document.getElementById('next-btn').disabled = true;
+                
+                // 重置学习卡片选择
+                document.querySelectorAll('.learning-card').forEach(card => {
+                    card.classList.remove('selected');
+                });
+                
+                // 重置挑战状态
+                document.querySelectorAll('.target-status').forEach(status => {
+                    status.textContent = '未找到';
+                    status.className = 'target-status status-missing';
+                });
+            }
+        }
+        
+        // 绘制神经网络连接
+        function drawNeuralNetwork() {
+            const connectionsContainer = document.getElementById('network-connections');
+            connectionsContainer.innerHTML = '';
+            
+            // 简单的连接线绘制
+            for (let i = 0; i < 3; i++) {
+                for (let j = 0; j < 4; j++) {
+                    for (let k = 0; k < 2; k++) {
+                        const connection = document.createElement('div');
+                        connection.className = 'connection';
+                        
+                        // 设置连接线位置和样式
+                        const left = 60 + (i * 120);
+                        const top = 30 + (j * 25);
+                        const width = 120;
+                        const angle = Math.atan2(30 + (k * 25) - top, 120);
+                        
+                        connection.style.left = left + 'px';
+                        connection.style.top = top + 'px';
+                        connection.style.width = width + 'px';
+                        connection.style.height = '2px';
+                        connection.style.transform = `rotate(${angle}rad)`;
+                        
+                        connectionsContainer.appendChild(connection);
+                    }
+                }
+            }
+        }
+        
+        // 初始化导航和页面
+        document.addEventListener('DOMContentLoaded', function() {
+            initAppNavigation();
+            // 尝试加载保存的游戏状态
+            if (loadGameState()) {
+                // 如果加载了游戏状态，更新UI显示
+                document.getElementById('score').textContent = gameState.score;
+                document.getElementById('current-level').textContent = gameState.level;
+                document.getElementById('current-progress').textContent = gameState.progress;
+            }
+            
+            // 绘制神经网络
+            drawNeuralNetwork();
+            
+            // 初始化进度显示
+            document.getElementById('progress-fill').style.width = (gameState.progress / gameState.totalChallenges * 100) + '%';
+        });
+    </script>
+</body>
+</html>

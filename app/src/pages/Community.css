@@ -1,0 +1,117 @@
+.topics-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 25px;
+}
+
+.topic-card {
+  background: #f9f9f9;
+  border-radius: 12px;
+  padding: 12px;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.3s;
+}
+
+.topic-card:hover {
+  transform: translateY(-3px);
+}
+
+.topic-icon {
+  font-size: 24px;
+  margin-bottom: 5px;
+}
+
+.topic-title {
+  font-size: 12px;
+  font-weight: bold;
+  margin-bottom: 3px;
+}
+
+.topic-count {
+  font-size: 10px;
+  color: #999;
+}
+
+.posts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.post-card {
+  background: white;
+  border-radius: 15px;
+  padding: 15px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+}
+
+.post-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.post-avatar {
+  font-size: 30px;
+  margin-right: 10px;
+}
+
+.post-author {
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.post-content {
+  font-size: 14px;
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+
+.post-image {
+  font-size: 60px;
+  text-align: center;
+  padding: 20px;
+  background: #f5f5f5;
+  border-radius: 10px;
+  margin-bottom: 12px;
+}
+
+.post-actions {
+  display: flex;
+  gap: 20px;
+}
+
+.action-item {
+  font-size: 13px;
+  color: #666;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.action-item:hover {
+  color: #e91e63;
+}
+
+.create-post-btn {
+  position: fixed;
+  bottom: 90px;
+  right: 20px;
+  background: linear-gradient(135deg, #e91e63 0%, #9c27b0 100%);
+  color: white;
+  padding: 15px 25px;
+  border-radius: 30px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 5px 20px rgba(233, 30, 99, 0.4);
+  transition: transform 0.3s;
+}
+
+.create-post-btn:hover {
+  transform: scale(1.05);
+}

@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>启蒙之光 - 阳光希望注册登录系统</title>
+    <script src="navigation-template.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #ff9a00 0%, #ff6a00 50%, #ff4800 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* 阳光射线效果 */
+        .sun-rays {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.4) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.3) 0%, transparent 50%),
+                        radial-gradient(circle at 40% 80%, rgba(255, 255, 255, 0.2) 0%, transparent 50%);
+            z-index: 0;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 450px;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            border: 8px solid #fff;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .header {
+            text-align: center;
+            padding: 30px 20px 20px;
+            background: linear-gradient(135deg, #ff9a00, #ff6a00);
+            color: white;
+            position: relative;
+            border-bottom: 5px solid #ffd166;
+        }
+        
+        .header h1 {
+            font-size: 34px;
+            margin-bottom: 10px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-shadow: 2px 2px 0px rgba(255, 107, 0, 0.3);
+        }
+        
+        .header p {
+            font-size: 18px;
+            opacity: 0.9;
+            font-weight: 500;
+        }
+        
+        .form-container {
+            padding: 30px;
+        }
+        
+        .form-title {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #ff6a00;
+            font-size: 24px;
+            font-weight: 600;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 16px;
+            color: #ff6a00;
+            font-weight: 500;
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 14px 15px;
+            border: 2px solid #ffd166;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s;
+            background-color: #fff9f0;
+        }
+        
+        .input-group input:focus {
+            border-color: #ff9a00;
+            outline: none;
+            background-color: white;
+            box-shadow: 0 0 0 3px rgba(255, 154, 0, 0.3);
+        }
+        
+        .password-requirements {
+            font-size: 13px;
+            color: #ff9a00;
+            margin-top: 5px;
+            line-height: 1.4;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(to right, #ff9a00, #ff6a00);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+            box-shadow: 0 4px 0 #e85c00;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 0 #e85c00;
+        }
+        
+        .btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #e85c00;
+        }
+        
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: 0.5s;
+        }
+        
+        .btn:hover::after {
+            left: 100%;
+        }
+        
+        .switch-form {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 16px;
+        }
+        
+        .switch-form a {
+            color: #ff9a00;
+            text-decoration: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        .switch-form a:hover {
+            color: #ff6a00;
+            text-decoration: underline;
+        }
+        
+        .error-message {
+            color: #e74c3c;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        .success-message {
+            color: #2ecc71;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        .welcome-container {
+            text-align: center;
+            padding: 40px 30px;
+        }
+        
+        .welcome-title {
+            font-size: 28px;
+            margin-bottom: 20px;
+            color: #ff6a00;
+        }
+        
+        .welcome-text {
+            margin-bottom: 30px;
+            color: #ff9a00;
+            line-height: 1.6;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .form-page {
+            transition: opacity 0.3s ease;
+        }
+        
+        .ai-icon {
+            font-size: 80px;
+            margin-bottom: 15px;
+            color: #ff9a00;
+            text-shadow: 3px 3px 0px rgba(255, 107, 0, 0.3);
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 15px;
+            font-size: 12px;
+            color: #ff9a00;
+            border-top: 1px solid #ffd166;
+        }
+        
+        .profile-link {
+            display: inline-block;
+            margin-top: 15px;
+            color: #ff9a00;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .profile-link:hover {
+            text-decoration: underline;
+        }
+        
+        .secondary-btn {
+            background: linear-gradient(to right, #ffd166, #ffb347) !important;
+            box-shadow: 0 4px 0 #ff9a00 !important;
+            color: #ff6a00 !important;
+        }
+        
+        .secondary-btn:hover {
+            box-shadow: 0 6px 0 #ff9a00 !important;
+        }
+        
+        .secondary-btn:active {
+            box-shadow: 0 2px 0 #ff9a00 !important;
+        }
+        
+        .sun-icon {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 24px;
+            color: #fff;
+            opacity: 0.8;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        .floating-elements {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 0;
+        }
+        
+        .floating-element {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            animation: float-random 15s infinite linear;
+        }
+        
+        @keyframes float-random {
+            0% {
+                transform: translateY(0) translateX(0) rotate(0deg);
+            }
+            25% {
+                transform: translateY(-20px) translateX(10px) rotate(90deg);
+            }
+            50% {
+                transform: translateY(0) translateX(20px) rotate(180deg);
+            }
+            75% {
+                transform: translateY(20px) translateX(10px) rotate(270deg);
+            }
+            100% {
+                transform: translateY(0) translateX(0) rotate(360deg);
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                max-width: 100%;
+            }
+            
+            .form-container {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="sun-rays"></div>
+    
+    <div class="floating-elements">
+        <!-- 浮动元素将通过JS动态生成 -->
+    </div>
+    
+    <div class="container">
+        <div class="header">
+            <div class="sun-icon">☀️</div>
+            <h1>加入启蒙之光</h1>
+            <p>开启你的AI探索之旅吧</p>
+        </div>
+        
+        <!-- 注册页面 -->
+        <div id="register-page" class="form-page">
+            <div class="form-container">
+                <div class="ai-icon">🤖✨</div>
+                <h2 class="form-title">用户注册</h2>
+                <form id="register-form">
+                    <div class="input-group">
+                        <label for="register-phone">手机号</label>
+                        <input type="tel" id="register-phone" placeholder="请输入您的手机号" required>
+                        <div id="phone-error" class="error-message">请输入有效的手机号</div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="register-password">密码</label>
+                        <input type="password" id="register-password" placeholder="请输入密码" required>
+                        <div class="password-requirements">密码需至少8位，包含大写字母、小写字母和数字</div>
+                        <div id="password-error" class="error-message">密码不符合要求</div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="confirm-password">确认密码</label>
+                        <input type="password" id="confirm-password" placeholder="请再次输入密码" required>
+                        <div id="confirm-error" class="error-message">两次输入的密码不一致</div>
+                    </div>
+                    
+                    <button type="submit" class="btn">注册</button>
+                    
+                    <div class="switch-form">
+                        已有账号？ <a id="to-login">立即登录</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- 登录页面 -->
+        <div id="login-page" class="form-page hidden">
+            <div class="form-container">
+                <div class="ai-icon">🔐✨</div>
+                <h2 class="form-title">用户登录</h2>
+                <form id="login-form">
+                    <div class="input-group">
+                        <label for="login-phone">手机号</label>
+                        <input type="tel" id="login-phone" placeholder="请输入您的手机号" required>
+                        <div id="login-phone-error" class="error-message">请输入有效的手机号</div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="login-password">密码</label>
+                        <input type="password" id="login-password" placeholder="请输入密码" required>
+                        <div id="login-password-error" class="error-message">密码错误</div>
+                    </div>
+                    
+                    <button type="submit" class="btn">登录</button>
+                    
+                    <div class="switch-form">
+                        没有账号？ <a id="to-register">立即注册</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- 欢迎页面 -->
+        <div id="welcome-page" class="form-page hidden">
+            <div class="welcome-container">
+                <div class="ai-icon">🎉✨</div>
+                <h2 class="welcome-title">登录成功！</h2>
+                <p class="welcome-text">欢迎加入启蒙之光，您已成功开启AI探索之旅！</p>
+                <button id="profile-btn" class="btn secondary-btn">进入个人主页</button>
+                <button id="logout-btn" class="btn" style="margin-top: 10px;">退出登录</button>
+            </div>
+        </div>
+        
+        <div class="footer">
+            &copy; 2023 启蒙之光 AI探索平台 | 关联文件: D:/2025年AI/AI造物计划/项目库文件/qmzg/profile.html
+        </div>
+    </div>
+
+    <script>
+        // 防止动态模块加载错误
+window.addEventListener('error', function(e) {
+    if (e.target && e.target.src && e.target.src.includes('@vite/client')) {
+        e.preventDefault();
+        console.log('已拦截Vite客户端模块加载请求');
+    }
+}, true);
+
+// 在DOM加载完成后初始化应用导航
+document.addEventListener('DOMContentLoaded', function() {
+    // 初始化导航
+    initAppNavigation();
+});
+        
+        // 页面元素
+        const registerPage = document.getElementById('register-page');
+        const loginPage = document.getElementById('login-page');
+        const welcomePage = document.getElementById('welcome-page');
+        
+        // 注册表单元素
+        const registerForm = document.getElementById('register-form');
+        const registerPhone = document.getElementById('register-phone');
+        const registerPassword = document.getElementById('register-password');
+        const confirmPassword = document.getElementById('confirm-password');
+        
+        // 登录表单元素
+        const loginForm = document.getElementById('login-form');
+        const loginPhone = document.getElementById('login-phone');
+        const loginPassword = document.getElementById('login-password');
+        
+        // 错误提示元素
+        const phoneError = document.getElementById('phone-error');
+        const passwordError = document.getElementById('password-error');
+        const confirmError = document.getElementById('confirm-error');
+        const loginPhoneError = document.getElementById('login-phone-error');
+        const loginPasswordError = document.getElementById('login-password-error');
+        
+        // 按钮元素
+        const toLoginLink = document.getElementById('to-login');
+        const toRegisterLink = document.getElementById('to-register');
+        const logoutBtn = document.getElementById('logout-btn');
+        const profileBtn = document.getElementById('profile-btn');
+        
+        // 使用localStorage模拟用户数据库
+        let users = JSON.parse(localStorage.getItem('users')) || {};
+        
+        // 创建浮动元素
+        function createFloatingElements() {
+            const container = document.querySelector('.floating-elements');
+            const elementCount = 15;
+            
+            for (let i = 0; i < elementCount; i++) {
+                const element = document.createElement('div');
+                element.classList.add('floating-element');
+                
+                // 随机大小和位置
+                const size = Math.random() * 30 + 10;
+                element.style.width = `${size}px`;
+                element.style.height = `${size}px`;
+                element.style.left = `${Math.random() * 100}%`;
+                element.style.top = `${Math.random() * 100}%`;
+                
+                // 随机动画延迟
+                element.style.animationDelay = `${Math.random() * 5}s`;
+                element.style.animationDuration = `${Math.random() * 10 + 10}s`;
+                
+                container.appendChild(element);
+            }
+        }
+        
+        // 显示页面
+        function showPage(page) {
+            registerPage.classList.add('hidden');
+            loginPage.classList.add('hidden');
+            welcomePage.classList.add('hidden');
+            page.classList.remove('hidden');
+        }
+        
+        // 手机号验证
+        function validatePhone(phone) {
+            const phoneRegex = /^1[3-9]\d{9}$/;
+            return phoneRegex.test(phone);
+        }
+        
+        // 密码验证
+        function validatePassword(password) {
+            // 至少8位，包含大写字母、小写字母和数字
+            const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+            return passwordRegex.test(password);
+        }
+        
+        // 切换至登录页面
+        toLoginLink.addEventListener('click', function() {
+            showPage(loginPage);
+        });
+        
+        // 切换至注册页面
+        toRegisterLink.addEventListener('click', function() {
+            showPage(registerPage);
+        });
+        
+        // 退出登录
+        logoutBtn.addEventListener('click', function() {
+            showPage(loginPage);
+            // 清空登录表单
+            loginForm.reset();
+        });
+        
+        // 进入个人主页
+        profileBtn.addEventListener('click', function() {
+            // 使用统一的导航函数跳转到个人主页
+            navigateTo('profile.html');
+        });
+        
+        // 注册表单提交
+        registerForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // 重置错误提示
+            phoneError.style.display = 'none';
+            passwordError.style.display = 'none';
+            confirmError.style.display = 'none';
+            
+            const phone = registerPhone.value.trim();
+            const password = registerPassword.value;
+            const confirm = confirmPassword.value;
+            
+            let isValid = true;
+            
+            // 验证手机号
+            if (!validatePhone(phone)) {
+                phoneError.style.display = 'block';
+                isValid = false;
+            }
+            
+            // 验证密码
+            if (!validatePassword(password)) {
+                passwordError.style.display = 'block';
+                isValid = false;
+            }
+            
+            // 验证确认密码
+            if (password !== confirm) {
+                confirmError.style.display = 'block';
+                isValid = false;
+            }
+            
+            // 检查手机号是否已注册
+            if (users[phone]) {
+                phoneError.textContent = '该手机号已注册';
+                phoneError.style.display = 'block';
+                isValid = false;
+            }
+            
+            if (isValid) {
+                // 保存用户信息
+                users[phone] = password;
+                localStorage.setItem('users', JSON.stringify(users));
+                
+                // 跳转到登录页面
+                showPage(loginPage);
+                // 清空注册表单
+                registerForm.reset();
+                
+                // 自动填充手机号到登录表单
+                loginPhone.value = phone;
+            }
+        });
+        
+        // 登录表单提交
+        loginForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // 重置错误提示
+            loginPhoneError.style.display = 'none';
+            loginPasswordError.style.display = 'none';
+            
+            const phone = loginPhone.value.trim();
+            const password = loginPassword.value;
+            
+            let isValid = true;
+            
+            // 验证手机号
+            if (!validatePhone(phone)) {
+                loginPhoneError.style.display = 'block';
+                isValid = false;
+            }
+            
+            // 验证用户是否存在
+            if (!users[phone]) {
+                loginPhoneError.textContent = '该手机号未注册';
+                loginPhoneError.style.display = 'block';
+                isValid = false;
+            } else if (users[phone] !== password) {
+                // 验证密码
+                loginPasswordError.style.display = 'block';
+                isValid = false;
+            }
+            
+            if (isValid) {
+                // 登录成功，跳转到首页
+                navigateTo('index.html');
+                // 保存登录状态
+                localStorage.setItem('isLoggedIn', 'true');
+                localStorage.setItem('currentUser', phone);
+            }
+        });
+        
+        // 初始显示注册页面
+        showPage(registerPage);
+        
+        // 创建浮动元素
+        createFloatingElements();
+    </script>
+</body>
+</html>

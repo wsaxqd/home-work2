@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI能力测评 - 光明使者</title>
+    <style>
+        /* 全局样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #fff8e1 0%, #e8f5e9 100%);
+            color: #333;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 0;
+            position: relative;
+            min-height: 100vh;
+            background: white;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+        
+        /* 头部样式 */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px 16px 16px;
+            color: #fff;
+            position: relative;
+            border-radius: 0 0 20px 20px;
+        }
+        
+        .back-button {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            background: rgba(255, 255, 255, 0.2);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        
+        .header h1 {
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+        
+        .header p {
+            font-size: 14px;
+            text-align: center;
+            opacity: 0.9;
+        }
+        
+        /* 主内容区 */
+        .main-content {
+            flex: 1;
+            padding: 20px 16px;
+            background-color: white;
+            padding-bottom: 80px;
+            overflow-y: auto;
+            max-height: calc(100vh - 140px);
+        }
+        
+        /* 测评介绍 */
+        .assessment-intro {
+            background: #fff;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            line-height: 1.6;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .assessment-intro h3 {
+            color: #333;
+            margin-bottom: 12px;
+            font-size: 16px;
+        }
+        
+        /* 测评类型卡片 */
+        .assessment-cards {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        
+        .assessment-card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 20px;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .assessment-card:active {
+            transform: scale(0.98);
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .card-icon {
+            font-size: 32px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+        }
+        
+        .card-info {
+            flex: 1;
+            margin-left: 16px;
+        }
+        
+        .card-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 4px;
+        }
+        
+        .card-desc {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .card-arrow {
+            color: #999;
+            font-size: 20px;
+        }
+        
+        /* 历史记录 */
+        .history-section {
+            background: #fff;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 16px;
+            color: #333;
+        }
+        
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .history-item:last-child {
+            border-bottom: none;
+        }
+        
+        .history-info h4 {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 4px;
+        }
+        
+        .history-date {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .history-score {
+            font-size: 20px;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+        
+        /* 底部导航 */
+        .bottom-nav {
+            display: flex;
+            justify-content: space-around;
+            background: white;
+            padding: 15px 0;
+            border-radius: 20px 20px 0 0;
+            box-shadow: 0 -4px 12px rgba(0,0,0,0.05);
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            max-width: 480px;
+            z-index: 1000;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        .nav-icon {
+            font-size: 24px;
+            margin-bottom: 5px;
+            color: #999;
+        }
+        
+        .nav-item.active .nav-icon {
+            color: #ff9800;
+        }
+        
+        .nav-text {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .nav-item.active .nav-text {
+            color: #ff9800;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="back-button">←</div>
+            <h1>AI能力测评</h1>
+            <p>了解你的AI知识水平</p>
+        </div>
+        
+        <div class="main-content">
+            <!-- 测评介绍 -->
+            <div class="assessment-intro">
+                <h3>为什么要进行AI测评？</h3>
+                <p>通过测评，你可以了解自己的AI知识水平，发现学习的薄弱点，系统会为你推荐个性化的学习路径和内容，帮助你更高效地学习AI知识。</p>
+            </div>
+            
+            <!-- 测评类型 -->
+            <div class="assessment-cards">
+                <div class="assessment-card">
+                    <div class="card-header">
+                        <div class="card-icon">🧠</div>
+                        <div class="card-info">
+                            <div class="card-title">基础知识测评</div>
+                            <div class="card-desc">测试AI基础知识掌握程度</div>
+                        </div>
+                        <div class="card-arrow">›</div>
+                    </div>
+                </div>
+                
+                <div class="assessment-card">
+                    <div class="card-header">
+                        <div class="card-icon">🎨</div>
+                        <div class="card-info">
+                            <div class="card-title">创作能力测评</div>
+                            <div class="card-desc">评估AI创作工具使用能力</div>
+                        </div>
+                        <div class="card-arrow">›</div>
+                    </div>
+                </div>
+                
+                <div class="assessment-card">
+                    <div class="card-header">
+                        <div class="card-icon">🔍</div>
+                        <div class="card-info">
+                            <div class="card-title">探索能力测评</div>
+                            <div class="card-desc">检测AI应用探索能力</div>
+                        </div>
+                        <div class="card-arrow">›</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 历史记录 -->
+            <div class="history-section">
+                <div class="section-title">测评历史</div>
+                <div class="history-item">
+                    <div class="history-info">
+                        <h4>基础知识测评</h4>
+                        <div class="history-date">2024-01-15</div>
+                    </div>
+                    <div class="history-score">85分</div>
+                </div>
+                <div class="history-item">
+                    <div class="history-info">
+                        <h4>创作能力测评</h4>
+                        <div class="history-date">2024-01-10</div>
+                    </div>
+                    <div class="history-score">92分</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 底部导航 -->
+        <div class="bottom-nav">
+            <div class="nav-item" onclick="navigateTo('index.html')">
+                <div class="nav-icon">🏠</div>
+                <div class="nav-text">首页</div>
+            </div>
+            <div class="nav-item active" onclick="navigateTo('explore.html')">
+                <div class="nav-icon">🔍</div>
+                <div class="nav-text">探索</div>
+            </div>
+            <div class="nav-item" onclick="navigateTo('create.html')">
+                <div class="nav-icon">🎨</div>
+                <div class="nav-text">创作</div>
+            </div>
+            <div class="nav-item" onclick="navigateTo('mind-garden.html')">
+                <div class="nav-icon">💝</div>
+                <div class="nav-text">心灵</div>
+            </div>
+            <div class="nav-item" onclick="navigateTo('profile.html')">
+                <div class="nav-icon">👤</div>
+                <div class="nav-text">我的</div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="navigation-template.js"></script>
+    <script>
+        // 页面特定的JavaScript
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化导航
+            initAppNavigation();
+            
+            // 测评卡片点击事件
+            document.querySelectorAll('.assessment-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    alert('测评功能开发中，敬请期待！');
+                });
+            });
+        });
+        
+        // 返回上一页由navigation-template.js中的fixBackButtonLogic函数处理
+        
+        // navigateTo函数由navigation-template.js提供
+    </script>
+</body>
+</html>

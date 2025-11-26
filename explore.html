@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI探索岛 - 启蒙之光</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial Rounded MT Bold', 'Arial', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #e0f7ff 0%, #d4f0ff 100%);
+            color: #333;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 0;
+            position: relative;
+            min-height: 100vh;
+            background: white;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: linear-gradient(135deg, #4a90e2 0%, #8e44ad 100%);
+            color: white;
+            border-radius: 0 0 20px 20px;
+        }
+        
+        .back-button {
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        .page-title {
+            font-size: 20px;
+            text-align: center;
+            flex: 1;
+        }
+        
+        .main-content {
+            padding: 20px;
+            overflow-y: auto;
+            max-height: calc(100vh - 140px);
+        }
+        
+        .section-title {
+            font-size: 18px;
+            margin: 20px 0 15px;
+            color: #4a90e2;
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title::before {
+            content: "";
+            display: inline-block;
+            width: 5px;
+            height: 20px;
+            background: #4a90e2;
+            margin-right: 10px;
+            border-radius: 3px;
+        }
+        
+        /* 探索岛地图样式 */
+        .explore-map {
+            background: #e6f7ff;
+            border-radius: 20px;
+            padding: 20px;
+            margin: 15px 0;
+            position: relative;
+            overflow: hidden;
+            border: 2px dashed #4a90e2;
+        }
+        
+        .map-title {
+            text-align: center;
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #4a90e2;
+        }
+        
+        .map-areas {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .map-area {
+            background: white;
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: transform 0.3s;
+            cursor: pointer;
+        }
+        
+        .map-area:hover {
+            transform: translateY(-5px);
+        }
+        
+        .area-icon {
+            font-size: 30px;
+            margin-bottom: 10px;
+            color: #4a90e2;
+        }
+        
+        .area-title {
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+        
+        .area-desc {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        /* 游戏卡片样式 */
+        .game-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .game-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: transform 0.3s;
+            cursor: pointer;
+        }
+        
+        .game-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .game-image {
+            height: 100px;
+            background: linear-gradient(135deg, #4a90e2 0%, #8e44ad 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 40px;
+            color: white;
+        }
+        
+        .game-content {
+            padding: 15px;
+        }
+        
+        .game-title {
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+        
+        .game-desc {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .game-progress {
+            height: 6px;
+            background: #e0e0e0;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: #4a90e2;
+            border-radius: 3px;
+        }
+        
+        .game-stats {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #666;
+        }
+        
+        /* 时间轴样式 */
+        .timeline-container {
+            background: white;
+            border-radius: 15px;
+            padding: 15px;
+            margin: 20px 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+        
+        .timeline::before {
+            content: "";
+            position: absolute;
+            left: 15px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #4a90e2;
+        }
+        
+        .timeline-item {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        
+        .timeline-item::before {
+            content: "";
+            position: absolute;
+            left: -23px;
+            top: 5px;
+            width: 12px;
+            height: 12px;
+            background: #4a90e2;
+            border-radius: 50%;
+            border: 2px solid white;
+            box-shadow: 0 0 0 2px #4a90e2;
+        }
+        
+        .timeline-year {
+            font-weight: bold;
+            color: #4a90e2;
+            margin-bottom: 5px;
+        }
+        
+        .timeline-content {
+            background: #f0f9ff;
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 14px;
+        }
+        
+        /* 问答样式 */
+        .qa-section {
+            background: white;
+            border-radius: 15px;
+            padding: 15px;
+            margin: 20px 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        .qa-title {
+            font-size: 16px;
+            margin-bottom: 15px;
+            color: #4a90e2;
+            display: flex;
+            align-items: center;
+        }
+        
+        .qa-title::before {
+            content: "?";
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 25px;
+            height: 25px;
+            background: #4a90e2;
+            color: white;
+            border-radius: 50%;
+            margin-right: 10px;
+            font-size: 14px;
+        }
+        
+        .qa-item {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .question {
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .answer {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.5;
+        }
+        
+        .ask-button {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #4a90e2 0%, #8e44ad 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: transform 0.2s;
+        }
+        
+        .ask-button:hover {
+            transform: scale(1.02);
+        }
+        
+        .bottom-nav {
+            display: flex;
+            justify-content: space-around;
+            background: white;
+            padding: 15px 0;
+            border-radius: 20px 20px 0 0;
+            box-shadow: 0 -4px 12px rgba(0,0,0,0.05);
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            max-width: 480px;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        .nav-icon {
+            font-size: 24px;
+            margin-bottom: 5px;
+            color: #999;
+        }
+        
+        .nav-item.active .nav-icon {
+            color: #4a90e2;
+        }
+        
+        .nav-text {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .nav-item.active .nav-text {
+            color: #4a90e2;
+            font-weight: bold;
+        }
+        
+        /* 响应式调整 */
+        @media (max-width: 480px) {
+            .container {
+                padding-bottom: 70px;
+            }
+            
+            .game-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="back-button" onclick="goBack()">←</div>
+            <div class="page-title">AI探索岛</div>
+            <div style="width: 24px;"></div> <!-- 占位保持对称 -->
+        </div>
+        
+        <div class="main-content">
+            <div class="explore-map">
+                <div class="map-title">探索AI奇妙世界</div>
+                <div class="map-areas">
+                    <div class="map-area" onclick="enterArea('history')">
+                        <div class="area-icon">📜</div>
+                        <div class="area-title">AI发展博物馆</div>
+                        <div class="area-desc">穿越时空了解AI发展</div>
+                    </div>
+                <div class="map-area" onclick="enterArea('games')">
+                    <div class="area-icon">🎮</div>
+                    <div class="area-title">AI游戏实验室</div>
+                    <div class="area-desc">通过游戏学习AI原理</div>
+                </div>
+                <div class="map-area" onclick="navigateTo('assessment.html')">
+                    <div class="area-icon">🧠</div>
+                    <div class="area-title">AI探索岛</div>
+                    <div class="area-desc">发现AI世界的奥秘</div>
+                </div>
+                <div class="map-area" onclick="enterArea('programming')">
+                        <div class="area-icon">💻</div>
+                        <div class="area-title">创意编程工坊</div>
+                        <div class="area-desc">动手创造你的AI程序</div>
+                    </div>
+                    <div class="map-area" onclick="enterArea('qa')">
+                        <div class="area-icon">❓</div>
+                        <div class="area-title">AI十万个为什么</div>
+                        <div class="area-desc">解答你的AI疑问</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section-title">AI历史长河</div>
+            <div class="timeline-container">
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-year">1950年</div>
+                        <div class="timeline-content">图灵提出"图灵测试"，开启了人工智能的研究</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-year">1956年</div>
+                        <div class="timeline-content">达特茅斯会议，人工智能正式成为一门学科</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-year">1997年</div>
+                        <div class="timeline-content">深蓝击败国际象棋世界冠军卡斯帕罗夫</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-year">2012年</div>
+                        <div class="timeline-content">深度学习在图像识别领域取得突破性进展</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-year">2016年</div>
+                        <div class="timeline-content">AlphaGo击败围棋世界冠军李世石</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section-title">AI游戏实验室</div>
+            <div class="game-grid">
+                <div class="game-card" onclick="playGame('image-recognition')">
+                    <div class="game-image">🖼️</div>
+                    <div class="game-content">
+                        <div class="game-title">猜猜我是谁</div>
+                        <div class="game-desc">用AI识别图片中的物体</div>
+                        <div class="game-progress">
+                            <div class="progress-bar" style="width: 65%"></div>
+                        </div>
+                        <div class="game-stats">
+                            <span>已完成65%</span>
+                            <span>⭐4.8</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="game-card" onclick="playGame('expression')">
+                    <div class="game-image">😊</div>
+                    <div class="game-content">
+                        <div class="game-title">表情模仿秀</div>
+                        <div class="game-desc">让AI识别你的表情</div>
+                        <div class="game-progress">
+                            <div class="progress-bar" style="width: 30%"></div>
+                        </div>
+                        <div class="game-stats">
+                            <span>已完成30%</span>
+                            <span>⭐4.6</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="game-card" onclick="playGame('training')">
+                    <div class="game-image">👾</div>
+                    <div class="game-content">
+                        <div class="game-title">训练我的小怪兽</div>
+                        <div class="game-desc">教AI识别不同颜色</div>
+                        <div class="game-progress">
+                            <div class="progress-bar" style="width: 80%"></div>
+                        </div>
+                        <div class="game-stats">
+                            <span>已完成80%</span>
+                            <span>⭐4.9</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="game-card" onclick="playGame('programming')">
+                    <div class="game-image">🧩</div>
+                    <div class="game-content">
+                        <div class="game-title">编程思维挑战</div>
+                        <div class="game-desc">学习顺序和循环概念</div>
+                        <div class="game-progress">
+                            <div class="progress-bar" style="width: 45%"></div>
+                        </div>
+                        <div class="game-stats">
+                            <span>已完成45%</span>
+                            <span>⭐4.7</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section-title">AI十万个为什么</div>
+            <div class="qa-section">
+                <div class="qa-title">热门问题</div>
+                <div class="qa-item">
+                    <div class="question">AI是怎么认出图片里是什么的？</div>
+                    <div class="answer">AI通过学习成千上万张带标签的图片，找出不同物体的特征，就像你学习认识新事物一样！</div>
+                </div>
+                <div class="qa-item">
+                    <div class="question">第一个机器人是谁发明的？</div>
+                    <div class="answer">最早的机器人概念可以追溯到古希腊，但现代意义上的第一个可编程机器人是乔治·德沃尔在1954年发明的。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="question">AI会做梦吗？</div>
+                    <div class="answer">AI不会像人类一样做梦，但可以通过生成对抗网络创造全新的图像和内容，有点像"白日梦"哦！</div>
+                </div>
+                <button class="ask-button" onclick="askQuestion()">向小光提问</button>
+            </div>
+        </div>
+        
+        <div class="bottom-nav">
+            <div class="nav-item" onclick="navigateTo('index.html')">
+                <div class="nav-icon">🏠</div>
+                <div class="nav-text">首页</div>
+            </div>
+            <div class="nav-item active" onclick="navigateTo('explore.html')">
+                <div class="nav-icon">🔍</div>
+                <div class="nav-text">探索</div>
+            </div>
+            <div class="nav-item" onclick="navigateTo('create.html')">
+                <div class="nav-icon">🎨</div>
+                <div class="nav-text">创作</div>
+            </div>
+            <div class="nav-item" onclick="navigateTo('mind-garden.html')">
+                <div class="nav-icon">💝</div>
+                <div class="nav-text">心灵</div>
+            </div>
+            <div class="nav-item" onclick="navigateTo('profile.html')">
+                <div class="nav-icon">👤</div>
+                <div class="nav-text">我的</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="navigation-template.js"></script>
+    <script>
+        function goBack() {
+            // 检查是否可以安全地返回
+            const documentReferrer = document.referrer;
+            const origin = window.location.origin;
+            
+            // 如果没有历史记录或者来源不是当前网站，则导航到首页
+            if (window.history.length <= 1 || (!documentReferrer.startsWith(origin) && documentReferrer !== '')) {
+                navigateTo('index.html');
+            } else {
+                // 否则执行返回操作
+                window.history.back();
+            }
+        }
+        
+        function enterArea(area) {
+            alert(`正在进入${getAreaName(area)}，准备开始探索之旅！`);
+            // 在实际应用中，这里会加载对应区域的内容
+        }
+        
+        function getAreaName(area) {
+            const areas = {
+                'history': 'AI历史长河',
+                'games': 'AI游戏实验室',
+                'programming': '创意编程工坊',
+                'qa': 'AI十万个为什么'
+            };
+            return areas[area] || '未知区域';
+        }
+        
+        function playGame(game) {
+            alert(`开始玩${getGameName(game)}游戏！`);
+            // 在实际应用中，这里会启动对应游戏
+        }
+        
+        function getGameName(game) {
+            const games = {
+                'image-recognition': '猜猜我是谁',
+                'expression': '表情模仿秀',
+                'training': '训练我的小怪兽',
+                'programming': '编程思维挑战'
+            };
+            return games[game] || '未知游戏';
+        }
+        
+        function askQuestion() {
+            const question = prompt("向小光提问关于AI的问题：");
+            if (question) {
+                alert(`你的问题"${question}"已提交，小光正在思考中...`);
+                // 在实际应用中，这里会调用AI问答接口
+            }
+        }
+        
+        // 初始化导航
+        document.addEventListener('DOMContentLoaded', function() {
+            initAppNavigation();
+        });
+    </script>
+</body>
+</html>

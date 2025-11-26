@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>启蒙之光 - 儿童AI教育应用</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial Rounded MT Bold', 'Arial', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(180deg, #e0f7ff 0%, #f0e6ff 100%);
+            color: #333;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            min-height: 100vh;
+        }
+        
+        /* 主界面样式 */
+        #main-screen {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            background: linear-gradient(180deg, #e0f7ff 0%, #f0e6ff 100%);
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: rgba(255,255,255,0.8);
+            border-radius: 0 0 20px 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+        
+        .avatar {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #4a90e2 0%, #8e44ad 100%);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        .welcome-text h2 {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+        
+        .welcome-text p {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .notification-icon {
+            font-size: 24px;
+            color: #8e44ad;
+            cursor: pointer;
+        }
+        
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .ai-companion {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        
+        .companion-bubble {
+            background: white;
+            border-radius: 50px;
+            padding: 15px 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            max-width: 80%;
+        }
+        
+        .companion-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #4a90e2 0%, #8e44ad 100%);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 24px;
+            margin-right: 15px;
+        }
+        
+        .companion-text {
+            font-size: 16px;
+        }
+        
+        .function-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 30px 0;
+        }
+        
+        .function-card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+        
+        .function-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        
+        .function-icon {
+            font-size: 40px;
+            margin-bottom: 15px;
+            color: #4a90e2;
+        }
+        
+        .function-card h3 {
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        
+        .function-card p {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .recommendation-section {
+            margin-top: 30px;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #4a90e2;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .see-all {
+            font-size: 14px;
+            color: #8e44ad;
+            cursor: pointer;
+        }
+        
+        .recommendation-list {
+            display: flex;
+            overflow-x: auto;
+            gap: 15px;
+            padding-bottom: 10px;
+        }
+        
+        .recommendation-item {
+            flex: 0 0 auto;
+            width: 200px;
+            background: white;
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            cursor: pointer;
+        }
+        
+        .recommendation-icon {
+            font-size: 30px;
+            margin-bottom: 10px;
+            color: #8e44ad;
+        }
+        
+        .recommendation-item h4 {
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+        
+        .recommendation-item p {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        /* 统一底部导航样式 */
+        .bottom-nav {
+            display: flex;
+            justify-content: space-around;
+            background: white;
+            padding: 15px 0;
+            border-radius: 20px 20px 0 0;
+            box-shadow: 0 -4px 12px rgba(0,0,0,0.05);
+            position: sticky;
+            bottom: 0;
+            z-index: 100;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            flex: 1;
+        }
+        
+        .nav-icon {
+            font-size: 24px;
+            margin-bottom: 5px;
+            color: #999;
+        }
+        
+        .nav-item.active .nav-icon {
+            color: #4a90e2;
+        }
+        
+        .nav-text {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .nav-item.active .nav-text {
+            color: #4a90e2;
+            font-weight: bold;
+        }
+        
+        /* 响应式调整 */
+        @media (max-width: 480px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .function-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .recommendation-item {
+                width: 180px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="main-screen" class="container">
+        <div class="header">
+            <div class="user-info">
+                <div class="avatar">小乐</div>
+                <div class="welcome-text">
+                    <h2>早上好，小乐！</h2>
+                    <p>今天想探索什么？</p>
+                </div>
+            </div>
+            <div class="notification-icon" onclick="showNotifications()">🔔</div>
+        </div>
+        
+        <div class="main-content">
+            <div class="ai-companion">
+                <div class="companion-bubble">
+                    <div class="companion-icon">光</div>
+                    <div class="companion-text">今天有个新的AI小游戏，想试试吗？</div>
+                </div>
+            </div>
+            
+            <div class="function-grid">
+                <div class="function-card" onclick="navigateTo('explore.html')">
+                    <div class="function-icon">🔍</div>
+                    <h3>AI探索岛</h3>
+                    <p>发现AI的奇妙世界</p>
+                </div>
+                <div class="function-card" onclick="navigateTo('create.html')">
+                    <div class="function-icon">🎨</div>
+                    <h3>创造湾</h3>
+                    <p>用AI创造你的作品</p>
+                </div>
+                <div class="function-card" onclick="navigateTo('mind-garden.html')">
+                    <div class="function-icon">💝</div>
+                    <h3>心灵花园</h3>
+                    <p>和小光分享心情</p>
+                </div>
+                <div class="function-card" onclick="navigateTo('community.html')">
+                    <div class="function-icon">🤝</div>
+                    <h3>光明城</h3>
+                    <p>连接更多小伙伴</p>
+                </div>
+            </div>
+            
+            <div class="recommendation-section">
+                <div class="section-title">
+                    <span>今日推荐</span>
+                    <span class="see-all" onclick="viewAllRecommendations()">查看全部</span>
+                </div>
+                <div class="recommendation-list">
+                    <div class="recommendation-item" onclick="startExploration('ai-intro')">
+                        <div class="recommendation-icon">🤖</div>
+                        <h4>AI是什么？</h4>
+                        <p>了解人工智能的起源</p>
+                    </div>
+                    <div class="recommendation-item" onclick="startCreation('music')">
+                        <div class="recommendation-icon">🎵</div>
+                        <h4>创作你的AI歌曲</h4>
+                        <p>用旋律表达心情</p>
+                    </div>
+                    <div class="recommendation-item" onclick="startCreation('story')">
+                        <div class="recommendation-icon">📖</div>
+                        <h4>AI童话制造机</h4>
+                        <p>创造属于你的故事</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="recommendation-section">
+                <div class="section-title">
+                    <span>继续上次</span>
+                </div>
+                <div class="recommendation-list">
+                    <div class="recommendation-item" onclick="startGame('image-recognition')">
+                        <div class="recommendation-icon">🎮</div>
+                        <h4>AI图像识别游戏</h4>
+                        <p>已完成65%</p>
+                    </div>
+                    <div class="recommendation-item" onclick="startActivity('mood-diary')">
+                        <div class="recommendation-icon">📓</div>
+                        <h4>我的心情日记</h4>
+                        <p>记录今天的感受</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 统一底部导航 -->
+        <div class="bottom-nav">
+            <div class="nav-item active">
+                <div class="nav-icon">🏠</div>
+                <div class="nav-text">首页</div>
+            </div>
+            <div class="nav-item">
+                <div class="nav-icon">🔍</div>
+                <div class="nav-text">探索</div>
+            </div>
+            <div class="nav-item">
+                <div class="nav-icon">🎨</div>
+                <div class="nav-text">创作</div>
+            </div>
+            <div class="nav-item">
+                <div class="nav-icon">💝</div>
+                <div class="nav-text">心灵</div>
+            </div>
+            <div class="nav-item">
+                <div class="nav-icon">👤</div>
+                <div class="nav-text">我的</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="navigation-template.js"></script>
+    <script>
+        // 页面特定功能
+        function showNotifications() {
+            alert('通知中心 - 暂无新消息');
+        }
+        
+        function viewAllRecommendations() {
+            navigateTo('explore.html');
+        }
+        
+        function startExploration(topic) {
+            if (topic === 'ai-intro') {
+                navigateTo('explore.html');
+            }
+        }
+        
+        function startCreation(type) {
+            const creationMap = {
+                'music': 'music-creator.html',
+                'story': 'story-creator.html',
+                'art': 'art-creator.html',
+                'poem': 'poem-creator.html'
+            };
+            const url = creationMap[type] || 'create.html';
+            navigateTo(url);
+        }
+        
+        function startGame(game) {
+            const gameMap = {
+                'image-recognition': 'image-recognition-game.html',
+                'expression': 'expression-game.html'
+            };
+            const url = gameMap[game] || 'explore.html';
+            navigateTo(url);
+        }
+        
+        function startActivity(activity) {
+            if (activity === 'mood-diary') {
+                navigateTo('mind-garden.html');
+            }
+        }
+        
+        // 初始化导航
+        document.addEventListener('DOMContentLoaded', function() {
+            initAppNavigation();
+        });
+    </script>
+</body>
+</html>

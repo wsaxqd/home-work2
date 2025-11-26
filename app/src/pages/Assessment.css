@@ -1,0 +1,158 @@
+.progress-info {
+  margin-bottom: 20px;
+}
+
+.progress-info span {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.progress-bar {
+  height: 8px;
+  background: #e0e0e0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: #00bcd4;
+  border-radius: 4px;
+  transition: width 0.5s;
+}
+
+.question-card {
+  background: white;
+  border-radius: 20px;
+  padding: 30px 20px;
+  text-align: center;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+}
+
+.question-icon {
+  font-size: 60px;
+  margin-bottom: 20px;
+}
+
+.question-text {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 30px;
+  color: #333;
+}
+
+.options-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.option-item {
+  padding: 15px 20px;
+  background: #f5f5f5;
+  border-radius: 12px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.option-item:hover {
+  background: #e0f7fa;
+  transform: translateX(5px);
+}
+
+.result-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.result-icon {
+  font-size: 60px;
+  margin-bottom: 15px;
+}
+
+.result-header h2 {
+  font-size: 24px;
+  color: #00bcd4;
+  margin-bottom: 10px;
+}
+
+.result-header p {
+  font-size: 14px;
+  color: #666;
+}
+
+.abilities-list {
+  background: white;
+  border-radius: 15px;
+  padding: 20px;
+  margin-bottom: 25px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+}
+
+.ability-item {
+  margin-bottom: 18px;
+}
+
+.ability-item:last-child {
+  margin-bottom: 0;
+}
+
+.ability-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.ability-name {
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.ability-value {
+  font-size: 14px;
+  color: #666;
+}
+
+.ability-bar {
+  height: 10px;
+  background: #e0e0e0;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.ability-fill {
+  height: 100%;
+  border-radius: 5px;
+  transition: width 1s ease-out;
+}
+
+.suggestion-card {
+  display: flex;
+  gap: 15px;
+  background: #e0f7fa;
+  border-radius: 15px;
+  padding: 20px;
+  margin-bottom: 25px;
+}
+
+.suggestion-icon {
+  font-size: 30px;
+}
+
+.suggestion-content p {
+  font-size: 14px;
+  color: #00695c;
+  margin-bottom: 8px;
+}
+
+.suggestion-content p:last-child {
+  margin-bottom: 0;
+}
+
+.reset-btn {
+  width: 100%;
+  background: linear-gradient(135deg, #00bcd4 0%, #009688 100%);
+}

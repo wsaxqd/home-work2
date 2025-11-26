@@ -1,0 +1,144 @@
+.garden-intro {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 20px;
+  background: linear-gradient(135deg, #fce4ec 0%, #f8bbd9 100%);
+  border-radius: 20px;
+  margin-bottom: 20px;
+}
+
+.garden-intro .intro-icon {
+  font-size: 50px;
+}
+
+.garden-intro .intro-text h3 {
+  font-size: 18px;
+  color: #e91e63;
+  margin-bottom: 5px;
+}
+
+.garden-intro .intro-text p {
+  font-size: 13px;
+  color: #666;
+}
+
+.mood-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 25px;
+}
+
+.mood-item {
+  background: #f9f9f9;
+  border-radius: 15px;
+  padding: 15px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s;
+  border: 3px solid transparent;
+}
+
+.mood-item:hover {
+  transform: scale(1.05);
+}
+
+.mood-item.selected {
+  background: white;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.mood-emoji {
+  font-size: 35px;
+  margin-bottom: 8px;
+}
+
+.mood-label {
+  font-size: 14px;
+  color: #333;
+}
+
+.thought-input textarea {
+  width: 100%;
+  min-height: 100px;
+  padding: 15px;
+  border: 2px solid #e0e0e0;
+  border-radius: 15px;
+  font-size: 14px;
+  resize: none;
+  outline: none;
+  font-family: inherit;
+}
+
+.thought-input textarea:focus {
+  border-color: #e91e63;
+}
+
+.submit-btn {
+  width: 100%;
+  margin: 20px 0;
+  background: linear-gradient(135deg, #e91e63 0%, #ff5722 100%);
+}
+
+.garden-view {
+  background: linear-gradient(to bottom, #87ceeb 0%, #90ee90 50%, #8b4513 100%);
+  border-radius: 20px;
+  padding: 30px 20px;
+  position: relative;
+  min-height: 200px;
+  overflow: hidden;
+  margin-bottom: 25px;
+}
+
+.garden-ground {
+  position: relative;
+  height: 120px;
+}
+
+.garden-flower {
+  position: absolute;
+  bottom: 0;
+  font-size: 40px;
+  animation: grow 0.5s ease-out forwards;
+}
+
+@keyframes grow {
+  from {
+    transform: scale(0) translateY(20px);
+  }
+  to {
+    transform: scale(1) translateY(0);
+  }
+}
+
+.garden-stats {
+  text-align: center;
+  color: white;
+  font-size: 14px;
+  margin-top: 15px;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+}
+
+.tips-card {
+  display: flex;
+  gap: 15px;
+  background: #fff3e0;
+  border-radius: 15px;
+  padding: 20px;
+  border-left: 4px solid #ff9800;
+}
+
+.tip-icon {
+  font-size: 30px;
+}
+
+.tip-content p {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 5px;
+}
+
+.tip-content p:last-child {
+  margin-bottom: 0;
+}

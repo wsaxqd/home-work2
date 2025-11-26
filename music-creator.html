@@ -1,0 +1,1309 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI音乐画布 - 启蒙之光</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial Rounded MT Bold', 'Arial', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #fff3e0 0%, #e8f5e9 100%);
+            color: #333;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 0;
+            position: relative;
+            min-height: 100vh;
+            background: white;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: linear-gradient(135deg, #ff9800 0%, #4caf50 100%);
+            color: white;
+            border-radius: 0 0 20px 20px;
+        }
+        
+        .back-button {
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        .page-title {
+            font-size: 20px;
+            text-align: center;
+            flex: 1;
+        }
+        
+        .main-content {
+            padding: 20px;
+            overflow-y: auto;
+            max-height: calc(100vh - 140px);
+        }
+        
+        .section-title {
+            font-size: 18px;
+            margin: 20px 0 15px;
+            color: #ff9800;
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title::before {
+            content: "";
+            display: inline-block;
+            width: 5px;
+            height: 20px;
+            background: #ff9800;
+            margin-right: 10px;
+            border-radius: 3px;
+        }
+        
+        /* 音乐创作向导样式 */
+        .wizard-section {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            border: 2px solid #fff3e0;
+        }
+        
+        .wizard-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .wizard-steps::before {
+            content: "";
+            position: absolute;
+            top: 15px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #e0e0e0;
+            z-index: 1;
+        }
+        
+        .wizard-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .step-circle {
+            width: 30px;
+            height: 30px;
+            background: #e0e0e0;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        
+        .wizard-step.active .step-circle {
+            background: #ff9800;
+        }
+        
+        .wizard-step.completed .step-circle {
+            background: #4caf50;
+        }
+        
+        .step-label {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .wizard-step.active .step-label {
+            color: #ff9800;
+            font-weight: bold;
+        }
+        
+        .wizard-content {
+            min-height: 200px;
+        }
+        
+        /* 音乐风格选择样式 */
+        .genre-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .genre-card {
+            background: #f9f9f9;
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: 2px solid transparent;
+        }
+        
+        .genre-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .genre-card.selected {
+            border-color: #ff9800;
+            background: #fff3e0;
+        }
+        
+        .genre-icon {
+            font-size: 30px;
+            margin-bottom: 10px;
+            color: #ff9800;
+        }
+        
+        .genre-name {
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        
+        .genre-desc {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        /* 节奏设置样式 */
+        .tempo-section {
+            display: none;
+        }
+        
+        .tempo-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .control-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .control-label {
+            font-size: 14px;
+            margin-bottom: 8px;
+            color: #333;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .control-value {
+            font-weight: bold;
+            color: #ff9800;
+        }
+        
+        .slider-container {
+            position: relative;
+        }
+        
+        .slider {
+            width: 100%;
+            height: 8px;
+            -webkit-appearance: none;
+            background: #e0e0e0;
+            border-radius: 4px;
+            outline: none;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #ff9800;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        
+        .slider-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 5px;
+            font-size: 12px;
+            color: #666;
+        }
+        
+        /* 旋律实验室样式 */
+        .melody-section {
+            display: none;
+        }
+        
+        .melody-canvas-container {
+            background: #f5f5f5;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .melody-canvas {
+            width: 100%;
+            height: 150px;
+            background: white;
+            border-radius: 10px;
+            border: 2px dashed #ff9800;
+            margin-bottom: 15px;
+            cursor: crosshair;
+            touch-action: none;
+        }
+        
+        .melody-instructions {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .melody-controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        
+        .melody-btn {
+            padding: 8px 15px;
+            background: #f5f5f5;
+            border: none;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .melody-btn:hover {
+            background: #e0e0e0;
+        }
+        
+        .melody-btn.active {
+            background: #ff9800;
+            color: white;
+        }
+        
+        /* 音乐预览样式 */
+        .preview-section {
+            display: none;
+            background: #f9f9f9;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .preview-title {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #ff9800;
+            text-align: center;
+        }
+        
+        .music-player {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+            margin-bottom: 15px;
+        }
+        
+        .player-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .player-btn {
+            width: 50px;
+            height: 50px;
+            background: #ff9800;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: transform 0.2s;
+        }
+        
+        .player-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        .player-btn.play {
+            width: 60px;
+            height: 60px;
+            font-size: 24px;
+        }
+        
+        .player-progress {
+            width: 100%;
+            height: 6px;
+            background: #e0e0e0;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: #ff9800;
+            border-radius: 3px;
+            width: 0%;
+            transition: width 0.1s linear;
+        }
+        
+        .player-time {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .music-details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .detail-item {
+            flex: 1;
+            min-width: 100px;
+            background: white;
+            border-radius: 10px;
+            padding: 10px;
+            text-align: center;
+        }
+        
+        .detail-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .detail-value {
+            font-size: 16px;
+            font-weight: bold;
+            color: #ff9800;
+        }
+        
+        .loading-animation {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 200px;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #fff3e0;
+            border-top: 4px solid #ff9800;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 15px;
+        }
+        
+        .loading-text {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        /* 控制按钮样式 */
+        .control-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.3s;
+        }
+        
+        .btn:disabled {
+            background: #e0e0e0;
+            color: #999;
+            cursor: not-allowed;
+        }
+        
+        .btn-primary {
+            background: #ff9800;
+            color: white;
+        }
+        
+        .btn-primary:hover:not(:disabled) {
+            background: #f57c00;
+            transform: scale(1.03);
+        }
+        
+        .btn-secondary {
+            background: #f5f5f5;
+            color: #333;
+        }
+        
+        .btn-secondary:hover {
+            background: #e0e0e0;
+            transform: scale(1.03);
+        }
+        
+        /* 底部导航样式 */
+        .bottom-nav {
+            display: flex;
+            justify-content: space-around;
+            background: white;
+            padding: 15px 0;
+            border-radius: 20px 20px 0 0;
+            box-shadow: 0 -4px 12px rgba(0,0,0,0.05);
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            max-width: 480px;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        .nav-icon {
+            font-size: 24px;
+            margin-bottom: 5px;
+            color: #999;
+        }
+        
+        .nav-item.active .nav-icon {
+            color: #ff9800;
+        }
+        
+        .nav-text {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .nav-item.active .nav-text {
+            color: #ff9800;
+            font-weight: bold;
+        }
+        
+        /* 动画 */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* 响应式调整 */
+        @media (max-width: 480px) {
+            .container {
+                padding-bottom: 70px;
+            }
+            
+            .genre-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .control-buttons {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="back-button" onclick="goBack()">←</div>
+            <div class="page-title">AI音乐画布</div>
+            <div style="width: 24px;"></div> <!-- 占位保持对称 -->
+        </div>
+        
+        <div class="main-content">
+            <div class="wizard-section">
+                <div class="wizard-steps">
+                    <div class="wizard-step active" id="step1">
+                        <div class="step-circle">1</div>
+                        <div class="step-label">选择风格</div>
+                    </div>
+                    <div class="wizard-step" id="step2">
+                        <div class="step-circle">2</div>
+                        <div class="step-label">设置节奏</div>
+                    </div>
+                    <div class="wizard-step" id="step3">
+                        <div class="step-circle">3</div>
+                        <div class="step-label">绘制旋律</div>
+                    </div>
+                    <div class="wizard-step" id="step4">
+                        <div class="step-circle">4</div>
+                        <div class="step-label">生成音乐</div>
+                    </div>
+                </div>
+                
+                <div class="wizard-content">
+                    <!-- 步骤1: 选择音乐风格 -->
+                    <div id="step1-content" class="step-content">
+                        <div class="section-title">选择音乐风格</div>
+                        <div class="genre-grid">
+                            <div class="genre-card" onclick="selectGenre(this, 'happy')">
+                                <div class="genre-icon">😊</div>
+                                <div class="genre-name">快乐旋律</div>
+                                <div class="genre-desc">活泼欢快的节奏</div>
+                            </div>
+                            <div class="genre-card" onclick="selectGenre(this, 'calm')">
+                                <div class="genre-icon">🌊</div>
+                                <div class="genre-name">宁静氛围</div>
+                                <div class="genre-desc">舒缓放松的音乐</div>
+                            </div>
+                            <div class="genre-card" onclick="selectGenre(this, 'adventure')">
+                                <div class="genre-icon">🚀</div>
+                                <div class="genre-name">冒险之旅</div>
+                                <div class="genre-desc">充满探索感的音乐</div>
+                            </div>
+                            <div class="genre-card" onclick="selectGenre(this, 'dream')">
+                                <div class="genre-icon">✨</div>
+                                <div class="genre-name">梦幻世界</div>
+                                <div class="genre-desc">神秘奇幻的旋律</div>
+                            </div>
+                            <div class="genre-card" onclick="selectGenre(this, 'electronic')">
+                                <div class="genre-icon">⚡</div>
+                                <div class="genre-name">电子节奏</div>
+                                <div class="genre-desc">现代感强的音乐</div>
+                            </div>
+                            <div class="genre-card" onclick="selectGenre(this, 'nature')">
+                                <div class="genre-icon">🌳</div>
+                                <div class="genre-name">自然之声</div>
+                                <div class="genre-desc">融入自然元素的音乐</div>
+                            </div>
+                        </div>
+                        
+                        <div class="control-buttons">
+                            <button class="btn btn-secondary" onclick="goBack()">返回</button>
+                            <button class="btn btn-primary" id="step1-next" onclick="nextStep(2)" disabled>下一步</button>
+                        </div>
+                    </div>
+                    
+                    <!-- 步骤2: 设置节奏和情绪 -->
+                    <div id="step2-content" class="step-content tempo-section">
+                        <div class="section-title">设置节奏和情绪</div>
+                        <div class="tempo-controls">
+                            <div class="control-group">
+                                <div class="control-label">
+                                    <span>节奏速度</span>
+                                    <span class="control-value" id="tempo-value">中等</span>
+                                </div>
+                                <div class="slider-container">
+                                    <input type="range" min="1" max="5" value="3" class="slider" id="tempo-slider" oninput="updateTempo()">
+                                    <div class="slider-labels">
+                                        <span>缓慢</span>
+                                        <span>中等</span>
+                                        <span>快速</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="control-group">
+                                <div class="control-label">
+                                    <span>情绪强度</span>
+                                    <span class="control-value" id="mood-value">适中</span>
+                                </div>
+                                <div class="slider-container">
+                                    <input type="range" min="1" max="5" value="3" class="slider" id="mood-slider" oninput="updateMood()">
+                                    <div class="slider-labels">
+                                        <span>柔和</span>
+                                        <span>适中</span>
+                                        <span>强烈</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="control-group">
+                                <div class="control-label">
+                                    <span>乐器组合</span>
+                                    <span class="control-value" id="instrument-value">混合</span>
+                                </div>
+                                <div class="slider-container">
+                                    <input type="range" min="1" max="5" value="3" class="slider" id="instrument-slider" oninput="updateInstrument()">
+                                    <div class="slider-labels">
+                                        <span>钢琴</span>
+                                        <span>混合</span>
+                                        <span>电子</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="control-buttons">
+                            <button class="btn btn-secondary" onclick="prevStep(1)">上一步</button>
+                            <button class="btn btn-primary" id="step2-next" onclick="nextStep(3)">下一步</button>
+                        </div>
+                    </div>
+                    
+                    <!-- 步骤3: 绘制旋律 -->
+                    <div id="step3-content" class="step-content melody-section">
+                        <div class="section-title">绘制你的旋律</div>
+                        <div class="melody-canvas-container">
+                            <div class="melody-instructions">在画布上绘制你的旋律线条，线条越高音调越高</div>
+                            <canvas class="melody-canvas" id="melody-canvas" width="400" height="150"></canvas>
+                            <div class="melody-controls">
+                                <button class="melody-btn" id="draw-btn" onclick="setDrawingMode(true)">✏️ 绘制</button>
+                                <button class="melody-btn" onclick="setDrawingMode(false)">🗑️ 清除</button>
+                                <button class="melody-btn" onclick="generateRandomMelody()">🎲 随机</button>
+                            </div>
+                        </div>
+                        
+                        <div class="control-buttons">
+                            <button class="btn btn-secondary" onclick="prevStep(2)">上一步</button>
+                            <button class="btn btn-primary" id="step3-next" onclick="nextStep(4)">生成音乐</button>
+                        </div>
+                    </div>
+                    
+                    <!-- 步骤4: 生成音乐 -->
+                    <div id="step4-content" class="step-content preview-section">
+                        <div class="section-title">你的专属音乐作品</div>
+                        <div class="preview-title" id="music-title">AI生成音乐</div>
+                        
+                        <div class="loading-animation" id="loading-animation">
+                            <div class="spinner"></div>
+                            <div class="loading-text">AI正在创作你的音乐，请稍候...</div>
+                        </div>
+                        
+                        <div class="music-player" id="music-player" style="display: none;">
+                            <div class="player-controls">
+                                <button class="player-btn" onclick="skipBackward()">⏮️</button>
+                                <button class="player-btn play" id="play-btn" onclick="togglePlay()">▶️</button>
+                                <button class="player-btn" onclick="skipForward()">⏭️</button>
+                            </div>
+                            <div class="player-progress">
+                                <div class="progress-bar" id="progress-bar"></div>
+                            </div>
+                            <div class="player-time">
+                                <span id="current-time">0:00</span>
+                                <span id="total-time">0:30</span>
+                            </div>
+                            
+                            <div class="music-details">
+                                <div class="detail-item">
+                                    <div class="detail-label">风格</div>
+                                    <div class="detail-value" id="detail-genre">快乐</div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-label">节奏</div>
+                                    <div class="detail-value" id="detail-tempo">中等</div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-label">时长</div>
+                                    <div class="detail-value" id="detail-duration">30秒</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="control-buttons">
+                            <button class="btn btn-secondary" onclick="prevStep(3)">重新绘制</button>
+                            <button class="btn btn-primary" id="step4-next" onclick="saveMusic()">保存音乐</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bottom-nav">
+            <div class="nav-item" onclick="navigateTo('index.html')">
+                <div class="nav-icon">🏠</div>
+                <div class="nav-text">首页</div>
+            </div>
+            <div class="nav-item" onclick="navigateTo('explore.html')">
+                <div class="nav-icon">🔍</div>
+                <div class="nav-text">探索</div>
+            </div>
+            <div class="nav-item" onclick="navigateTo('create.html')">
+                <div class="nav-icon">🎨</div>
+                <div class="nav-text">创作</div>
+            </div>
+            <div class="nav-item" onclick="navigateTo('mind-garden.html')">
+                <div class="nav-icon">💝</div>
+                <div class="nav-text">心灵</div>
+            </div>
+            <div class="nav-item" onclick="navigateTo('profile.html')">
+                <div class="nav-icon">👤</div>
+                <div class="nav-text">我的</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="navigation-template.js"></script>
+    <script>
+        // 初始化导航
+        document.addEventListener('DOMContentLoaded', function() {
+            initAppNavigation();
+        });
+        
+        // 当前步骤和音乐数据
+        let currentStep = 1;
+        let musicData = {
+            genre: '',
+            tempo: 3,
+            mood: 3,
+            instruments: 3,
+            melodyPoints: [],
+            duration: 30
+        };
+        
+        // 音乐播放状态
+        let isPlaying = false;
+        let progressInterval;
+        let currentTime = 0;
+        
+        // 画布绘制状态
+        let isDrawing = false;
+        let canvas, ctx;
+        
+        // 导航功能
+        function goBack() {
+            // 特殊处理：在非第一步时返回上一步
+            if (currentStep > 1) {
+                prevStep(currentStep - 1);
+                return;
+            }
+            
+            // 标准导航逻辑
+            if (!document.referrer || window.history.length <= 1) {
+                navigateTo('index.html');
+            } else {
+                window.history.back();
+            }
+        }
+        
+        // 步骤导航
+        function nextStep(step) {
+            // 隐藏当前步骤内容
+            document.getElementById(`step${currentStep}-content`).style.display = 'none';
+            
+            // 更新步骤指示器
+            document.getElementById(`step${currentStep}`).classList.remove('active');
+            document.getElementById(`step${currentStep}`).classList.add('completed');
+            
+            // 显示新步骤内容
+            currentStep = step;
+            document.getElementById(`step${currentStep}`).classList.add('active');
+            document.getElementById(`step${currentStep}-content`).style.display = 'block';
+            
+            // 特殊处理：步骤4生成音乐
+            if (step === 4) {
+                generateMusic();
+            }
+            
+            // 特殊处理：步骤3初始化画布
+            if (step === 3) {
+                initCanvas();
+            }
+        }
+        
+        function prevStep(step) {
+            // 隐藏当前步骤内容
+            document.getElementById(`step${currentStep}-content`).style.display = 'none';
+            
+            // 更新步骤指示器
+            document.getElementById(`step${currentStep}`).classList.remove('active');
+            
+            // 显示上一步内容
+            currentStep = step;
+            document.getElementById(`step${currentStep}`).classList.add('active');
+            document.getElementById(`step${currentStep}-content`).style.display = 'block';
+        }
+        
+        // 选择音乐风格
+        function selectGenre(caller, genre) {
+            // 支持两种调用：selectGenre(genre) 或 selectGenre(caller, genre)
+            if (typeof genre === 'undefined') {
+                genre = caller;
+                caller = null;
+            }
+
+            // 移除之前的选择
+            document.querySelectorAll('.genre-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+
+            // 设置新的选择
+            var targetEl = null;
+            if (caller && caller.nodeType) {
+                targetEl = caller;
+            } else if (typeof event !== 'undefined' && event.target) {
+                targetEl = event.target.closest ? event.target.closest('.genre-card') : event.target;
+            }
+
+            if (targetEl) targetEl.classList.add('selected');
+            musicData.genre = genre;
+
+            // 启用下一步按钮
+            document.getElementById('step1-next').disabled = false;
+        }
+        
+        // 更新节奏设置
+        function updateTempo() {
+            const tempoSlider = document.getElementById('tempo-slider');
+            const tempoValue = document.getElementById('tempo-value');
+            const tempo = parseInt(tempoSlider.value);
+            
+            musicData.tempo = tempo;
+            
+            const tempoLabels = ['非常慢', '缓慢', '中等', '快速', '非常快'];
+            tempoValue.textContent = tempoLabels[tempo - 1];
+        }
+        
+        // 更新情绪设置
+        function updateMood() {
+            const moodSlider = document.getElementById('mood-slider');
+            const moodValue = document.getElementById('mood-value');
+            const mood = parseInt(moodSlider.value);
+            
+            musicData.mood = mood;
+            
+            const moodLabels = ['非常柔和', '柔和', '适中', '强烈', '非常强烈'];
+            moodValue.textContent = moodLabels[mood - 1];
+        }
+        
+        // 更新乐器设置
+        function updateInstrument() {
+            const instrumentSlider = document.getElementById('instrument-slider');
+            const instrumentValue = document.getElementById('instrument-value');
+            const instruments = parseInt(instrumentSlider.value);
+            
+            musicData.instruments = instruments;
+            
+            const instrumentLabels = ['纯钢琴', '钢琴+弦乐', '混合', '电子+传统', '纯电子'];
+            instrumentValue.textContent = instrumentLabels[instruments - 1];
+        }
+        
+        // 初始化画布
+        function initCanvas() {
+            canvas = document.getElementById('melody-canvas');
+            ctx = canvas.getContext('2d');
+            
+            // 设置画布尺寸
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = rect.height;
+            
+            // 清除画布
+            clearCanvas();
+            
+            // 添加事件监听器
+            canvas.addEventListener('mousedown', startDrawing);
+            canvas.addEventListener('mousemove', draw);
+            canvas.addEventListener('mouseup', stopDrawing);
+            canvas.addEventListener('mouseout', stopDrawing);
+            
+            // 触摸设备支持
+            canvas.addEventListener('touchstart', handleTouchStart);
+            canvas.addEventListener('touchmove', handleTouchMove);
+            canvas.addEventListener('touchend', handleTouchEnd);
+        }
+        
+        // 设置绘制模式
+        function setDrawingMode(drawing) {
+            isDrawing = drawing;
+            const drawBtn = document.getElementById('draw-btn');
+            
+            if (drawing) {
+                drawBtn.classList.add('active');
+                drawBtn.textContent = '✏️ 绘制中';
+            } else {
+                drawBtn.classList.remove('active');
+                drawBtn.textContent = '✏️ 绘制';
+            }
+        }
+        
+        // 开始绘制
+        function startDrawing(e) {
+            if (!isDrawing) return;
+            
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            musicData.melodyPoints = [{x, y}];
+            drawPoint(x, y);
+        }
+        
+        // 绘制
+        function draw(e) {
+            if (!isDrawing || musicData.melodyPoints.length === 0) return;
+            
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            const lastPoint = musicData.melodyPoints[musicData.melodyPoints.length - 1];
+            
+            // 绘制线条
+            ctx.beginPath();
+            ctx.moveTo(lastPoint.x, lastPoint.y);
+            ctx.lineTo(x, y);
+            ctx.strokeStyle = '#ff9800';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            
+            // 绘制点
+            drawPoint(x, y);
+            
+            // 保存点
+            musicData.melodyPoints.push({x, y});
+        }
+        
+        // 停止绘制
+        function stopDrawing() {
+            if (musicData.melodyPoints.length > 0) {
+                // 启用生成按钮
+                document.getElementById('step3-next').disabled = false;
+            }
+        }
+        
+        // 绘制点
+        function drawPoint(x, y) {
+            ctx.beginPath();
+            ctx.arc(x, y, 4, 0, Math.PI * 2);
+            ctx.fillStyle = '#ff9800';
+            ctx.fill();
+        }
+        
+        // 清除画布
+        function clearCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 绘制网格背景
+            ctx.strokeStyle = '#e0e0e0';
+            ctx.lineWidth = 1;
+            
+            // 水平线
+            for (let i = 0; i < canvas.height; i += canvas.height / 8) {
+                ctx.beginPath();
+                ctx.moveTo(0, i);
+                ctx.lineTo(canvas.width, i);
+                ctx.stroke();
+            }
+            
+            // 垂直线
+            for (let i = 0; i < canvas.width; i += canvas.width / 16) {
+                ctx.beginPath();
+                ctx.moveTo(i, 0);
+                ctx.lineTo(i, canvas.height);
+                ctx.stroke();
+            }
+            
+            musicData.melodyPoints = [];
+            document.getElementById('step3-next').disabled = true;
+        }
+        
+        // 生成随机旋律
+        function generateRandomMelody() {
+            clearCanvas();
+            
+            const points = [];
+            const segmentWidth = canvas.width / 10;
+            
+            for (let i = 0; i <= 10; i++) {
+                const x = i * segmentWidth;
+                const y = Math.random() * canvas.height;
+                points.push({x, y});
+                
+                if (i > 0) {
+                    const prevPoint = points[i - 1];
+                    
+                    // 绘制线条
+                    ctx.beginPath();
+                    ctx.moveTo(prevPoint.x, prevPoint.y);
+                    ctx.lineTo(x, y);
+                    ctx.strokeStyle = '#ff9800';
+                    ctx.lineWidth = 3;
+                    ctx.stroke();
+                    
+                    // 绘制点
+                    drawPoint(x, y);
+                }
+            }
+            
+            musicData.melodyPoints = points;
+            document.getElementById('step3-next').disabled = false;
+        }
+        
+        // 触摸事件处理
+        function handleTouchStart(e) {
+            e.preventDefault();
+            if (!isDrawing) return;
+            
+            const touch = e.touches[0];
+            const rect = canvas.getBoundingClientRect();
+            const x = touch.clientX - rect.left;
+            const y = touch.clientY - rect.top;
+            
+            musicData.melodyPoints = [{x, y}];
+            drawPoint(x, y);
+        }
+        
+        function handleTouchMove(e) {
+            e.preventDefault();
+            if (!isDrawing || musicData.melodyPoints.length === 0) return;
+            
+            const touch = e.touches[0];
+            const rect = canvas.getBoundingClientRect();
+            const x = touch.clientX - rect.left;
+            const y = touch.clientY - rect.top;
+            
+            const lastPoint = musicData.melodyPoints[musicData.melodyPoints.length - 1];
+            
+            // 绘制线条
+            ctx.beginPath();
+            ctx.moveTo(lastPoint.x, lastPoint.y);
+            ctx.lineTo(x, y);
+            ctx.strokeStyle = '#ff9800';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            
+            // 绘制点
+            drawPoint(x, y);
+            
+            // 保存点
+            musicData.melodyPoints.push({x, y});
+        }
+        
+        function handleTouchEnd(e) {
+            stopDrawing();
+        }
+        
+        // 生成音乐
+        function generateMusic() {
+            const loadingElement = document.getElementById('loading-animation');
+            const playerElement = document.getElementById('music-player');
+            
+            // 显示加载动画
+            loadingElement.style.display = 'flex';
+            playerElement.style.display = 'none';
+            
+            // 更新音乐详情
+            updateMusicDetails();
+            
+            // 模拟AI生成音乐（在实际应用中，这里会调用AI API）
+            setTimeout(() => {
+                // 显示音乐播放器
+                loadingElement.style.display = 'none';
+                playerElement.style.display = 'block';
+                
+                // 重置播放状态
+                resetPlayer();
+                
+                // 启用保存按钮
+                document.getElementById('step4-next').disabled = false;
+            }, 3000);
+        }
+        
+        // 更新音乐详情
+        function updateMusicDetails() {
+            const genreLabels = {
+                'happy': '快乐旋律',
+                'calm': '宁静氛围',
+                'adventure': '冒险之旅',
+                'dream': '梦幻世界',
+                'electronic': '电子节奏',
+                'nature': '自然之声'
+            };
+            
+            const tempoLabels = ['非常慢', '缓慢', '中等', '快速', '非常快'];
+            
+            document.getElementById('detail-genre').textContent = genreLabels[musicData.genre] || '自定义';
+            document.getElementById('detail-tempo').textContent = tempoLabels[musicData.tempo - 1];
+            document.getElementById('detail-duration').textContent = musicData.duration + '秒';
+            
+            document.getElementById('music-title').textContent = genreLabels[musicData.genre] + ' - 你的创作';
+        }
+        
+        // 音乐播放控制
+        function togglePlay() {
+            const playBtn = document.getElementById('play-btn');
+            
+            if (!isPlaying) {
+                // 开始播放
+                isPlaying = true;
+                playBtn.textContent = '⏸️';
+                
+                progressInterval = setInterval(updateProgress, 100);
+            } else {
+                // 暂停播放
+                isPlaying = false;
+                playBtn.textContent = '▶️';
+                
+                clearInterval(progressInterval);
+            }
+        }
+        
+        function updateProgress() {
+            currentTime += 0.1;
+            const progress = (currentTime / musicData.duration) * 100;
+            
+            document.getElementById('progress-bar').style.width = progress + '%';
+            document.getElementById('current-time').textContent = formatTime(currentTime);
+            
+            if (currentTime >= musicData.duration) {
+                resetPlayer();
+            }
+        }
+        
+        function resetPlayer() {
+            isPlaying = false;
+            currentTime = 0;
+            
+            document.getElementById('play-btn').textContent = '▶️';
+            document.getElementById('progress-bar').style.width = '0%';
+            document.getElementById('current-time').textContent = '0:00';
+            
+            clearInterval(progressInterval);
+        }
+        
+        function skipBackward() {
+            currentTime = Math.max(0, currentTime - 5);
+            document.getElementById('progress-bar').style.width = (currentTime / musicData.duration) * 100 + '%';
+            document.getElementById('current-time').textContent = formatTime(currentTime);
+        }
+        
+        function skipForward() {
+            currentTime = Math.min(musicData.duration, currentTime + 5);
+            document.getElementById('progress-bar').style.width = (currentTime / musicData.duration) * 100 + '%';
+            document.getElementById('current-time').textContent = formatTime(currentTime);
+        }
+        
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+        }
+        
+        // 保存音乐
+        function saveMusic() {
+            try {
+                // 收集音乐数据
+                const timestamp = new Date().getTime();
+                const dateStr = new Date().toLocaleDateString('zh-CN').replace(/\//g, '-');
+                
+                const musicData = {
+                    id: timestamp,
+                    title: `我的${getMoodLabel() || '音乐'}作品`,
+                    filename: `我的${getMoodLabel() || '音乐'}作品_${dateStr}_${timestamp}`,
+                    mood: currentMood,
+                    tempo: currentTempo,
+                    instrument: currentInstrument,
+                    duration: 30, // 假设30秒
+                    timestamp: new Date().toISOString(),
+                    type: 'music'
+                };
+                
+                // 保存到localStorage
+                if (typeof localStorage !== 'undefined') {
+                    try {
+                        // 获取现有作品
+                        let artworks = JSON.parse(localStorage.getItem('qmzg_artworks') || '[]');
+                        
+                        // 添加到数组开头，确保最新的在前面
+                        artworks.unshift(musicData);
+                        
+                        // 限制保存数量，只保留最新的20个
+                        if (artworks.length > 20) {
+                            artworks = artworks.slice(0, 20);
+                        }
+                        
+                        // 尝试保存，如果localStorage空间不足则删除最旧的作品重试
+                        try {
+                            localStorage.setItem('qmzg_artworks', JSON.stringify(artworks));
+                        } catch (storageError) {
+                            console.warn('localStorage空间不足，删除部分旧作品:', storageError);
+                            // 删除旧作品并重试
+                            artworks = artworks.slice(0, 10); // 只保留10个
+                            localStorage.setItem('qmzg_artworks', JSON.stringify(artworks));
+                        }
+                    } catch (storageError) {
+                        console.error('保存到localStorage失败:', storageError);
+                        // 这是一个非关键错误，不应该阻止整个保存流程
+                    }
+                }
+                
+                alert("音乐已成功保存！你可以在'我的作品'中查看和分享它。");
+            } catch (error) {
+                console.error('保存音乐失败:', error);
+                alert('保存失败：' + error.message + '，请刷新页面重试。');
+                return; // 出错时不继续执行后续操作
+            }
+            
+            // 返回创作湾
+            setTimeout(() => {
+                navigateTo('create.html');
+            }, 1500);
+        }
+        
+        // 获取情绪标签
+        function getMoodLabel() {
+            const moodLabels = {
+                'happy': '快乐',
+                'calm': '平静',
+                'excited': '兴奋',
+                'sad': '悲伤',
+                'energetic': '充满活力'
+            };
+            return moodLabels[currentMood] || '';
+        }
+        
+        // 为底部导航添加点击事件
+        document.querySelectorAll('.nav-item').forEach((item) => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+        
+        // 初始化页面
+        document.addEventListener('DOMContentLoaded', function() {
+            // 默认显示第一步
+            document.getElementById('step1-content').style.display = 'block';
+            
+            // 设置初始值
+            updateTempo();
+            updateMood();
+            updateInstrument();
+        });
+    </script>
+</body>
+</html>

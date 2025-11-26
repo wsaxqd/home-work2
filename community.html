@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>光明城 - 启蒙之光</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial Rounded MT Bold', 'Arial', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #fff8e1 0%, #e8f5e9 100%);
+            color: #333;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 0;
+            position: relative;
+            min-height: 100vh;
+            background: white;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: linear-gradient(135deg, #ff9800 0%, #4caf50 100%);
+            color: white;
+            border-radius: 0 0 20px 20px;
+        }
+        
+        .back-button {
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        .page-title {
+            font-size: 20px;
+            text-align: center;
+            flex: 1;
+        }
+        
+        .main-content {
+            padding: 20px;
+            overflow-y: auto;
+            max-height: calc(100vh - 140px);
+        }
+        
+        .section-title {
+            font-size: 18px;
+            margin: 20px 0 15px;
+            color: #ff9800;
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title::before {
+            content: "";
+            display: inline-block;
+            width: 5px;
+            height: 20px;
+            background: #ff9800;
+            margin-right: 10px;
+            border-radius: 3px;
+        }
+        
+        /* 心愿墙样式 */
+        .wishwall-section {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            border: 2px solid #fff8e1;
+        }
+        
+        .wishwall-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .wishwall-title {
+            font-size: 16px;
+            color: #ff9800;
+            display: flex;
+            align-items: center;
+        }
+        
+        .wishwall-title::before {
+            content: "⭐";
+            margin-right: 10px;
+        }
+        
+        .wish-filters {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .filter-btn {
+            padding: 5px 10px;
+            background: #f5f5f5;
+            border: none;
+            border-radius: 15px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .filter-btn.active {
+            background: #ff9800;
+            color: white;
+        }
+        
+        .wish-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .wish-card {
+            background: #fff8e1;
+            border-radius: 15px;
+            padding: 15px;
+            border-left: 4px solid #ff9800;
+        }
+        
+        .wish-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+        
+        .wish-content {
+            font-size: 14px;
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+        
+        .wish-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .wish-status {
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+        }
+        
+        .status-pending {
+            background: #ffecb3;
+            color: #ff9800;
+        }
+        
+        .status-inprogress {
+            background: #c8e6c9;
+            color: #4caf50;
+        }
+        
+        .status-completed {
+            background: #e0e0e0;
+            color: #757575;
+        }
+        
+        .wish-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .action-btn {
+            flex: 1;
+            padding: 8px;
+            border: none;
+            border-radius: 8px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .help-btn {
+            background: #ff9800;
+            color: white;
+        }
+        
+        .share-btn {
+            background: #e0e0e0;
+            color: #666;
+        }
+        
+        .action-btn:hover {
+            transform: scale(1.05);
+        }
+        
+        /* 光明动态样式 */
+        .news-section {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        .news-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .news-title {
+            font-size: 16px;
+            color: #ff9800;
+            display: flex;
+            align-items: center;
+        }
+        
+        .news-title::before {
+            content: "📰";
+            margin-right: 10px;
+        }
+        
+        .news-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .news-card {
+            display: flex;
+            gap: 15px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 15px;
+            transition: transform 0.3s;
+            cursor: pointer;
+        }
+        
+        .news-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .news-image {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #ff9800 0%, #4caf50 100%);
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 30px;
+            flex-shrink: 0;
+        }
+        
+        .news-content {
+            flex: 1;
+        }
+        
+        .news-content h3 {
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+        
+        .news-content p {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+        
+        .news-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #999;
+        }
+        
+        /* 志愿者驿站样式 */
+        .volunteer-section {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            background: linear-gradient(135deg, #f1f8e9 0%, #e8f5e9 100%);
+            border: 2px dashed #4caf50;
+        }
+        
+        .volunteer-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .volunteer-icon {
+            font-size: 24px;
+            margin-right: 10px;
+            color: #4caf50;
+        }
+        
+        .volunteer-title {
+            font-size: 16px;
+            color: #4caf50;
+        }
+        
+        .volunteer-desc {
+            font-size: 14px;
+            margin-bottom: 15px;
+            line-height: 1.5;
+            color: #666;
+        }
+        
+        .volunteer-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .stat-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #4caf50;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .volunteer-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        
+        .volunteer-btn {
+            padding: 12px;
+            background: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .volunteer-btn.secondary {
+            background: #ff9800;
+        }
+        
+        .volunteer-btn:hover {
+            transform: scale(1.03);
+        }
+        
+        .btn-icon {
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+        
+        /* 透明捐赠样式 */
+        .donation-section {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        .donation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .donation-title {
+            font-size: 16px;
+            color: #ff9800;
+            display: flex;
+            align-items: center;
+        }
+        
+        .donation-title::before {
+            content: "❤️";
+            margin-right: 10px;
+        }
+        
+        .donation-progress {
+            margin-bottom: 15px;
+        }
+        
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: #ff9800;
+            border-radius: 4px;
+            width: 65%;
+        }
+        
+        .donation-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .donation-option {
+            padding: 10px;
+            background: #f5f5f5;
+            border: 2px solid transparent;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .donation-option:hover {
+            border-color: #ff9800;
+        }
+        
+        .donation-option.selected {
+            background: #fff8e1;
+            border-color: #ff9800;
+        }
+        
+        .donation-amount {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .donation-desc {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .custom-amount {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 14px;
+            margin-bottom: 15px;
+            outline: none;
+        }
+        
+        .custom-amount:focus {
+            border-color: #ff9800;
+        }
+        
+        .donate-button {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #ff9800 0%, #4caf50 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .donate-button:hover {
+            transform: scale(1.02);
+        }
+        
+        .bottom-nav {
+            display: flex;
+            justify-content: space-around;
+            background: white;
+            padding: 15px 0;
+            border-radius: 20px 20px 0 0;
+            box-shadow: 0 -4px 12px rgba(0,0,0,0.05);
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            max-width: 480px;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        .nav-icon {
+            font-size: 24px;
+            margin-bottom: 5px;
+            color: #999;
+        }
+        
+        .nav-item.active .nav-icon {
+            color: #ff9800;
+        }
+        
+        .nav-text {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .nav-item.active .nav-text {
+            color: #ff9800;
+            font-weight: bold;
+        }
+        
+        /* 响应式调整 */
+        @media (max-width: 480px) {
+            .container {
+                padding-bottom: 70px;
+            }
+            
+            .volunteer-actions {
+                grid-template-columns: 1fr;
+            }
+            
+            .donation-options {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="back-button" onclick="goBack()">←</div>
+            <div class="page-title">光明城</div>
+            <div style="width: 24px;"></div> <!-- 占位保持对称 -->
+        </div>
+        
+        <div class="main-content">
+            <div class="section-title">心愿墙</div>
+            <div class="wishwall-section">
+                <div class="wishwall-header">
+                    <div class="wishwall-title">孩子们的微心愿</div>
+                    <div class="wish-filters">
+                        <button class="filter-btn active" onclick="filterWishes(this, 'all')">全部</button>
+                        <button class="filter-btn" onclick="filterWishes(this, 'pending')">待实现</button>
+                        <button class="filter-btn" onclick="filterWishes(this, 'inprogress')">进行中</button>
+                    </div>
+                </div>
+                <div class="wish-list">
+                    <div class="wish-card">
+                        <div class="wish-header">
+                            <div class="wish-user">小芳，9岁</div>
+                            <div class="wish-status status-pending">待实现</div>
+                        </div>
+                        <div class="wish-content">我想要一本《人工智能启蒙绘本》，学习更多AI知识！</div>
+                        <div class="wish-info">
+                            <div class="wish-school">阳光小学</div>
+                            <div class="wish-date">3天前</div>
+                        </div>
+                        <div class="wish-actions">
+                            <button class="action-btn help-btn" onclick="helpWish(1)">帮助实现</button>
+                            <button class="action-btn share-btn" onclick="shareWish(1)">分享</button>
+                        </div>
+                    </div>
+                    
+                    <div class="wish-card">
+                        <div class="wish-header">
+                            <div class="wish-user">小明，10岁</div>
+                            <div class="wish-status status-inprogress">进行中</div>
+                        </div>
+                        <div class="wish-content">希望有一个篮球，可以和同学们一起锻炼身体</div>
+                        <div class="wish-info">
+                            <div class="wish-school">希望小学</div>
+                            <div class="wish-date">1周前</div>
+                        </div>
+                        <div class="wish-actions">
+                            <button class="action-btn help-btn" onclick="helpWish(2)">帮助实现</button>
+                            <button class="action-btn share-btn" onclick="shareWish(2)">分享</button>
+                        </div>
+                    </div>
+                    
+                    <div class="wish-card">
+                        <div class="wish-header">
+                            <div class="wish-user">小强，8岁</div>
+                            <div class="wish-status status-pending">待实现</div>
+                        </div>
+                        <div class="wish-content">我想要一套彩色画笔，画出我心中的AI世界</div>
+                        <div class="wish-info">
+                            <div class="wish-school">星光小学</div>
+                            <div class="wish-date">5天前</div>
+                        </div>
+                        <div class="wish-actions">
+                            <button class="action-btn help-btn" onclick="helpWish(3)">帮助实现</button>
+                            <button class="action-btn share-btn" onclick="shareWish(3)">分享</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section-title">光明动态</div>
+            <div class="news-section">
+                <div class="news-header">
+                    <div class="news-title">项目进展</div>
+                    <div class="view-all" onclick="viewAllNews()">查看全部</div>
+                </div>
+                <div class="news-list">
+                    <div class="news-card" onclick="viewNews(1)">
+                        <div class="news-image">🎁</div>
+                        <div class="news-content">
+                            <h3>100个心愿已实现！</h3>
+                            <p>感谢各位爱心人士的帮助，我们已经帮助100个孩子实现了他们的微心愿！</p>
+                            <div class="news-meta">
+                                <span>2023年10月20日</span>
+                                <span>❤️ 256</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="news-card" onclick="viewNews(2)">
+                        <div class="news-image">🏫</div>
+                        <div class="news-content">
+                            <h3>新学校加入计划</h3>
+                            <p>阳光小学正式加入"启蒙之光"计划，50名孩子将开始他们的AI探索之旅</p>
+                            <div class="news-meta">
+                                <span>2023年10月15日</span>
+                                <span>❤️ 189</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="news-card" onclick="viewNews(3)">
+                        <div class="news-image">🤖</div>
+                        <div class="news-content">
+                            <h3>AI小创客比赛圆满结束</h3>
+                            <p>首届山区儿童AI创作比赛圆满落幕，孩子们展示了惊人的创造力</p>
+                            <div class="news-meta">
+                                <span>2023年10月10日</span>
+                                <span>❤️ 312</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section-title">志愿者驿站</div>
+            <div class="volunteer-section">
+                <div class="volunteer-header">
+                    <div class="volunteer-icon">🤝</div>
+                    <div class="volunteer-title">加入我们，传递光明</div>
+                </div>
+                <div class="volunteer-desc">
+                    无论你身在何处，都可以为山区孩子和留守儿童贡献一份力量。选择适合你的方式，加入我们的志愿者团队！
+                </div>
+                <div class="volunteer-stats">
+                    <div class="stat-item">
+                        <div class="stat-value">1,258</div>
+                        <div class="stat-label">注册志愿者</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">356</div>
+                        <div class="stat-label">活跃项目</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">89</div>
+                        <div class="stat-label">合作学校</div>
+                    </div>
+                </div>
+                <div class="volunteer-actions">
+                    <button class="volunteer-btn" onclick="becomeVolunteer('online')">
+                        <div class="btn-icon">💻</div>
+                        <div>线上支教</div>
+                    </button>
+                    <button class="volunteer-btn secondary" onclick="becomeVolunteer('content')">
+                        <div class="btn-icon">📝</div>
+                        <div>内容共创</div>
+                    </button>
+                    <button class="volunteer-btn" onclick="becomeVolunteer('activity')">
+                        <div class="btn-icon">🎯</div>
+                        <div>活动协助</div>
+                    </button>
+                    <button class="volunteer-btn secondary" onclick="viewAllTasks()">
+                        <div class="btn-icon">📋</div>
+                        <div>查看任务</div>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="section-title">透明捐赠</div>
+            <div class="donation-section">
+                <div class="donation-header">
+                    <div class="donation-title">支持山区AI教育</div>
+                    <div class="view-all" onclick="viewDonationDetails()">资金明细</div>
+                </div>
+                <div class="donation-progress">
+                    <div class="progress-info">
+                        <span>已筹集：¥86,542</span>
+                        <span>目标：¥150,000</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill"></div>
+                    </div>
+                </div>
+                <div class="donation-options">
+                    <div class="donation-option" onclick="selectAmount(this, 50)">
+                        <div class="donation-amount">¥50</div>
+                        <div class="donation-desc">一本绘本</div>
+                    </div>
+                    <div class="donation-option" onclick="selectAmount(this, 100)">
+                        <div class="donation-amount">¥100</div>
+                        <div class="donation-desc">一套画笔</div>
+                    </div>
+                    <div class="donation-option" onclick="selectAmount(this, 200)">
+                        <div class="donation-amount">¥200</div>
+                        <div class="donation-desc">AI学习包</div>
+                    </div>
+                </div>
+                <input type="number" class="custom-amount" placeholder="输入其他金额" id="custom-amount">
+                <button class="donate-button" onclick="makeDonation()">立即捐赠</button>
+            </div>
+        </div>
+        
+        <div class="bottom-nav">
+            <div class="nav-item" onclick="navigateTo('index.html')">
+                <div class="nav-icon">🏠</div>
+                <div class="nav-text">首页</div>
+            </div>
+            <div class="nav-item" onclick="navigateTo('explore.html')">
+                <div class="nav-icon">🔍</div>
+                <div class="nav-text">探索</div>
+            </div>
+            <div class="nav-item" onclick="navigateTo('create.html')">
+                <div class="nav-icon">🎨</div>
+                <div class="nav-text">创作</div>
+            </div>
+            <div class="nav-item" onclick="navigateTo('mind-garden.html')">
+                <div class="nav-icon">💝</div>
+                <div class="nav-text">心灵</div>
+            </div>
+            <div class="nav-item active" onclick="navigateTo('community.html')">
+                <div class="nav-icon">🤝</div>
+                <div class="nav-text">社区</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="navigation-template.js"></script>
+    <script>
+        // 初始化导航
+        document.addEventListener('DOMContentLoaded', function() {
+            initAppNavigation();
+        });
+        
+        function goBack() {
+            // 检查来源页面和历史记录
+            if (document.referrer && window.history.length > 1) {
+                // 如果有有效的来源页面和历史记录，则返回上一页
+                window.history.back();
+            } else {
+                // 否则，导航到首页
+                navigateTo('index.html');
+            }
+        }
+        
+        // 心愿墙功能
+        function filterWishes(caller, filter) {
+            // 支持两种调用形式：filterWishes(filter) 或 filterWishes(caller, filter)
+            if (typeof filter === 'undefined') {
+                filter = caller;
+                caller = null;
+            }
+
+            // 更新过滤器按钮状态
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // 如果传入了调用者元素，则标记它为 active
+            if (caller && caller.nodeType) {
+                caller.classList.add('active');
+            } else if (typeof event !== 'undefined' && event.target) {
+                event.target.classList.add('active');
+            }
+
+            // 在实际应用中，这里会根据筛选条件过滤心愿列表
+            alert(`筛选显示：${filter}状态的心愿`);
+        }
+        
+        function helpWish(wishId) {
+            alert(`感谢您愿意帮助实现心愿 (ID: ${wishId})！我们将联系您确认细节。`);
+            // 在实际应用中，这里会记录帮助意向并联系用户
+        }
+        
+        function shareWish(wishId) {
+            alert(`分享心愿 (ID: ${wishId}) 给更多人！`);
+            // 在实际应用中，这里会调用分享API
+        }
+        
+        // 光明动态功能
+        function viewAllNews() {
+            alert("查看所有项目动态");
+            // 在实际应用中，这里会跳转到动态列表页面
+        }
+        
+        function viewNews(newsId) {
+            alert(`查看动态详情 (ID: ${newsId})`);
+            // 在实际应用中，这里会打开动态详情页面
+        }
+        
+        // 志愿者功能
+        function becomeVolunteer(type) {
+            const types = {
+                'online': '线上支教',
+                'content': '内容共创',
+                'activity': '活动协助'
+            };
+            
+            alert(`申请成为${types[type]}志愿者`);
+            // 在实际应用中，这里会打开志愿者申请表单
+        }
+        
+        function viewAllTasks() {
+            alert("查看所有志愿者任务");
+            // 在实际应用中，这里会跳转到任务列表页面
+        }
+        
+        // 捐赠功能
+        let selectedAmount = 0;
+        
+        function selectAmount(caller, amount) {
+            // 支持两种调用：selectAmount(amount) 或 selectAmount(caller, amount)
+            if (typeof amount === 'undefined') {
+                amount = caller;
+                caller = null;
+            }
+
+            selectedAmount = amount;
+
+            // 更新选项样式
+            document.querySelectorAll('.donation-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+
+            if (caller && caller.nodeType) {
+                caller.classList.add('selected');
+            } else if (typeof event !== 'undefined' && event.target) {
+                event.target.classList.add('selected');
+            }
+
+            // 清空自定义金额输入
+            document.getElementById('custom-amount').value = '';
+        }
+        
+        function makeDonation() {
+            let amount = selectedAmount;
+            const customAmount = document.getElementById('custom-amount').value;
+            
+            if (customAmount) {
+                amount = parseInt(customAmount);
+            }
+            
+            if (!amount || amount <= 0) {
+                alert('请选择或输入捐赠金额！');
+                return;
+            }
+            
+            alert(`感谢您的捐赠！金额：¥${amount}，我们将用于支持山区儿童的AI教育。`);
+            // 在实际应用中，这里会调用支付接口
+            
+            // 重置选择
+            selectedAmount = 0;
+            document.querySelectorAll('.donation-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            document.getElementById('custom-amount').value = '';
+        }
+        
+        function viewDonationDetails() {
+            alert("查看捐赠资金使用明细");
+            // 在实际应用中，这里会跳转到资金明细页面
+        }
+        
+        // 为底部导航添加点击事件
+        document.querySelectorAll('.nav-item').forEach((item) => {
+            item.addEventListener('click', function() {
+                if (!this.classList.contains('active')) {
+                    document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+                    this.classList.add('active');
+                }
+            });
+        });
+        
+        // 监听自定义金额输入
+        document.getElementById('custom-amount').addEventListener('input', function() {
+            if (this.value) {
+                document.querySelectorAll('.donation-option').forEach(option => {
+                    option.classList.remove('selected');
+                });
+                selectedAmount = 0;
+            }
+        });
+    </script>
+</body>
+</html>

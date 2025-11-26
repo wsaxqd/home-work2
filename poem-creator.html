@@ -1,0 +1,1200 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI诗词助手 - 启蒙之光</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial Rounded MT Bold', 'Arial', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f0f4ff 0%, #fff0f5 100%);
+            color: #333;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 0;
+            position: relative;
+            min-height: 100vh;
+            background: white;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: linear-gradient(135deg, #9c27b0 0%, #673ab7 100%);
+            color: white;
+            border-radius: 0 0 20px 20px;
+        }
+        
+        .back-button {
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        .page-title {
+            font-size: 20px;
+            text-align: center;
+            flex: 1;
+        }
+        
+        .main-content {
+            padding: 20px;
+            overflow-y: auto;
+            max-height: calc(100vh - 140px);
+        }
+        
+        .section-title {
+            font-size: 18px;
+            margin: 20px 0 15px;
+            color: #9c27b0;
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title::before {
+            content: "";
+            display: inline-block;
+            width: 5px;
+            height: 20px;
+            background: #9c27b0;
+            margin-right: 10px;
+            border-radius: 3px;
+        }
+        
+        /* 诗词创作向导样式 */
+        .wizard-section {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            border: 2px solid #f0f4ff;
+        }
+        
+        .wizard-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .wizard-steps::before {
+            content: "";
+            position: absolute;
+            top: 15px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #e0e0e0;
+            z-index: 1;
+        }
+        
+        .wizard-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .step-circle {
+            width: 30px;
+            height: 30px;
+            background: #e0e0e0;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        
+        .wizard-step.active .step-circle {
+            background: #9c27b0;
+        }
+        
+        .wizard-step.completed .step-circle {
+            background: #673ab7;
+        }
+        
+        .step-label {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .wizard-step.active .step-label {
+            color: #9c27b0;
+            font-weight: bold;
+        }
+        
+        .wizard-content {
+            min-height: 200px;
+        }
+        
+        /* 诗词主题选择样式 */
+        .theme-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .theme-card {
+            background: #f9f9f9;
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: 2px solid transparent;
+        }
+        
+        .theme-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .theme-card.selected {
+            border-color: #9c27b0;
+            background: #f0f4ff;
+        }
+        
+        .theme-icon {
+            font-size: 30px;
+            margin-bottom: 10px;
+            color: #9c27b0;
+        }
+        
+        .theme-name {
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        
+        .theme-desc {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        /* 诗词风格选择样式 */
+        .style-section {
+            display: none;
+        }
+        
+        .style-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .style-card {
+            background: #f9f9f9;
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: 2px solid transparent;
+        }
+        
+        .style-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .style-card.selected {
+            border-color: #9c27b0;
+            background: #f0f4ff;
+        }
+        
+        .style-icon {
+            font-size: 30px;
+            margin-bottom: 10px;
+            color: #9c27b0;
+        }
+        
+        .style-name {
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        
+        .style-desc {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        /* 关键词设置样式 */
+        .keywords-section {
+            display: none;
+        }
+        
+        .keywords-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-label {
+            font-size: 14px;
+            margin-bottom: 8px;
+            color: #333;
+        }
+        
+        .form-input {
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 14px;
+            outline: none;
+        }
+        
+        .form-input:focus {
+            border-color: #9c27b0;
+        }
+        
+        .form-select {
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 14px;
+            outline: none;
+            background: white;
+        }
+        
+        .keywords-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .keyword-tag {
+            background: #e1bee7;
+            color: #4a148c;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .remove-keyword {
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        /* 诗词预览样式 */
+        .preview-section {
+            display: none;
+            background: #f9f9f9;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .preview-title {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #9c27b0;
+            text-align: center;
+        }
+        
+        .poem-preview {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            min-height: 200px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .poem-content {
+            font-size: 16px;
+            line-height: 1.8;
+            color: #333;
+            white-space: pre-line;
+        }
+        
+        .poem-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #9c27b0;
+        }
+        
+        .loading-animation {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 200px;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f0f4ff;
+            border-top: 4px solid #9c27b0;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 15px;
+        }
+        
+        .loading-text {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        /* 诗词编辑器样式 */
+        .editor-section {
+            display: none;
+        }
+        
+        .editor-toolbar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .toolbar-btn {
+            padding: 8px 12px;
+            background: #f5f5f5;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: background 0.3s;
+        }
+        
+        .toolbar-btn:hover {
+            background: #e0e0e0;
+        }
+        
+        .editor-area {
+            width: 100%;
+            min-height: 200px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+            line-height: 1.8;
+            resize: vertical;
+            outline: none;
+            font-family: '楷体', 'STKaiti', serif;
+        }
+        
+        .editor-area:focus {
+            border-color: #9c27b0;
+        }
+        
+        .suggestions-panel {
+            background: #f9f9f9;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+        
+        .suggestions-title {
+            font-size: 14px;
+            margin-bottom: 10px;
+            color: #9c27b0;
+        }
+        
+        .suggestions-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .suggestion-item {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 5px 10px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .suggestion-item:hover {
+            background: #e1bee7;
+        }
+        
+        /* 控制按钮样式 */
+        .control-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.3s;
+        }
+        
+        .btn:disabled {
+            background: #e0e0e0;
+            color: #999;
+            cursor: not-allowed;
+        }
+        
+        .btn-primary {
+            background: #9c27b0;
+            color: white;
+        }
+        
+        .btn-primary:hover:not(:disabled) {
+            background: #7b1fa2;
+            transform: scale(1.03);
+        }
+        
+        .btn-secondary {
+            background: #f5f5f5;
+            color: #333;
+        }
+        
+        .btn-secondary:hover {
+            background: #e0e0e0;
+            transform: scale(1.03);
+        }
+        
+        /* 底部导航样式 */
+        .bottom-nav {
+            display: flex;
+            justify-content: space-around;
+            background: white;
+            padding: 15px 0;
+            border-radius: 20px 20px 0 0;
+            box-shadow: 0 -4px 12px rgba(0,0,0,0.05);
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            max-width: 480px;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        .nav-icon {
+            font-size: 24px;
+            margin-bottom: 5px;
+            color: #999;
+        }
+        
+        .nav-item.active .nav-icon {
+            color: #9c27b0;
+        }
+        
+        .nav-text {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .nav-item.active .nav-text {
+            color: #9c27b0;
+            font-weight: bold;
+        }
+        
+        /* 动画 */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* 响应式调整 */
+        @media (max-width: 480px) {
+            .container {
+                padding-bottom: 70px;
+            }
+            
+            .theme-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .style-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .control-buttons {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="back-button" onclick="goBack()">←</div>
+            <div class="page-title">AI诗词助手</div>
+            <div style="width: 24px;"></div> <!-- 占位保持对称 -->
+        </div>
+        
+        <div class="main-content">
+            <div class="wizard-section">
+                <div class="wizard-steps">
+                    <div class="wizard-step active" id="step1">
+                        <div class="step-circle">1</div>
+                        <div class="step-label">选择主题</div>
+                    </div>
+                    <div class="wizard-step" id="step2">
+                        <div class="step-circle">2</div>
+                        <div class="step-label">诗词风格</div>
+                    </div>
+                    <div class="wizard-step" id="step3">
+                        <div class="step-circle">3</div>
+                        <div class="step-label">关键词</div>
+                    </div>
+                    <div class="wizard-step" id="step4">
+                        <div class="step-circle">4</div>
+                        <div class="step-label">生成诗词</div>
+                    </div>
+                </div>
+                
+                <div class="wizard-content">
+                    <!-- 步骤1: 选择主题 -->
+                    <div id="step1-content" class="step-content">
+                        <div class="section-title">选择诗词主题</div>
+                        <div class="theme-grid">
+                            <div class="theme-card" onclick="selectTheme(this, 'nature')">
+                                <div class="theme-icon">🌳</div>
+                                <div class="theme-name">自然风光</div>
+                                <div class="theme-desc">山水花鸟，四季变化</div>
+                            </div>
+                            <div class="theme-card" onclick="selectTheme(this, 'friendship')">
+                                <div class="theme-icon">🤝</div>
+                                <div class="theme-name">友谊情感</div>
+                                <div class="theme-desc">朋友情谊，温暖心间</div>
+                            </div>
+                            <div class="theme-card" onclick="selectTheme(this, 'family')">
+                                <div class="theme-icon">👨‍👩‍👧</div>
+                                <div class="theme-name">家庭温馨</div>
+                                <div class="theme-desc">亲情温暖，家的感觉</div>
+                            </div>
+                            <div class="theme-card" onclick="selectTheme(this, 'dream')">
+                                <div class="theme-icon">✨</div>
+                                <div class="theme-name">梦想未来</div>
+                                <div class="theme-desc">心中梦想，未来展望</div>
+                            </div>
+                            <div class="theme-card" onclick="selectTheme(this, 'seasons')">
+                                <div class="theme-icon">🍂</div>
+                                <div class="theme-name">四季变化</div>
+                                <div class="theme-desc">春夏秋冬，季节更替</div>
+                            </div>
+                            <div class="theme-card" onclick="selectTheme(this, 'custom')">
+                                <div class="theme-icon">🎯</div>
+                                <div class="theme-name">自定义</div>
+                                <div class="theme-desc">自由发挥，随心创作</div>
+                            </div>
+                        </div>
+                        
+                        <div class="control-buttons">
+                            <button class="btn btn-secondary" onclick="goBack()">返回</button>
+                            <button class="btn btn-primary" id="step1-next" onclick="nextStep(2)" disabled>下一步</button>
+                        </div>
+                    </div>
+                    
+                    <!-- 步骤2: 选择诗词风格 -->
+                    <div id="step2-content" class="step-content style-section">
+                        <div class="section-title">选择诗词风格</div>
+                        <div class="style-grid">
+                            <div class="style-card" onclick="selectStyle(this, 'ancient')">
+                                <div class="style-icon">📜</div>
+                                <div class="style-name">古典诗词</div>
+                                <div class="style-desc">传统韵律，古风雅致</div>
+                            </div>
+                            <div class="style-card" onclick="selectStyle(this, 'modern')">
+                                <div class="style-icon">🖋️</div>
+                                <div class="style-name">现代诗歌</div>
+                                <div class="style-desc">自由表达，情感真挚</div>
+                            </div>
+                            <div class="style-card" onclick="selectStyle(this, 'children')">
+                                <div class="style-icon">🧒</div>
+                                <div class="style-name">童谣儿歌</div>
+                                <div class="style-desc">活泼可爱，朗朗上口</div>
+                            </div>
+                            <div class="style-card" onclick="selectStyle(this, 'haiku')">
+                                <div class="style-icon">🎌</div>
+                                <div class="style-name">俳句短诗</div>
+                                <div class="style-desc">简洁精炼，意境深远</div>
+                            </div>
+                            <div class="style-card" onclick="selectStyle(this, 'funny')">
+                                <div class="style-icon">😄</div>
+                                <div class="style-name">幽默诙谐</div>
+                                <div class="style-desc">轻松有趣，逗人发笑</div>
+                            </div>
+                            <div class="style-card" onclick="selectStyle(this, 'custom')">
+                                <div class="style-icon">🎨</div>
+                                <div class="style-name">自由风格</div>
+                                <div class="style-desc">不拘一格，随心创作</div>
+                            </div>
+                        </div>
+                        
+                        <div class="control-buttons">
+                            <button class="btn btn-secondary" onclick="prevStep(1)">上一步</button>
+                            <button class="btn btn-primary" id="step2-next" onclick="nextStep(3)" disabled>下一步</button>
+                        </div>
+                    </div>
+                    
+                    <!-- 步骤3: 设置关键词 -->
+                    <div id="step3-content" class="step-content keywords-section">
+                        <div class="section-title">设置诗词关键词</div>
+                        <div class="keywords-form">
+                            <div class="form-group">
+                                <label class="form-label">主要关键词</label>
+                                <input type="text" class="form-input" id="main-keyword" placeholder="例如：春天、友谊、梦想..." onkeypress="addKeywordOnEnter(event)">
+                                <div class="keywords-tags" id="keywords-tags"></div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">情感基调</label>
+                                <select class="form-select" id="emotion-tone" onchange="updatePoemData()">
+                                    <option value="happy">快乐喜悦</option>
+                                    <option value="calm">平静安宁</option>
+                                    <option value="nostalgic">怀念思念</option>
+                                    <option value="inspiring">激励鼓舞</option>
+                                    <option value="funny">幽默有趣</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">诗词长度</label>
+                                <select class="form-select" id="poem-length" onchange="updatePoemData()">
+                                    <option value="short">短诗 (4-8行)</option>
+                                    <option value="medium" selected>中等 (8-12行)</option>
+                                    <option value="long">长诗 (12-16行)</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="control-buttons">
+                            <button class="btn btn-secondary" onclick="prevStep(2)">上一步</button>
+                            <button class="btn btn-primary" id="step3-next" onclick="nextStep(4)">生成诗词</button>
+                        </div>
+                    </div>
+                    
+                    <!-- 步骤4: 生成诗词 -->
+                    <div id="step4-content" class="step-content preview-section">
+                        <div class="section-title">AI为你创作的诗词</div>
+                        <div class="preview-title" id="poem-title">你的专属诗词</div>
+                        
+                        <div class="poem-preview">
+                            <div class="loading-animation" id="loading-animation">
+                                <div class="spinner"></div>
+                                <div class="loading-text">AI正在创作你的诗词，请稍候...</div>
+                            </div>
+                            <div class="poem-content" id="generated-poem" style="display: none;">
+                                <div class="poem-title" id="display-poem-title"></div>
+                                <div id="display-poem-content"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="control-buttons">
+                            <button class="btn btn-secondary" onclick="prevStep(3)">重新生成</button>
+                            <button class="btn btn-primary" id="step4-next" onclick="nextStep(5)">编辑完善</button>
+                        </div>
+                    </div>
+                    
+                    <!-- 步骤5: 编辑完善 -->
+                    <div id="step5-content" class="step-content editor-section">
+                        <div class="section-title">编辑和完善你的诗词</div>
+                        
+                        <div class="editor-toolbar">
+                            <button class="toolbar-btn" onclick="suggestRhymes()">🎵 押韵建议</button>
+                            <button class="toolbar-btn" onclick="suggestWords()">💡 词汇建议</button>
+                            <button class="toolbar-btn" onclick="improveStructure()">📐 结构优化</button>
+                            <button class="toolbar-btn" onclick="addEmotion()">❤️ 增强情感</button>
+                        </div>
+                        
+                        <textarea class="editor-area" id="poem-editor" placeholder="在这里编辑和完善你的诗词..."></textarea>
+                        
+                        <div class="suggestions-panel" id="suggestions-panel" style="display: none;">
+                            <div class="suggestions-title">AI建议</div>
+                            <div class="suggestions-list" id="suggestions-list"></div>
+                        </div>
+                        
+                        <div class="control-buttons">
+                            <button class="btn btn-secondary" onclick="prevStep(4)">上一步</button>
+                            <button class="btn btn-primary" onclick="savePoem()">保存诗词</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bottom-nav">
+            <div class="nav-item" onclick="navigateTo('index.html')">
+                <div class="nav-icon">🏠</div>
+                <div class="nav-text">首页</div>
+            </div>
+            <div class="nav-item" onclick="navigateTo('explore.html')">
+                <div class="nav-icon">🔍</div>
+                <div class="nav-text">探索</div>
+            </div>
+            <div class="nav-item" onclick="navigateTo('create.html')">
+                <div class="nav-icon">🎨</div>
+                <div class="nav-text">创作</div>
+            </div>
+            <div class="nav-item" onclick="navigateTo('mind-garden.html')">
+                <div class="nav-icon">💝</div>
+                <div class="nav-text">心灵</div>
+            </div>
+            <div class="nav-item" onclick="navigateTo('profile.html')">
+                <div class="nav-icon">👤</div>
+                <div class="nav-text">我的</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="navigation-template.js"></script>
+    <script>
+        // 初始化导航
+        document.addEventListener('DOMContentLoaded', function() {
+            initAppNavigation();
+        });
+        
+        // 当前步骤和诗词数据
+        let currentStep = 1;
+        let poemData = {
+            theme: '',
+            style: '',
+            keywords: [],
+            emotion: 'happy',
+            length: 'medium',
+            poemContent: '',
+            poemTitle: ''
+        };
+        
+        // 导航功能
+        function goBack() {
+            // 特殊处理：在非第一步时返回上一步
+            if (currentStep > 1) {
+                prevStep(currentStep - 1);
+                return;
+            }
+            
+            // 标准导航逻辑
+            if (!document.referrer || window.history.length <= 1) {
+                navigateTo('index.html');
+            } else {
+                window.history.back();
+            }
+        }
+        
+        // 步骤导航
+        function nextStep(step) {
+            // 隐藏当前步骤内容
+            document.getElementById(`step${currentStep}-content`).style.display = 'none';
+            
+            // 更新步骤指示器
+            document.getElementById(`step${currentStep}`).classList.remove('active');
+            document.getElementById(`step${currentStep}`).classList.add('completed');
+            
+            // 显示新步骤内容
+            currentStep = step;
+            document.getElementById(`step${currentStep}`).classList.add('active');
+            document.getElementById(`step${currentStep}-content`).style.display = 'block';
+            
+            // 特殊处理：步骤4生成诗词
+            if (step === 4) {
+                generatePoem();
+            }
+            
+            // 特殊处理：步骤5加载诗词到编辑器
+            if (step === 5) {
+                document.getElementById('poem-editor').value = poemData.poemContent;
+            }
+        }
+        
+        function prevStep(step) {
+            // 隐藏当前步骤内容
+            document.getElementById(`step${currentStep}-content`).style.display = 'none';
+            
+            // 更新步骤指示器
+            document.getElementById(`step${currentStep}`).classList.remove('active');
+            
+            // 显示上一步内容
+            currentStep = step;
+            document.getElementById(`step${currentStep}`).classList.add('active');
+            document.getElementById(`step${currentStep}-content`).style.display = 'block';
+            
+            // 特殊处理：返回步骤3时重置关键词
+            if (step === 3) {
+                updateKeywordsDisplay();
+            }
+        }
+        
+        // 选择主题
+        function selectTheme(caller, theme) {
+            // 支持两种调用：selectTheme(theme) 或 selectTheme(caller, theme)
+            if (typeof theme === 'undefined') {
+                theme = caller;
+                caller = null;
+            }
+
+            // 移除之前的选择
+            document.querySelectorAll('.theme-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+
+            // 设置新的选择
+            var targetEl = null;
+            if (caller && caller.nodeType) {
+                targetEl = caller;
+            } else if (typeof event !== 'undefined' && event.target) {
+                targetEl = event.target.closest ? event.target.closest('.theme-card') : event.target;
+            }
+
+            if (targetEl) targetEl.classList.add('selected');
+            poemData.theme = theme;
+
+            // 启用下一步按钮
+            document.getElementById('step1-next').disabled = false;
+        }
+
+        // 选择风格
+        function selectStyle(caller, style) {
+            // 支持两种调用：selectStyle(style) 或 selectStyle(caller, style)
+            if (typeof style === 'undefined') {
+                style = caller;
+                caller = null;
+            }
+
+            // 移除之前的选择
+            document.querySelectorAll('.style-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+
+            // 设置新的选择
+            var targetEl = null;
+            if (caller && caller.nodeType) {
+                targetEl = caller;
+            } else if (typeof event !== 'undefined' && event.target) {
+                targetEl = event.target.closest ? event.target.closest('.style-card') : event.target;
+            }
+
+            if (targetEl) targetEl.classList.add('selected');
+            poemData.style = style;
+
+            // 启用下一步按钮
+            document.getElementById('step2-next').disabled = false;
+        }
+        
+        // 添加关键词
+        function addKeywordOnEnter(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                const input = document.getElementById('main-keyword');
+                const keyword = input.value.trim();
+                
+                if (keyword && !poemData.keywords.includes(keyword)) {
+                    poemData.keywords.push(keyword);
+                    input.value = '';
+                    updateKeywordsDisplay();
+                }
+            }
+        }
+        
+        // 更新关键词显示
+        function updateKeywordsDisplay() {
+            const tagsContainer = document.getElementById('keywords-tags');
+            tagsContainer.innerHTML = '';
+            
+            poemData.keywords.forEach((keyword, index) => {
+                const tag = document.createElement('div');
+                tag.className = 'keyword-tag';
+                tag.innerHTML = `${keyword} <span class="remove-keyword" onclick="removeKeyword(${index})">×</span>`;
+                tagsContainer.appendChild(tag);
+            });
+            
+            // 启用下一步按钮（如果有至少一个关键词）
+            document.getElementById('step3-next').disabled = poemData.keywords.length === 0;
+        }
+        
+        // 移除关键词
+        function removeKeyword(index) {
+            poemData.keywords.splice(index, 1);
+            updateKeywordsDisplay();
+        }
+        
+        // 更新诗词数据
+        function updatePoemData() {
+            poemData.emotion = document.getElementById('emotion-tone').value;
+            poemData.length = document.getElementById('poem-length').value;
+        }
+        
+        // 生成诗词
+        function generatePoem() {
+            const loadingElement = document.getElementById('loading-animation');
+            const poemElement = document.getElementById('generated-poem');
+            
+            // 显示加载动画
+            loadingElement.style.display = 'flex';
+            poemElement.style.display = 'none';
+            
+            // 模拟AI生成诗词（在实际应用中，这里会调用AI API）
+            setTimeout(() => {
+                // 根据用户输入生成诗词
+                const { title, content } = createPoemFromData();
+                
+                // 显示生成的诗词
+                loadingElement.style.display = 'none';
+                poemElement.style.display = 'block';
+                document.getElementById('display-poem-title').textContent = title;
+                document.getElementById('display-poem-content').textContent = content;
+                
+                // 保存诗词内容
+                poemData.poemTitle = title;
+                poemData.poemContent = `${title}\n\n${content}`;
+                
+                // 启用下一步按钮
+                document.getElementById('step4-next').disabled = false;
+            }, 3000);
+        }
+        
+        // 根据用户数据创建诗词
+        function createPoemFromData() {
+            const themes = {
+                'nature': '自然风光',
+                'friendship': '友谊情感',
+                'family': '家庭温馨',
+                'dream': '梦想未来',
+                'seasons': '四季变化',
+                'custom': '自由创作'
+            };
+            
+            const styles = {
+                'ancient': '古典',
+                'modern': '现代',
+                'children': '童谣',
+                'haiku': '俳句',
+                'funny': '幽默',
+                'custom': '自由'
+            };
+            
+            const emotions = {
+                'happy': '快乐',
+                'calm': '平静',
+                'nostalgic': '怀念',
+                'inspiring': '激励',
+                'funny': '幽默'
+            };
+            
+            const themeName = themes[poemData.theme] || '自由';
+            const styleName = styles[poemData.style] || '自由';
+            const emotionName = emotions[poemData.emotion] || '快乐';
+            
+            // 生成标题
+            const title = `${themeName}·${styleName}诗`;
+            
+            // 根据风格生成内容
+            let content = '';
+            
+            if (poemData.style === 'ancient') {
+                content = `春风拂面柳丝长，${poemData.keywords[0] || '花开'}满园香。\n鸟语声声入耳畔，童心荡漾乐无疆。\n\n青山绿水映晴空，${poemData.keywords[1] || '云淡'}风轻意更浓。\n愿得时光常驻此，${poemData.keywords[2] || '欢歌'}笑语伴孩童。`;
+            } else if (poemData.style === 'modern') {
+                content = `在${poemData.keywords[0] || '春天'}的怀抱里\n我听见${poemData.keywords[1] || '风儿'}的细语\n看见${poemData.keywords[2] || '阳光'}的微笑\n\n我的心像一只小鸟\n在${poemData.keywords[3] || '蓝天'}中自由飞翔\n带着${emotionName}的旋律\n唱出童年的歌谣`;
+            } else if (poemData.style === 'children') {
+                content = `${poemData.keywords[0] || '小蝴蝶'}，飞呀飞\n飞到${poemData.keywords[1] || '花丛'}中\n${poemData.keywords[2] || '采花蜜'}，甜甜的\n\n${poemData.keywords[3] || '小朋友'}，笑呀笑\n手拉手，做游戏\n${emotionName}的时光\n永远记心里`;
+            } else if (poemData.style === 'haiku') {
+                content = `${poemData.keywords[0] || '春风吹'}\n${poemData.keywords[1] || '花开满园'}\n${poemData.keywords[2] || '童心欢'}`;
+            } else if (poemData.style === 'funny') {
+                content = `我的${poemData.keywords[0] || '书包'}会说话\n里面住着${poemData.keywords[1] || '小精灵'}\n铅笔跳起舞\n橡皮翻跟头\n\n作业本上开满花\n${poemData.keywords[2] || '数学题'}变成糖\n老师变成${poemData.keywords[3] || '大熊猫'}\n课堂变成游乐场`;
+            } else {
+                content = `在${poemData.keywords[0] || '心中'}的${poemData.keywords[1] || '花园'}\n种下${poemData.keywords[2] || '梦想'}的种子\n用${emotionName}的雨水浇灌\n\n等待它发芽生长\n开出${poemData.keywords[3] || '希望'}的花朵\n在${themeName}的阳光下\n绽放独特的光芒`;
+            }
+            
+            return { title, content };
+        }
+        
+        // 押韵建议
+        function suggestRhymes() {
+            const suggestions = ['明月-原野', '花开-春来', '飞翔-梦想', '朋友-长久', '家庭-温馨'];
+            showSuggestions(suggestions, '押韵词对');
+        }
+        
+        // 词汇建议
+        function suggestWords() {
+            const suggestions = ['璀璨', '绚烂', '悠扬', '灵动', '芬芳', '明媚', '欢畅'];
+            showSuggestions(suggestions, '优美词汇');
+        }
+        
+        // 结构优化
+        function improveStructure() {
+            const suggestions = ['增加对仗', '调整句式', '增强节奏', '丰富意象', '深化主题'];
+            showSuggestions(suggestions, '结构建议');
+        }
+        
+        // 增强情感
+        function addEmotion() {
+            const suggestions = ['加入比喻', '使用拟人', '增强画面感', '深化情感表达', '增加想象空间'];
+            showSuggestions(suggestions, '情感增强');
+        }
+        
+        // 显示建议
+        function showSuggestions(suggestions, title) {
+            const panel = document.getElementById('suggestions-panel');
+            const list = document.getElementById('suggestions-list');
+            
+            list.innerHTML = '';
+            suggestions.forEach(suggestion => {
+                const item = document.createElement('div');
+                item.className = 'suggestion-item';
+                item.textContent = suggestion;
+                item.onclick = function() {
+                    insertSuggestion(suggestion);
+                };
+                list.appendChild(item);
+            });
+            
+            document.querySelector('.suggestions-title').textContent = title + ' - 点击使用';
+            panel.style.display = 'block';
+        }
+        
+        // 插入建议
+        function insertSuggestion(suggestion) {
+            const editor = document.getElementById('poem-editor');
+            const start = editor.selectionStart;
+            const end = editor.selectionEnd;
+            
+            editor.value = editor.value.substring(0, start) + suggestion + editor.value.substring(end);
+            editor.focus();
+            editor.setSelectionRange(start + suggestion.length, start + suggestion.length);
+            
+            // 隐藏建议面板
+            document.getElementById('suggestions-panel').style.display = 'none';
+        }
+        
+        // 保存诗词
+        function savePoem() {
+            try {
+                // 收集诗词数据
+                const timestamp = new Date().getTime();
+                const dateStr = new Date().toLocaleDateString('zh-CN').replace(/\//g, '-');
+                
+                // 获取诗词标题和内容
+                const poemContent = document.getElementById('poem-editor').value;
+                let poemTitle = poemData.poemTitle || `我的诗词_${dateStr}`;
+                
+                // 尝试从内容中提取标题（如果有的话）
+                if (poemContent) {
+                    const firstLine = poemContent.split('\n')[0];
+                    if (firstLine && firstLine.trim().length > 0 && firstLine.trim().length < 50) {
+                        poemTitle = firstLine.trim();
+                    }
+                }
+                
+                // 获取诗词风格
+                const poemStyle = poemData.style || 'general';
+                
+                const poemDataSave = {
+                    id: timestamp,
+                    title: poemTitle,
+                    filename: `${poemTitle}_${dateStr}_${timestamp}`,
+                    content: poemContent,
+                    style: poemStyle,
+                    theme: poemData.theme || '',
+                    emotion: poemData.emotion || '',
+                    keywords: poemData.keywords || [],
+                    lineCount: poemContent.split('\n').filter(line => line.trim().length > 0).length,
+                    timestamp: new Date().toISOString(),
+                    type: 'poem'
+                };
+                
+                // 保存到localStorage
+                if (typeof localStorage !== 'undefined') {
+                    try {
+                        // 获取现有作品
+                        let artworks = JSON.parse(localStorage.getItem('qmzg_artworks') || '[]');
+                        
+                        // 添加到数组开头，确保最新的在前面
+                        artworks.unshift(poemDataSave);
+                        
+                        // 限制保存数量，只保留最新的20个
+                        if (artworks.length > 20) {
+                            artworks = artworks.slice(0, 20);
+                        }
+                        
+                        // 尝试保存，如果localStorage空间不足则删除最旧的作品重试
+                        try {
+                            localStorage.setItem('qmzg_artworks', JSON.stringify(artworks));
+                        } catch (storageError) {
+                            console.warn('localStorage空间不足，删除部分旧作品:', storageError);
+                            // 删除旧作品并重试
+                            artworks = artworks.slice(0, 10); // 只保留10个
+                            localStorage.setItem('qmzg_artworks', JSON.stringify(artworks));
+                        }
+                    } catch (storageError) {
+                        console.error('保存到localStorage失败:', storageError);
+                        // 这是一个非关键错误，不应该阻止整个保存流程
+                    }
+                }
+                
+                alert("诗词已成功保存！你可以在'我的作品'中查看和分享它。");
+            } catch (error) {
+                console.error('保存诗词失败:', error);
+                alert('保存失败：' + error.message + '，请刷新页面重试。');
+                return; // 出错时不继续执行后续操作
+            }
+            
+            // 返回创作湾
+            setTimeout(() => {
+                navigateTo('create.html');
+            }, 1500);
+        }
+        
+        // 为底部导航添加点击事件
+        document.querySelectorAll('.nav-item').forEach((item) => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+        
+        // 初始化页面
+        document.addEventListener('DOMContentLoaded', function() {
+            // 默认显示第一步
+            document.getElementById('step1-content').style.display = 'block';
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI童话制造机 - 启蒙之光</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial Rounded MT Bold', 'Arial', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+            color: #333;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 0;
+            position: relative;
+            min-height: 100vh;
+            background: white;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: linear-gradient(135deg, #7e57c2 0%, #5c6bc0 100%);
+            color: white;
+            border-radius: 0 0 20px 20px;
+        }
+        
+        .back-button {
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        .page-title {
+            font-size: 20px;
+            text-align: center;
+            flex: 1;
+        }
+        
+        .main-content {
+            padding: 20px;
+            overflow-y: auto;
+            max-height: calc(100vh - 140px);
+        }
+        
+        .section-title {
+            font-size: 18px;
+            margin: 20px 0 15px;
+            color: #7e57c2;
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title::before {
+            content: "";
+            display: inline-block;
+            width: 5px;
+            height: 20px;
+            background: #7e57c2;
+            margin-right: 10px;
+            border-radius: 3px;
+        }
+        
+        /* 故事创作向导样式 */
+        .wizard-section {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            border: 2px solid #f3e5f5;
+        }
+        
+        .wizard-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .wizard-steps::before {
+            content: "";
+            position: absolute;
+            top: 15px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #e0e0e0;
+            z-index: 1;
+        }
+        
+        .wizard-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .step-circle {
+            width: 30px;
+            height: 30px;
+            background: #e0e0e0;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        
+        .wizard-step.active .step-circle {
+            background: #7e57c2;
+        }
+        
+        .wizard-step.completed .step-circle {
+            background: #5c6bc0;
+        }
+        
+        .step-label {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .wizard-step.active .step-label {
+            color: #7e57c2;
+            font-weight: bold;
+        }
+        
+        .wizard-content {
+            min-height: 200px;
+        }
+        
+        /* 故事主题选择样式 */
+        .theme-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .theme-card {
+            background: #f9f9f9;
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: 2px solid transparent;
+        }
+        
+        .theme-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .theme-card.selected {
+            border-color: #7e57c2;
+            background: #f3e5f5;
+        }
+        
+        .theme-icon {
+            font-size: 30px;
+            margin-bottom: 10px;
+            color: #7e57c2;
+        }
+        
+        .theme-name {
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        
+        .theme-desc {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        /* 角色设置样式 */
+        .character-section {
+            display: none;
+        }
+        
+        .character-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-label {
+            font-size: 14px;
+            margin-bottom: 8px;
+            color: #333;
+        }
+        
+        .form-input {
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 14px;
+            outline: none;
+        }
+        
+        .form-input:focus {
+            border-color: #7e57c2;
+        }
+        
+        .form-select {
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 14px;
+            outline: none;
+            background: white;
+        }
+        
+        /* 故事预览样式 */
+        .preview-section {
+            display: none;
+            background: #f9f9f9;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .preview-title {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #7e57c2;
+            text-align: center;
+        }
+        
+        .story-preview {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            min-height: 200px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+            margin-bottom: 15px;
+        }
+        
+        .story-content {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #333;
+        }
+        
+        .loading-animation {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 200px;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3e5f5;
+            border-top: 4px solid #7e57c2;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 15px;
+        }
+        
+        .loading-text {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        /* 故事编辑器样式 */
+        .editor-section {
+            display: none;
+        }
+        
+        .editor-toolbar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .toolbar-btn {
+            padding: 8px 12px;
+            background: #f5f5f5;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: background 0.3s;
+        }
+        
+        .toolbar-btn:hover {
+            background: #e0e0e0;
+        }
+        
+        .editor-area {
+            width: 100%;
+            min-height: 200px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 14px;
+            line-height: 1.6;
+            resize: vertical;
+            outline: none;
+        }
+        
+        .editor-area:focus {
+            border-color: #7e57c2;
+        }
+        
+        /* 控制按钮样式 */
+        .control-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.3s;
+        }
+        
+        .btn:disabled {
+            background: #e0e0e0;
+            color: #999;
+            cursor: not-allowed;
+        }
+        
+        .btn-primary {
+            background: #7e57c2;
+            color: white;
+        }
+        
+        .btn-primary:hover:not(:disabled) {
+            background: #5c6bc0;
+            transform: scale(1.03);
+        }
+        
+        .btn-secondary {
+            background: #f5f5f5;
+            color: #333;
+        }
+        
+        .btn-secondary:hover {
+            background: #e0e0e0;
+            transform: scale(1.03);
+        }
+        
+        /* 底部导航样式 */
+        .bottom-nav {
+            display: flex;
+            justify-content: space-around;
+            background: white;
+            padding: 15px 0;
+            border-radius: 20px 20px 0 0;
+            box-shadow: 0 -4px 12px rgba(0,0,0,0.05);
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            max-width: 480px;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        .nav-icon {
+            font-size: 24px;
+            margin-bottom: 5px;
+            color: #999;
+        }
+        
+        .nav-item.active .nav-icon {
+            color: #7e57c2;
+        }
+        
+        .nav-text {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .nav-item.active .nav-text {
+            color: #7e57c2;
+            font-weight: bold;
+        }
+        
+        /* 动画 */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* 响应式调整 */
+        @media (max-width: 480px) {
+            .container {
+                padding-bottom: 70px;
+            }
+            
+            .theme-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .control-buttons {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="back-button" onclick="goBack()">←</div>
+            <div class="page-title">AI童话制造机</div>
+            <div style="width: 24px;"></div> <!-- 占位保持对称 -->
+        </div>
+        
+        <div class="main-content">
+            <div class="wizard-section">
+                <div class="wizard-steps">
+                    <div class="wizard-step active" id="step1">
+                        <div class="step-circle">1</div>
+                        <div class="step-label">选择主题</div>
+                    </div>
+                    <div class="wizard-step" id="step2">
+                        <div class="step-circle">2</div>
+                        <div class="step-label">设置角色</div>
+                    </div>
+                    <div class="wizard-step" id="step3">
+                        <div class="step-circle">3</div>
+                        <div class="step-label">生成故事</div>
+                    </div>
+                    <div class="wizard-step" id="step4">
+                        <div class="step-circle">4</div>
+                        <div class="step-label">编辑完善</div>
+                    </div>
+                </div>
+                
+                <div class="wizard-content">
+                    <!-- 步骤1: 选择主题 -->
+                    <div id="step1-content" class="step-content">
+                        <div class="section-title">选择故事主题</div>
+                        <div class="theme-grid">
+                            <div class="theme-card" onclick="selectTheme(this, 'adventure')">
+                                <div class="theme-icon">🚀</div>
+                                <div class="theme-name">奇幻冒险</div>
+                                <div class="theme-desc">探索未知的神秘世界</div>
+                            </div>
+                            <div class="theme-card" onclick="selectTheme(this, 'friendship')">
+                                <div class="theme-icon">🤝</div>
+                                <div class="theme-name">友谊魔法</div>
+                                <div class="theme-desc">关于友情和合作的故事</div>
+                            </div>
+                            <div class="theme-card" onclick="selectTheme(this, 'science')">
+                                <div class="theme-icon">🔬</div>
+                                <div class="theme-name">科学探索</div>
+                                <div class="theme-desc">用科学解决难题</div>
+                            </div>
+                            <div class="theme-card" onclick="selectTheme(this, 'animal')">
+                                <div class="theme-icon">🐾</div>
+                                <div class="theme-name">动物王国</div>
+                                <div class="theme-desc">动物们的奇妙故事</div>
+                            </div>
+                            <div class="theme-card" onclick="selectTheme(this, 'robot')">
+                                <div class="theme-icon">🤖</div>
+                                <div class="theme-name">AI伙伴</div>
+                                <div class="theme-desc">与智能机器人的故事</div>
+                            </div>
+                            <div class="theme-card" onclick="selectTheme(this, 'custom')">
+                                <div class="theme-icon">✨</div>
+                                <div class="theme-name">自定义</div>
+                                <div class="theme-desc">创造独特的故事</div>
+                            </div>
+                        </div>
+                        
+                        <div class="control-buttons">
+                            <button class="btn btn-secondary" onclick="goBack()">返回</button>
+                            <button class="btn btn-primary" id="step1-next" onclick="nextStep(2)" disabled>下一步</button>
+                        </div>
+                    </div>
+                    
+                    <!-- 步骤2: 设置角色 -->
+                    <div id="step2-content" class="step-content character-section">
+                        <div class="section-title">设置故事角色</div>
+                        <div class="character-form">
+                            <div class="form-group">
+                                <label class="form-label">主角名字</label>
+                                <input type="text" class="form-input" id="main-character" placeholder="例如：小光、阿明..." oninput="validateStep2()">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">主角性格</label>
+                                <select class="form-select" id="character-personality" onchange="validateStep2()">
+                                    <option value="">选择性格特点</option>
+                                    <option value="brave">勇敢的</option>
+                                    <option value="curious">好奇的</option>
+                                    <option value="kind">善良的</option>
+                                    <option value="smart">聪明的</option>
+                                    <option value="funny">有趣的</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">故事地点</label>
+                                <input type="text" class="form-input" id="story-location" placeholder="例如：魔法森林、未来城市..." oninput="validateStep2()">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">特别元素（可选）</label>
+                                <input type="text" class="form-input" id="special-element" placeholder="例如：会说话的动物、神奇的宝石...">
+                            </div>
+                        </div>
+                        
+                        <div class="control-buttons">
+                            <button class="btn btn-secondary" onclick="prevStep(1)">上一步</button>
+                            <button class="btn btn-primary" id="step2-next" onclick="nextStep(3)" disabled>下一步</button>
+                        </div>
+                    </div>
+                    
+                    <!-- 步骤3: 生成故事 -->
+                    <div id="step3-content" class="step-content preview-section">
+                        <div class="section-title">AI正在创作你的故事</div>
+                        <div class="preview-title" id="story-title">你的专属童话</div>
+                        <div class="story-preview">
+                            <div class="loading-animation" id="loading-animation">
+                                <div class="spinner"></div>
+                                <div class="loading-text">AI正在努力创作中，请稍候...</div>
+                            </div>
+                            <div class="story-content" id="generated-story" style="display: none;"></div>
+                        </div>
+                        
+                        <div class="control-buttons">
+                            <button class="btn btn-secondary" onclick="prevStep(2)">上一步</button>
+                            <button class="btn btn-primary" id="step3-next" onclick="nextStep(4)" disabled>下一步</button>
+                        </div>
+                    </div>
+                    
+                    <!-- 步骤4: 编辑完善 -->
+                    <div id="step4-content" class="step-content editor-section">
+                        <div class="section-title">编辑和完善故事</div>
+                        <div class="editor-toolbar">
+                            <button class="toolbar-btn" onclick="formatText('bold')"><b>B</b></button>
+                            <button class="toolbar-btn" onclick="formatText('italic')"><i>I</i></button>
+                            <button class="toolbar-btn" onclick="insertEmoji('🌟')">🌟 添加星星</button>
+                            <button class="toolbar-btn" onclick="suggestImprovements()">💡 AI建议</button>
+                        </div>
+                        <textarea class="editor-area" id="story-editor" placeholder="在这里编辑和完善你的故事..."></textarea>
+                        
+                        <div class="control-buttons">
+                            <button class="btn btn-secondary" onclick="prevStep(3)">上一步</button>
+                            <button class="btn btn-primary" onclick="saveStory()">保存故事</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bottom-nav">
+            <div class="nav-item" onclick="navigateTo('index.html')">
+                <div class="nav-icon">🏠</div>
+                <div class="nav-text">首页</div>
+            </div>
+            <div class="nav-item" onclick="navigateTo('explore.html')">
+                <div class="nav-icon">🔍</div>
+                <div class="nav-text">探索</div>
+            </div>
+            <div class="nav-item" onclick="navigateTo('create.html')">
+                <div class="nav-icon">🎨</div>
+                <div class="nav-text">创作</div>
+            </div>
+            <div class="nav-item" onclick="navigateTo('mind-garden.html')">
+                <div class="nav-icon">💝</div>
+                <div class="nav-text">心灵</div>
+            </div>
+            <div class="nav-item" onclick="navigateTo('profile.html')">
+                <div class="nav-icon">👤</div>
+                <div class="nav-text">我的</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="navigation-template.js"></script>
+    <script>
+        // 当前步骤和故事数据
+        let currentStep = 1;
+        let storyData = {
+            theme: '',
+            mainCharacter: '',
+            personality: '',
+            location: '',
+            specialElement: '',
+            storyContent: ''
+        };
+        
+        // 初始化导航
+        document.addEventListener('DOMContentLoaded', function() {
+            initAppNavigation();
+        });
+        
+        // 导航功能
+        function goBack() {
+            // 检查来源页面和历史记录
+            if (document.referrer && window.history.length > 1) {
+                // 如果有有效的来源页面和历史记录，则返回上一页
+                window.history.back();
+            } else {
+                // 否则，导航到首页
+                navigateTo('index.html');
+            }
+        }
+        
+        // 步骤控制
+        function prevStep(step) {
+            if (currentStep > 1) {
+                currentStep = step;
+                updateStepDisplay();
+            }
+        }
+        
+        // 步骤导航
+        function nextStep(step) {
+            // 隐藏当前步骤内容
+            document.getElementById(`step${currentStep}-content`).style.display = 'none';
+            
+            // 更新步骤指示器
+            document.getElementById(`step${currentStep}`).classList.remove('active');
+            document.getElementById(`step${currentStep}`).classList.add('completed');
+            
+            // 显示新步骤内容
+            currentStep = step;
+            document.getElementById(`step${currentStep}`).classList.add('active');
+            document.getElementById(`step${currentStep}-content`).style.display = 'block';
+            
+            // 特殊处理：步骤3生成故事
+            if (step === 3) {
+                generateStory();
+            }
+            
+            // 特殊处理：步骤4加载故事到编辑器
+            if (step === 4) {
+                document.getElementById('story-editor').value = storyData.storyContent;
+            }
+        }
+        
+        function prevStep(step) {
+            // 隐藏当前步骤内容
+            document.getElementById(`step${currentStep}-content`).style.display = 'none';
+            
+            // 更新步骤指示器
+            document.getElementById(`step${currentStep}`).classList.remove('active');
+            
+            // 显示上一步内容
+            currentStep = step;
+            document.getElementById(`step${currentStep}`).classList.add('active');
+            document.getElementById(`step${currentStep}-content`).style.display = 'block';
+        }
+        
+        // 选择主题
+        function selectTheme(caller, theme) {
+            // 支持两种调用：selectTheme(theme) 或 selectTheme(caller, theme)
+            if (typeof theme === 'undefined') {
+                theme = caller;
+                caller = null;
+            }
+
+            // 移除之前的选择
+            document.querySelectorAll('.theme-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+
+            // 设置新的选择
+            var targetEl = null;
+            if (caller && caller.nodeType) {
+                targetEl = caller;
+            } else if (typeof event !== 'undefined' && event.target) {
+                targetEl = event.target.closest ? event.target.closest('.theme-card') : event.target;
+            }
+
+            if (targetEl) targetEl.classList.add('selected');
+            storyData.theme = theme;
+
+            // 启用下一步按钮
+            document.getElementById('step1-next').disabled = false;
+        }
+        
+        // 验证步骤2输入
+        function validateStep2() {
+            const mainCharacter = document.getElementById('main-character').value;
+            const personality = document.getElementById('character-personality').value;
+            const location = document.getElementById('story-location').value;
+            
+            // 保存数据
+            storyData.mainCharacter = mainCharacter;
+            storyData.personality = personality;
+            storyData.location = location;
+            storyData.specialElement = document.getElementById('special-element').value;
+            
+            // 启用下一步按钮
+            document.getElementById('step2-next').disabled = !(mainCharacter && personality && location);
+        }
+        
+        // 生成故事
+        function generateStory() {
+            const loadingElement = document.getElementById('loading-animation');
+            const storyElement = document.getElementById('generated-story');
+            
+            // 显示加载动画
+            loadingElement.style.display = 'flex';
+            storyElement.style.display = 'none';
+            
+            // 模拟AI生成故事（在实际应用中，这里会调用AI API）
+            setTimeout(() => {
+                // 根据用户输入生成故事
+                const story = createStoryFromData();
+                
+                // 显示生成的故事
+                loadingElement.style.display = 'none';
+                storyElement.style.display = 'block';
+                storyElement.innerHTML = story;
+                
+                // 保存故事内容
+                storyData.storyContent = story;
+                
+                // 启用下一步按钮
+                document.getElementById('step3-next').disabled = false;
+            }, 3000);
+        }
+        
+        // 根据用户数据创建故事
+        function createStoryFromData() {
+            const themes = {
+                'adventure': '奇幻冒险',
+                'friendship': '友谊魔法',
+                'science': '科学探索',
+                'animal': '动物王国',
+                'robot': 'AI伙伴',
+                'custom': '自定义'
+            };
+            
+            const personalities = {
+                'brave': '勇敢',
+                'curious': '好奇',
+                'kind': '善良',
+                'smart': '聪明',
+                'funny': '有趣'
+            };
+            
+            const themeName = themes[storyData.theme] || '奇妙';
+            const personalityName = personalities[storyData.personality] || '特别';
+            
+            let story = `<h3>${storyData.mainCharacter}的${themeName}之旅</h3>`;
+            
+            story += `<p>在${storyData.location}，住着一个${personalityName}的孩子，名叫${storyData.mainCharacter}。</p>`;
+            
+            if (storyData.theme === 'adventure') {
+                story += `<p>有一天，${storyData.mainCharacter}发现了一个神秘的入口，通往一个充满魔法生物的世界。在那里，${storyData.mainCharacter}遇到了一只会说话的小狐狸，它们一起踏上了寻找失落宝石的冒险。</p>`;
+                story += `<p>经过重重考验，${storyData.mainCharacter}不仅找到了宝石，还学会了勇敢和坚持的重要性。</p>`;
+            } else if (storyData.theme === 'friendship') {
+                story += `<p>${storyData.mainCharacter}最好的朋友要搬去很远的地方了，他们都非常难过。但${storyData.mainCharacter}想出了一个好主意——制作一个特别的友谊手链。</p>`;
+                story += `<p>这个手链有着神奇的魔力，无论朋友相隔多远，都能感受到彼此的思念和祝福。</p>`;
+            } else if (storyData.theme === 'science') {
+                story += `<p>${storyData.mainCharacter}是个小小科学家，最喜欢在实验室里做实验。有一天，${storyData.mainCharacter}发明了一种能让植物快速生长的营养液。</p>`;
+                story += `<p>但营养液被不小心洒在了学校的后院里，一夜之间，那里长出了一个神奇的植物迷宫！</p>`;
+            } else if (storyData.theme === 'animal') {
+                story += `<p>${storyData.mainCharacter}有一个特殊的能力——能听懂动物说话。一天，森林里的小动物们来找${storyData.mainCharacter}帮忙，它们的家园正面临危险。</p>`;
+                story += `<p>${storyData.mainCharacter}带领小动物们想出了一个聪明的办法，保护了美丽的森林。</p>`;
+            } else if (storyData.theme === 'robot') {
+                story += `<p>${storyData.mainCharacter}生日那天，收到了一份特别的礼物——一个名叫小光的AI机器人。小光不仅会说话，还能帮助${storyData.mainCharacter}学习新知识。</p>`;
+                story += `<p>他们一起解决了许多难题，成为了最好的朋友和搭档。</p>`;
+            } else {
+                story += `<p>${storyData.mainCharacter}有一个特别的梦想，就是${storyData.specialElement || '创造属于自己的神奇世界'}。</p>`;
+                story += `<p>经过不懈的努力和朋友的帮助，${storyData.mainCharacter}终于实现了这个梦想！</p>`;
+            }
+            
+            story += `<p>从此，${storyData.mainCharacter}明白了，只要有勇气、智慧和善良的心，就能创造属于自己的奇迹。</p>`;
+            
+            return story;
+        }
+        
+        // 文本格式化功能
+        function formatText(type) {
+            const editor = document.getElementById('story-editor');
+            const start = editor.selectionStart;
+            const end = editor.selectionEnd;
+            const selectedText = editor.value.substring(start, end);
+            
+            let formattedText = '';
+            
+            if (type === 'bold') {
+                formattedText = `<b>${selectedText}</b>`;
+            } else if (type === 'italic') {
+                formattedText = `<i>${selectedText}</i>`;
+            }
+            
+            editor.value = editor.value.substring(0, start) + formattedText + editor.value.substring(end);
+            storyData.storyContent = editor.value;
+        }
+        
+        // 插入表情符号
+        function insertEmoji(emoji) {
+            const editor = document.getElementById('story-editor');
+            const start = editor.selectionStart;
+            
+            editor.value = editor.value.substring(0, start) + emoji + editor.value.substring(start);
+            storyData.storyContent = editor.value;
+        }
+        
+        // AI改进建议
+        function suggestImprovements() {
+            alert("AI建议：\n1. 可以增加更多对话，让故事更生动\n2. 添加一些有趣的细节描述\n3. 考虑给故事一个意外的转折\n\n这些只是建议，你的故事已经很棒了！");
+        }
+        
+        // 保存故事
+        function saveStory() {
+            storyData.storyContent = document.getElementById('story-editor').value;
+            
+            try {
+                // 收集故事数据
+                const timestamp = new Date().getTime();
+                const dateStr = new Date().toLocaleDateString('zh-CN').replace(/\//g, '-');
+                
+                // 获取故事标题（如果有输入），否则使用默认标题
+                const storyTitle = document.getElementById('story-title')?.innerText.trim() || `我的故事_${dateStr}`;
+                
+                // 获取故事内容
+                const storyContent = document.getElementById('story-editor').value;
+                
+                const storyDataObj = {
+                    id: timestamp,
+                    title: storyTitle,
+                    filename: `${storyTitle}_${dateStr}_${timestamp}`,
+                    content: storyContent,
+                    genre: storyData.theme || 'general',
+                    length: storyContent.length,
+                    timestamp: new Date().toISOString(),
+                    type: 'story'
+                };
+                
+                // 保存到localStorage
+                if (typeof localStorage !== 'undefined') {
+                    try {
+                        // 获取现有作品
+                        let artworks = JSON.parse(localStorage.getItem('qmzg_artworks') || '[]');
+                        
+                        // 添加到数组开头，确保最新的在前面
+                        artworks.unshift(storyDataObj);
+                        
+                        // 限制保存数量，只保留最新的20个
+                        if (artworks.length > 20) {
+                            artworks = artworks.slice(0, 20);
+                        }
+                        
+                        // 尝试保存，如果localStorage空间不足则删除最旧的作品重试
+                        try {
+                            localStorage.setItem('qmzg_artworks', JSON.stringify(artworks));
+                        } catch (storageError) {
+                            console.warn('localStorage空间不足，删除部分旧作品:', storageError);
+                            // 删除旧作品并重试
+                            artworks = artworks.slice(0, 10); // 只保留10个
+                            localStorage.setItem('qmzg_artworks', JSON.stringify(artworks));
+                        }
+                    } catch (storageError) {
+                        console.error('保存到localStorage失败:', storageError);
+                        // 这是一个非关键错误，不应该阻止整个保存流程
+                    }
+                }
+                
+                alert("故事已成功保存！你可以在'我的作品'中查看和分享它。");
+            } catch (error) {
+                console.error('保存故事失败:', error);
+                alert('保存失败：' + error.message + '，请刷新页面重试。');
+                return; // 出错时不继续执行后续操作
+            }
+            
+            // 返回创作湾
+            setTimeout(() => {
+                navigateTo('create.html');
+            }, 1500);
+        }
+        
+        // 为底部导航添加点击事件
+        document.querySelectorAll('.nav-item').forEach((item) => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+        
+        // 初始化页面
+        document.addEventListener('DOMContentLoaded', function() {
+            // 默认显示第一步
+            document.getElementById('step1-content').style.display = 'block';
+        });
+    </script>
+</body>
+</html>

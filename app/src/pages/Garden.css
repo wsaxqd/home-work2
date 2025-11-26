@@ -1,0 +1,117 @@
+.garden-welcome {
+  text-align: center;
+  padding: 30px 20px;
+  background: linear-gradient(135deg, #fce4ec 0%, #f8bbd9 100%);
+  border-radius: 20px;
+  margin-bottom: 25px;
+}
+
+.welcome-icon {
+  font-size: 60px;
+  margin-bottom: 15px;
+}
+
+.garden-welcome h2 {
+  font-size: 22px;
+  color: #e91e63;
+  margin-bottom: 8px;
+}
+
+.garden-welcome p {
+  font-size: 14px;
+  color: #666;
+}
+
+.garden-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 25px;
+}
+
+.garden-option {
+  display: flex;
+  align-items: center;
+  background: white;
+  border-radius: 15px;
+  padding: 18px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+  cursor: pointer;
+  transition: transform 0.3s;
+}
+
+.garden-option:hover {
+  transform: translateX(5px);
+}
+
+.option-icon {
+  font-size: 35px;
+  margin-right: 15px;
+}
+
+.option-info {
+  flex: 1;
+}
+
+.option-title {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.option-desc {
+  font-size: 13px;
+  color: #666;
+}
+
+.option-arrow {
+  font-size: 20px;
+  color: #e91e63;
+}
+
+.tips-carousel {
+  display: flex;
+  gap: 15px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+}
+
+.tip-card {
+  min-width: 140px;
+  background: #fff3e0;
+  border-radius: 15px;
+  padding: 20px 15px;
+  text-align: center;
+}
+
+.tip-emoji {
+  font-size: 35px;
+  margin-bottom: 10px;
+}
+
+.tip-text {
+  font-size: 13px;
+  color: #666;
+  line-height: 1.4;
+}
+
+.confidence-bar {
+  width: 100%;
+  height: 10px;
+  background: #e0e0e0;
+  border-radius: 5px;
+  overflow: hidden;
+  margin: 10px 0;
+}
+
+.confidence-fill {
+  height: 100%;
+  background: #4caf50;
+  border-radius: 5px;
+  transition: width 0.5s;
+}
+
+.confidence-text {
+  font-size: 14px;
+  color: #666;
+}

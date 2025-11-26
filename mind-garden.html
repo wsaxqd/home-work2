@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>心灵花园 - 光明使者</title>
+    <style>
+        /* 全局样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial Rounded MT Bold', 'Arial', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(180deg, #e0f7ff 0%, #f0e6ff 100%);
+            color: #333;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            min-height: 100vh;
+        }
+        
+        /* 头部样式 */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: rgba(255,255,255,0.8);
+            border-radius: 0 0 20px 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        
+        .back-button {
+            background: rgba(74, 144, 226, 0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #4a90e2;
+            font-size: 18px;
+        }
+        
+        .header-content {
+            text-align: center;
+            flex: 1;
+            margin-right: 36px; /* 为了标题居中 */
+        }
+        
+        .header h1 {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #4a90e2;
+        }
+        
+        .header p {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        /* 主内容区 */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            padding-bottom: 80px;
+        }
+        
+        /* 心灵伙伴 */
+        .ai-companion {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        
+        .companion-bubble {
+            background: white;
+            border-radius: 50px;
+            padding: 15px 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            max-width: 80%;
+        }
+        
+        .companion-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #4a90e2 0%, #8e44ad 100%);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 24px;
+            margin-right: 15px;
+        }
+        
+        .companion-text {
+            font-size: 16px;
+        }
+        
+        /* 心情记录卡片 */
+        .mood-tracker {
+            background: #fff;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        .section-title {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #4a90e2;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+        }
+        
+        .mood-selector {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+        
+        .mood-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+            transition: background-color 0.3s;
+        }
+        
+        .mood-item:hover {
+            background-color: #f0f0f0;
+        }
+        
+        .mood-item.active {
+            background-color: #e3f2fd;
+        }
+        
+        .mood-icon {
+            font-size: 28px;
+            margin-bottom: 4px;
+        }
+        
+        .mood-text {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .mood-input {
+            width: 100%;
+            min-height: 100px;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            font-size: 14px;
+            resize: none;
+            margin-bottom: 12px;
+        }
+        
+        .save-mood-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #4a90e2 0%, #8e44ad 100%);
+            border: none;
+            border-radius: 25px;
+            color: #fff;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .save-mood-btn:active {
+            transform: scale(0.98);
+        }
+        
+        .save-mood-btn:hover {
+            box-shadow: 0 5px 15px rgba(74, 144, 226, 0.3);
+        }
+        
+        /* 功能卡片 */
+        .function-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 30px 0;
+        }
+        
+        .function-card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+        
+        .function-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        
+        .function-icon {
+            font-size: 40px;
+            margin-bottom: 15px;
+            color: #4a90e2;
+        }
+        
+        .function-card h3 {
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        
+        .function-card p {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        /* 心情档案 */
+        .mood-archive {
+            background: #fff;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        .view-all {
+            font-size: 14px;
+            color: #8e44ad;
+            cursor: pointer;
+        }
+        
+        .mood-history {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .history-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .history-item:last-child {
+            border-bottom: none;
+        }
+        
+        .history-date {
+            font-size: 12px;
+            color: #666;
+            margin-right: 12px;
+            min-width: 50px;
+        }
+        
+        .history-mood {
+            font-size: 20px;
+            margin-right: 12px;
+        }
+        
+        .history-content {
+            flex: 1;
+            font-size: 14px;
+            color: #333;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        /* 统一底部导航样式 */
+        .bottom-nav {
+            display: flex;
+            justify-content: space-around;
+            background: white;
+            padding: 15px 0;
+            border-radius: 20px 20px 0 0;
+            box-shadow: 0 -4px 12px rgba(0,0,0,0.05);
+            position: sticky;
+            bottom: 0;
+            z-index: 100;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            flex: 1;
+        }
+        
+        .nav-icon {
+            font-size: 24px;
+            margin-bottom: 5px;
+            color: #999;
+        }
+        
+        .nav-item.active .nav-icon {
+            color: #4a90e2;
+        }
+        
+        .nav-text {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .nav-item.active .nav-text {
+            color: #4a90e2;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="back-button" onclick="goBack()">←</div>
+            <div class="header-content">
+                <h1>心灵花园</h1>
+                <p>和小光一起守护心灵的净土</p>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <!-- 心灵伙伴 -->
+            <div class="ai-companion">
+                <div class="companion-bubble">
+                    <div class="companion-icon">光</div>
+                    <div class="companion-text">你今天感觉怎么样？和我分享你的心情吧，我会认真倾听的哦～</div>
+                </div>
+            </div>
+            
+            <!-- 心情记录 -->
+            <div class="mood-tracker">
+                <div class="section-title">记录心情</div>
+                <div class="mood-selector">
+                    <div class="mood-item active">
+                        <div class="mood-icon">😊</div>
+                        <div class="mood-text">开心</div>
+                    </div>
+                    <div class="mood-item">
+                        <div class="mood-icon">😐</div>
+                        <div class="mood-text">平静</div>
+                    </div>
+                    <div class="mood-item">
+                        <div class="mood-icon">😔</div>
+                        <div class="mood-text">难过</div>
+                    </div>
+                    <div class="mood-item">
+                        <div class="mood-icon">😴</div>
+                        <div class="mood-text">疲惫</div>
+                    </div>
+                    <div class="mood-item">
+                        <div class="mood-icon">😤</div>
+                        <div class="mood-text">生气</div>
+                    </div>
+                </div>
+                <textarea class="mood-input" placeholder="分享一下今天的心情吧..."></textarea>
+                <button class="save-mood-btn">保存心情</button>
+            </div>
+            
+            <!-- 功能卡片 -->
+            <div class="function-grid">
+                <div class="function-card">
+                    <div class="function-icon">💭</div>
+                    <h3>心情测评</h3>
+                    <p>了解你的心理状态</p>
+                </div>
+                <div class="function-card">
+                    <div class="function-icon">📚</div>
+                    <h3>心灵树洞</h3>
+                    <p>倾诉心事的地方</p>
+                </div>
+                <div class="function-card">
+                    <div class="function-icon">🎵</div>
+                    <h3>音乐疗愈</h3>
+                    <p>放松心情的音乐</p>
+                </div>
+                <div class="function-card">
+                    <div class="function-icon">🧘</div>
+                    <h3>冥想练习</h3>
+                    <p>专注当下的力量</p>
+                </div>
+            </div>
+            
+            <!-- 心情档案 -->
+            <div class="mood-archive">
+                <div class="section-title">
+                    <span>心情档案</span>
+                    <span class="view-all">查看全部</span>
+                </div>
+                <div class="mood-history">
+                    <div class="history-item">
+                        <div class="history-date">今天</div>
+                        <div class="history-mood">😊</div>
+                        <div class="history-content">今天完成了AI创作任务，感觉很有成就感！</div>
+                    </div>
+                    <div class="history-item">
+                        <div class="history-date">昨天</div>
+                        <div class="history-mood">😴</div>
+                        <div class="history-content">学习了很多新知识，有点疲惫但很充实。</div>
+                    </div>
+                    <div class="history-item">
+                        <div class="history-date">前天</div>
+                        <div class="history-mood">😐</div>
+                        <div class="history-content">平静的一天，看了一本有趣的书。</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 底部导航 -->
+        <div class="bottom-nav">
+            <div class="nav-item" onclick="navigateTo('index.html')">
+                <div class="nav-icon">🏠</div>
+                <div class="nav-text">首页</div>
+            </div>
+            <div class="nav-item" onclick="navigateTo('explore.html')">
+                <div class="nav-icon">🔍</div>
+                <div class="nav-text">探索</div>
+            </div>
+            <div class="nav-item" onclick="navigateTo('create.html')">
+                <div class="nav-icon">🎨</div>
+                <div class="nav-text">创作</div>
+            </div>
+            <div class="nav-item active" onclick="navigateTo('mind-garden.html')">
+                <div class="nav-icon">💝</div>
+                <div class="nav-text">心灵</div>
+            </div>
+            <div class="nav-item" onclick="navigateTo('profile.html')">
+                <div class="nav-icon">👤</div>
+                <div class="nav-text">我的</div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="navigation-template.js"></script>
+    <script>
+        // 页面特定的JavaScript
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化导航
+            initAppNavigation();
+            
+            // 心情选择逻辑
+            const moodItems = document.querySelectorAll('.mood-item');
+            moodItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    moodItems.forEach(i => i.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+            
+            // 保存心情
+            document.querySelector('.save-mood-btn').addEventListener('click', function() {
+                const activeMood = document.querySelector('.mood-item.active .mood-icon').textContent;
+                const moodText = document.querySelector('.mood-input').value;
+                
+                if (moodText.trim() === '') {
+                    alert('请输入你的心情内容');
+                    return;
+                }
+                
+                alert('心情记录已保存！');
+                document.querySelector('.mood-input').value = '';
+            });
+        });
+        
+        // 返回上一页 - 符合导航标准
+        function goBack() {
+            // 检查是否来自本站
+            if (document.referrer && !document.referrer.includes(window.location.hostname)) {
+                navigateTo('index.html');
+                return;
+            }
+            
+            // 有历史记录则返回上一页，否则跳转首页
+            if (window.history.length > 1) {
+                window.history.back();
+            } else {
+                navigateTo('index.html');
+            }
+        }
+    </script>
+</body>
+</html>

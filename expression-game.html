@@ -1,0 +1,1294 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>表情模仿秀 - AI游戏实验室 - 启蒙之光</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial Rounded MT Bold', 'Arial', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #fff9c4 0%, #ffccbc 100%);
+            color: #333;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 0;
+            position: relative;
+            min-height: 100vh;
+            background: white;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: linear-gradient(135deg, #ffc107 0%, #ff5722 100%);
+            color: white;
+            border-radius: 0 0 20px 20px;
+        }
+        
+        .back-button {
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        .page-title {
+            font-size: 20px;
+            text-align: center;
+            flex: 1;
+        }
+        
+        .game-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .score {
+            background: rgba(255,255,255,0.2);
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 14px;
+        }
+        
+        .main-content {
+            padding: 20px;
+            overflow-y: auto;
+            max-height: calc(100vh - 140px);
+        }
+        
+        .section-title {
+            font-size: 18px;
+            margin: 20px 0 15px;
+            color: #ff5722;
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title::before {
+            content: "";
+            display: inline-block;
+            width: 5px;
+            height: 20px;
+            background: #ff5722;
+            margin-right: 10px;
+            border-radius: 3px;
+        }
+        
+        /* 游戏区域样式 */
+        .game-area {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            border: 2px solid #fff9c4;
+        }
+        
+        .game-progress {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .level-indicator {
+            font-size: 14px;
+            color: #ff5722;
+            font-weight: bold;
+        }
+        
+        .progress-bar {
+            flex: 1;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            margin: 0 15px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: #ffc107;
+            border-radius: 4px;
+            width: 40%;
+            transition: width 0.5s;
+        }
+        
+        .progress-text {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        /* 表情识别区域 */
+        .expression-area {
+            background: #f9f9f9;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .camera-container {
+            position: relative;
+            width: 100%;
+            height: 250px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .camera-view {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+        
+        .camera-placeholder {
+            font-size: 50px;
+            color: #999;
+        }
+        
+        .face-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        
+        .face-box {
+            position: absolute;
+            border: 3px solid #4caf50;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+        }
+        
+        .expression-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .control-btn {
+            width: 60px;
+            height: 60px;
+            background: #ffc107;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: transform 0.2s;
+        }
+        
+        .control-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        .control-btn.secondary {
+            background: #ff5722;
+        }
+        
+        .expression-result {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .result-text {
+            font-size: 16px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .expression-match {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .target-expression {
+            font-size: 30px;
+        }
+        
+        .match-indicator {
+            font-size: 20px;
+        }
+        
+        .user-expression {
+            font-size: 30px;
+        }
+        
+        .accuracy-bar {
+            width: 100%;
+            height: 10px;
+            background: #e0e0e0;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+        
+        .accuracy-fill {
+            height: 100%;
+            background: #4caf50;
+            border-radius: 5px;
+            width: 0%;
+            transition: width 0.5s;
+        }
+        
+        .accuracy-text {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        /* 表情挑战样式 */
+        .challenge-area {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        .challenge-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .challenge-icon {
+            font-size: 24px;
+            margin-right: 10px;
+            color: #ff5722;
+        }
+        
+        .challenge-title {
+            font-size: 16px;
+            color: #ff5722;
+        }
+        
+        .target-expression-card {
+            background: #fff9c4;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        
+        .target-emoji {
+            font-size: 60px;
+            margin-bottom: 10px;
+        }
+        
+        .target-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #ff5722;
+            margin-bottom: 5px;
+        }
+        
+        .target-description {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .challenge-timer {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .timer-icon {
+            font-size: 20px;
+            color: #ff5722;
+        }
+        
+        .timer-text {
+            font-size: 16px;
+            font-weight: bold;
+            color: #ff5722;
+        }
+        
+        /* 表情学习样式 */
+        .learning-area {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            background: linear-gradient(135deg, #fff9c4 0%, #ffccbc 100%);
+            border: 2px dashed #ff5722;
+        }
+        
+        .learning-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .learning-icon {
+            font-size: 24px;
+            margin-right: 10px;
+            color: #ff5722;
+        }
+        
+        .learning-title {
+            font-size: 16px;
+            color: #ff5722;
+        }
+        
+        .expressions-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .expression-item {
+            background: white;
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .expression-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .expression-emoji {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+        
+        .expression-label {
+            font-size: 14px;
+            color: #333;
+        }
+        
+        /* AI原理说明样式 */
+        .explanation-area {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        .explanation-title {
+            font-size: 16px;
+            margin-bottom: 15px;
+            color: #ff5722;
+            display: flex;
+            align-items: center;
+        }
+        
+        .explanation-title::before {
+            content: "🤖";
+            margin-right: 10px;
+        }
+        
+        .explanation-content {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #666;
+            margin-bottom: 15px;
+        }
+        
+        .emotion-detection-demo {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 20px 0;
+        }
+        
+        .face-diagram {
+            width: 150px;
+            height: 150px;
+            background: #f5f5f5;
+            border-radius: 50%;
+            position: relative;
+            margin-bottom: 15px;
+        }
+        
+        .face-feature {
+            position: absolute;
+            background: #ffc107;
+            border-radius: 50%;
+        }
+        
+        .eyes {
+            width: 20px;
+            height: 20px;
+            top: 40px;
+        }
+        
+        .left-eye {
+            left: 40px;
+        }
+        
+        .right-eye {
+            right: 40px;
+        }
+        
+        .mouth {
+            width: 60px;
+            height: 20px;
+            bottom: 40px;
+            left: 45px;
+            border-radius: 0 0 30px 30px;
+        }
+        
+        .feature-labels {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        .feature-label {
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+        }
+        
+        /* 控制按钮样式 */
+        .control-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.3s;
+        }
+        
+        .btn:disabled {
+            background: #e0e0e0;
+            color: #999;
+            cursor: not-allowed;
+        }
+        
+        .btn-primary {
+            background: #ff5722;
+            color: white;
+        }
+        
+        .btn-primary:hover:not(:disabled) {
+            background: #e64a19;
+            transform: scale(1.03);
+        }
+        
+        .btn-secondary {
+            background: #f5f5f5;
+            color: #333;
+        }
+        
+        .btn-secondary:hover {
+            background: #e0e0e0;
+            transform: scale(1.03);
+        }
+        
+        /* 底部导航样式 */
+        .bottom-nav {
+            display: flex;
+            justify-content: space-around;
+            background: white;
+            padding: 15px 0;
+            border-radius: 20px 20px 0 0;
+            box-shadow: 0 -4px 12px rgba(0,0,0,0.05);
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            max-width: 480px;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        .nav-icon {
+            font-size: 24px;
+            margin-bottom: 5px;
+            color: #999;
+        }
+        
+        .nav-item.active .nav-icon {
+            color: #ff5722;
+        }
+        
+        .nav-text {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .nav-item.active .nav-text {
+            color: #ff5722;
+            font-weight: bold;
+        }
+        
+        /* 动画 */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .pulse {
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .bounce {
+            animation: bounce 1s infinite;
+        }
+        
+        /* 响应式调整 */
+        @media (max-width: 480px) {
+            .container {
+                padding-bottom: 70px;
+            }
+            
+            .expressions-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .control-buttons {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="back-button" onclick="goBack()">←</div>
+            <div class="page-title">表情模仿秀</div>
+            <div class="game-info">
+                <div class="score">得分: <span id="score">0</span></div>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <div class="game-area">
+                <div class="game-progress">
+                    <div class="level-indicator">第 <span id="current-level">1</span> 关</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill"></div>
+                    </div>
+                    <div class="progress-text"><span id="current-progress">4</span>/8</div>
+                </div>
+                
+                <div class="section-title">表情识别挑战</div>
+                <div class="expression-area">
+                    <div class="camera-container" id="camera-container">
+                        <div class="camera-placeholder">📷</div>
+                        <div class="face-overlay" id="face-overlay"></div>
+                        <!-- 在实际应用中，这里会显示摄像头预览 -->
+                    </div>
+                    
+                    <div class="expression-controls">
+                        <button class="control-btn" onclick="startCamera()">📹</button>
+                        <button class="control-btn secondary" onclick="captureExpression()">📸</button>
+                        <button class="control-btn" onclick="analyzeExpression()">🔍</button>
+                    </div>
+                    
+                    <div class="expression-result" id="expression-result">
+                        <div class="result-text">开启摄像头，模仿目标表情，AI会识别你的表情！</div>
+                    </div>
+                </div>
+                
+                <div class="control-buttons">
+                    <button class="btn btn-secondary" onclick="resetGame()">重新开始</button>
+                    <button class="btn btn-primary" id="next-btn" onclick="nextChallenge()" disabled>下一个表情</button>
+                </div>
+            </div>
+            
+            <div class="section-title">当前挑战</div>
+            <div class="challenge-area">
+                <div class="challenge-header">
+                    <div class="challenge-icon">🎯</div>
+                    <div class="challenge-title">模仿这个表情</div>
+                </div>
+                
+                <div class="target-expression-card">
+                    <div class="target-emoji" id="target-emoji">😊</div>
+                    <div class="target-name" id="target-name">开心</div>
+                    <div class="target-description" id="target-description">嘴角上扬，眼睛微弯，露出牙齿的笑容</div>
+                </div>
+                
+                <div class="challenge-timer">
+                    <div class="timer-icon">⏱️</div>
+                    <div class="timer-text">剩余时间: <span id="timer">30</span>秒</div>
+                </div>
+            </div>
+            
+            <div class="section-title">表情学习</div>
+            <div class="learning-area">
+                <div class="learning-header">
+                    <div class="learning-icon">🎓</div>
+                    <div class="learning-title">常见表情学习</div>
+                </div>
+                
+                <div class="expressions-grid">
+                    <div class="expression-item" onclick="selectExpression('happy')">
+                        <div class="expression-emoji">😊</div>
+                        <div class="expression-label">开心</div>
+                    </div>
+                    <div class="expression-item" onclick="selectExpression('sad')">
+                        <div class="expression-emoji">😢</div>
+                        <div class="expression-label">悲伤</div>
+                    </div>
+                    <div class="expression-item" onclick="selectExpression('angry')">
+                        <div class="expression-emoji">😠</div>
+                        <div class="expression-label">生气</div>
+                    </div>
+                    <div class="expression-item" onclick="selectExpression('surprised')">
+                        <div class="expression-emoji">😲</div>
+                        <div class="expression-label">惊讶</div>
+                    </div>
+                    <div class="expression-item" onclick="selectExpression('fearful')">
+                        <div class="expression-emoji">😨</div>
+                        <div class="expression-label">害怕</div>
+                    </div>
+                    <div class="expression-item" onclick="selectExpression('disgusted')">
+                        <div class="expression-emoji">🤢</div>
+                        <div class="expression-label">厌恶</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section-title">AI原理小知识</div>
+            <div class="explanation-area">
+                <div class="explanation-title">AI是怎么识别表情的？</div>
+                <div class="explanation-content">
+                    AI通过分析人脸的关键特征来识别表情，比如眼睛、眉毛和嘴巴的形状变化。它会比较这些特征与已知表情模式，判断你现在的情绪状态。
+                </div>
+                
+                <div class="emotion-detection-demo">
+                    <div class="face-diagram">
+                        <div class="face-feature eyes left-eye"></div>
+                        <div class="face-feature eyes right-eye"></div>
+                        <div class="face-feature mouth"></div>
+                    </div>
+                    
+                    <div class="feature-labels">
+                        <div class="feature-label">眼睛形状</div>
+                        <div class="feature-label">眉毛角度</div>
+                        <div class="feature-label">嘴巴形状</div>
+                    </div>
+                </div>
+                
+                <div class="explanation-content">
+                    AI通过分析成千上万张带标签的人脸图片来学习，找出不同表情的特征模式。当你做出表情时，AI会提取你的面部特征并与学到的模式进行比较。
+                </div>
+            </div>
+        </div>
+        
+        <div class="bottom-nav">
+            <div class="nav-item" onclick="navigateTo('index.html')">
+                <div class="nav-icon">🏠</div>
+                <div class="nav-text">首页</div>
+            </div>
+            <div class="nav-item active" onclick="navigateTo('explore.html')">
+                <div class="nav-icon">🔍</div>
+                <div class="nav-text">探索</div>
+            </div>
+            <div class="nav-item" onclick="navigateTo('create.html')">
+                <div class="nav-icon">🎨</div>
+                <div class="nav-text">创作</div>
+            </div>
+            <div class="nav-item" onclick="navigateTo('mind-garden.html')">
+                <div class="nav-icon">💝</div>
+                <div class="nav-text">心灵</div>
+            </div>
+            <div class="nav-item" onclick="navigateTo('profile.html')">
+                <div class="nav-icon">👤</div>
+                <div class="nav-text">我的</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="navigation-template.js"></script>
+    <script>
+        // 游戏状态和数据
+        let gameState = {
+            score: 0,
+            level: 1,
+            progress: 4,
+            totalChallenges: 8,
+            currentExpression: 'happy',
+            timer: 30,
+            timerInterval: null,
+            cameraActive: false
+        };
+        
+        // 保存游戏状态
+        function saveGameState() {
+            try {
+                if (typeof localStorage !== 'undefined') {
+                    const saveState = {
+                        score: gameState.score,
+                        level: gameState.level,
+                        progress: gameState.progress,
+                        currentExpression: gameState.currentExpression,
+                        timer: gameState.timer,
+                        gameInProgress: true,
+                        lastUpdated: new Date().toISOString()
+                    };
+                    localStorage.setItem('qmzg_expressionGame_state', JSON.stringify(saveState));
+                    console.log('游戏状态已保存');
+                }
+            } catch (error) {
+                console.error('保存游戏状态失败:', error);
+            }
+        }
+        
+        // 加载游戏状态
+        function loadGameState() {
+            try {
+                if (typeof localStorage !== 'undefined') {
+                    const savedState = localStorage.getItem('qmzg_expressionGame_state');
+                    if (savedState) {
+                        const parsedState = JSON.parse(savedState);
+                        // 检查状态是否是今天的，如果超过1小时则不恢复
+                        const lastUpdated = new Date(parsedState.lastUpdated);
+                        const now = new Date();
+                        const minutesPassed = (now - lastUpdated) / (1000 * 60);
+                        
+                        if (minutesPassed < 60) {
+                            gameState.score = parsedState.score || 0;
+                            gameState.level = parsedState.level || 1;
+                            gameState.progress = parsedState.progress || 1;
+                            gameState.currentExpression = parsedState.currentExpression || 'happy';
+                            gameState.timer = parsedState.timer || 30;
+                            
+                            // 更新UI显示
+                            document.getElementById('score').textContent = gameState.score;
+                            document.getElementById('current-level').textContent = gameState.level;
+                            document.getElementById('current-progress').textContent = gameState.progress;
+                            document.getElementById('timer').textContent = gameState.timer;
+                            document.getElementById('progress-fill').style.width = (gameState.progress / gameState.totalChallenges * 100) + '%';
+                            
+                            console.log('游戏状态已恢复');
+                            return true;
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('加载游戏状态失败:', error);
+            }
+            return false;
+        }
+        
+        // 保存游戏结果
+        function saveGameResult(finalScore) {
+            try {
+                const timestamp = new Date().getTime();
+                const gameResult = {
+                    id: timestamp,
+                    gameType: 'expression-game',
+                    score: finalScore,
+                    level: gameState.level,
+                    challengesCompleted: gameState.progress,
+                    timestamp: new Date().toISOString()
+                };
+                
+                if (typeof localStorage !== 'undefined') {
+                    let gameHistory = JSON.parse(localStorage.getItem('qmzg_gameResults') || '[]');
+                    gameHistory.unshift(gameResult);
+                    
+                    // 保留最近的10条记录
+                    if (gameHistory.length > 10) {
+                        gameHistory = gameHistory.slice(0, 10);
+                    }
+                    
+                    localStorage.setItem('qmzg_gameResults', JSON.stringify(gameHistory));
+                }
+                
+                console.log('游戏结果已保存:', gameResult);
+            } catch (error) {
+                console.error('保存游戏结果失败:', error);
+            }
+        }
+        
+        // 表情数据
+        const expressions = {
+            'happy': {
+                emoji: '😊',
+                name: '开心',
+                description: '嘴角上扬，眼睛微弯，露出牙齿的笑容',
+                features: '眼睛微弯，嘴角上扬'
+            },
+            'sad': {
+                emoji: '😢',
+                name: '悲伤',
+                description: '嘴角下垂，眉毛呈八字形，可能流泪',
+                features: '眉毛下垂，嘴角下弯'
+            },
+            'angry': {
+                emoji: '😠',
+                name: '生气',
+                description: '眉毛紧皱，眼睛瞪大，嘴角向下',
+                features: '眉毛紧皱，嘴唇紧闭'
+            },
+            'surprised': {
+                emoji: '😲',
+                name: '惊讶',
+                description: '眼睛睁大，眉毛抬高，嘴巴张开呈O形',
+                features: '眼睛睁大，嘴巴张开'
+            },
+            'fearful': {
+                emoji: '😨',
+                name: '害怕',
+                description: '眼睛睁大，眉毛上扬并聚拢，嘴巴张开',
+                features: '眉毛上扬，嘴巴紧张'
+            },
+            'disgusted': {
+                emoji: '🤢',
+                name: '厌恶',
+                description: '鼻子皱起，上唇抬起，可能伴随眯眼',
+                features: '鼻子皱起，上唇抬起'
+            }
+        };
+        
+        // 导航功能
+        function goBack() {
+            window.history.back();
+        }
+        
+        // 选择表情学习
+        function selectExpression(expression) {
+            // 更新目标表情
+            setTargetExpression(expression);
+            
+            // 显示提示
+            const resultElement = document.getElementById('expression-result');
+            resultElement.innerHTML = `
+                <div class="result-text">学习${expressions[expression].name}表情！尝试模仿这个表情。</div>
+            `;
+        }
+        
+        // 设置目标表情
+        function setTargetExpression(expression) {
+            gameState.currentExpression = expression;
+            const exprData = expressions[expression];
+            
+            document.getElementById('target-emoji').textContent = exprData.emoji;
+            document.getElementById('target-name').textContent = exprData.name;
+            document.getElementById('target-description').textContent = exprData.description;
+        }
+        
+        // 开启摄像头
+        function startCamera() {
+            // 在实际应用中，这里会调用设备摄像头
+            // 这里我们模拟摄像头开启
+            const cameraContainer = document.getElementById('camera-container');
+            cameraContainer.innerHTML = `
+                <div class="camera-placeholder pulse">📹 摄像头开启中...</div>
+                <div class="face-overlay" id="face-overlay"></div>
+            `;
+            
+            setTimeout(() => {
+                // 模拟摄像头开启成功
+                cameraContainer.innerHTML = `
+                    <div class="camera-placeholder">😀</div>
+                    <div class="face-overlay" id="face-overlay"></div>
+                `;
+                
+                // 显示面部检测框
+                drawFaceDetection();
+                
+                // 显示提示
+                const resultElement = document.getElementById('expression-result');
+                resultElement.innerHTML = `
+                    <div class="result-text">摄像头已开启！现在尝试模仿目标表情。</div>
+                `;
+                
+                gameState.cameraActive = true;
+                
+                // 开始计时
+                startTimer();
+            }, 2000);
+        }
+        
+        // 绘制面部检测
+        function drawFaceDetection() {
+            const overlay = document.getElementById('face-overlay');
+            overlay.innerHTML = '';
+            
+            // 创建面部检测框
+            const faceBox = document.createElement('div');
+            faceBox.className = 'face-box';
+            faceBox.style.width = '150px';
+            faceBox.style.height = '180px';
+            faceBox.style.top = '35px';
+            faceBox.style.left = 'calc(50% - 75px)';
+            
+            overlay.appendChild(faceBox);
+        }
+        
+        // 开始计时
+        function startTimer() {
+            gameState.timer = 30;
+            document.getElementById('timer').textContent = gameState.timer;
+            
+            if (gameState.timerInterval) {
+                clearInterval(gameState.timerInterval);
+            }
+            
+            gameState.timerInterval = setInterval(() => {
+                gameState.timer--;
+                document.getElementById('timer').textContent = gameState.timer;
+                
+                // 定期保存游戏状态
+                if (gameState.timer % 5 === 0) { // 每5秒保存一次
+                    saveGameState();
+                }
+                
+                if (gameState.timer <= 0) {
+                    clearInterval(gameState.timerInterval);
+                    
+                    // 保存游戏结果
+                    saveGameResult(gameState.score);
+                    
+                    timeUp();
+                }
+            }, 1000);
+        }
+        
+        // 时间到
+        function timeUp() {
+            const resultElement = document.getElementById('expression-result');
+            resultElement.innerHTML = `
+                <div class="result-text">时间到！点击分析按钮查看你的表情识别结果。</div>
+            `;
+        }
+        
+        // 捕捉表情
+        function captureExpression() {
+            if (!gameState.cameraActive) {
+                alert('请先开启摄像头！');
+                return;
+            }
+            
+            // 在实际应用中，这里会捕捉当前帧
+            // 这里我们模拟捕捉过程
+            const cameraContainer = document.getElementById('camera-container');
+            cameraContainer.innerHTML = `
+                <div class="camera-placeholder pulse">📸 捕捉表情中...</div>
+                <div class="face-overlay" id="face-overlay"></div>
+            `;
+            
+            setTimeout(() => {
+                // 模拟捕捉完成
+                const userEmoji = getRandomUserExpression();
+                cameraContainer.innerHTML = `
+                    <div class="camera-placeholder">${userEmoji}</div>
+                    <div class="face-overlay" id="face-overlay"></div>
+                `;
+                
+                // 重新绘制面部检测
+                drawFaceDetection();
+                
+                // 显示提示
+                const resultElement = document.getElementById('expression-result');
+                resultElement.innerHTML = `
+                    <div class="result-text">表情已捕捉！点击分析按钮查看识别结果。</div>
+                `;
+            }, 1500);
+        }
+        
+        // 获取随机用户表情（模拟）
+        function getRandomUserExpression() {
+            const emojis = ['😊', '😐', '😕', '😲', '😠', '😢'];
+            return emojis[Math.floor(Math.random() * emojis.length)];
+        }
+        
+        // 分析表情
+        function analyzeExpression() {
+            if (!gameState.cameraActive) {
+                alert('请先开启摄像头并捕捉表情！');
+                return;
+            }
+            
+            // 显示分析中
+            const resultElement = document.getElementById('expression-result');
+            resultElement.innerHTML = `
+                <div class="result-text">AI正在分析你的表情...</div>
+                <div class="accuracy-bar">
+                    <div class="accuracy-fill" id="accuracy-fill" style="width: 0%"></div>
+                </div>
+                <div class="accuracy-text">分析进度: <span id="accuracy-text">0%</span></div>
+            `;
+            
+            // 模拟AI分析过程
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 5;
+                document.getElementById('accuracy-fill').style.width = progress + '%';
+                document.getElementById('accuracy-text').textContent = progress + '%';
+                
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    showExpressionResult();
+                }
+            }, 100);
+        }
+        
+        // 显示表情识别结果
+        function showExpressionResult() {
+            const resultElement = document.getElementById('expression-result');
+            
+            // 模拟识别结果
+            const targetExpression = gameState.currentExpression;
+            const detectedExpression = simulateExpressionDetection(targetExpression);
+            const accuracy = Math.floor(Math.random() * 30) + 70; // 70-100% 准确率
+            
+            // 获取表情emoji
+            const targetEmoji = expressions[targetExpression].emoji;
+            const detectedEmoji = expressions[detectedExpression]?.emoji || '😐';
+            
+            // 判断匹配程度
+            const isMatch = detectedExpression === targetExpression;
+            const matchSymbol = isMatch ? '✅' : '❌';
+            
+            resultElement.innerHTML = `
+                <div class="expression-match">
+                    <div class="target-expression">${targetEmoji}</div>
+                    <div class="match-indicator">${matchSymbol}</div>
+                    <div class="user-expression">${detectedEmoji}</div>
+                </div>
+                <div class="result-text">${getResultMessage(isMatch, accuracy, expressions[targetExpression].name, expressions[detectedExpression]?.name || '未知')}</div>
+                <div class="accuracy-bar">
+                    <div class="accuracy-fill" style="width: ${accuracy}%"></div>
+                </div>
+                <div class="accuracy-text">匹配度: ${accuracy}%</div>
+            `;
+            
+            // 更新分数
+            updateScore(accuracy, isMatch);
+            
+            // 停止计时
+            if (gameState.timerInterval) {
+                clearInterval(gameState.timerInterval);
+            }
+            
+            // 启用下一个按钮
+            document.getElementById('next-btn').disabled = false;
+        }
+        
+        // 模拟表情检测
+        function simulateExpressionDetection(targetExpression) {
+            // 80% 概率正确识别，20% 概率错误识别
+            if (Math.random() < 0.8) {
+                return targetExpression;
+            } else {
+                // 随机返回一个不同的表情
+                const expressionsList = Object.keys(expressions);
+                const otherExpressions = expressionsList.filter(expr => expr !== targetExpression);
+                return otherExpressions[Math.floor(Math.random() * otherExpressions.length)];
+            }
+        }
+        
+        // 获取结果消息
+        function getResultMessage(isMatch, accuracy, targetName, detectedName) {
+            if (isMatch) {
+                if (accuracy >= 90) {
+                    return `太棒了！你的${targetName}表情非常像！`;
+                } else if (accuracy >= 80) {
+                    return `不错！你的${targetName}表情很像！`;
+                } else {
+                    return `还可以！你的${targetName}表情有点像！`;
+                }
+            } else {
+                return `你模仿的是${targetName}，但AI识别为${detectedName}。再试一次！`;
+            }
+        }
+        
+        // 更新分数
+        function updateScore(accuracy, isMatch) {
+            let points = Math.floor(accuracy / 10);
+            
+            if (isMatch) {
+                points += 10; // 匹配成功额外加分
+            }
+            
+            // 根据剩余时间加分
+            if (gameState.timer > 10) {
+                points += 5;
+            }
+            
+            gameState.score += points;
+            document.getElementById('score').textContent = gameState.score;
+        }
+        
+        // 下一个挑战
+        function nextChallenge() {
+            gameState.progress++;
+            
+            if (gameState.progress > gameState.totalChallenges) {
+                gameState.level++;
+                gameState.progress = 1;
+            }
+            
+            // 更新进度显示
+            document.getElementById('current-level').textContent = gameState.level;
+            document.getElementById('current-progress').textContent = gameState.progress;
+            document.getElementById('progress-fill').style.width = (gameState.progress / gameState.totalChallenges * 100) + '%';
+            
+            // 随机选择新表情
+            const expressionsList = Object.keys(expressions);
+            const randomExpression = expressionsList[Math.floor(Math.random() * expressionsList.length)];
+            setTargetExpression(randomExpression);
+            
+            // 重置摄像头区域
+            document.getElementById('camera-container').innerHTML = `
+                <div class="camera-placeholder">📷</div>
+                <div class="face-overlay" id="face-overlay"></div>
+            `;
+            
+            // 重置结果区域
+            document.getElementById('expression-result').innerHTML = `
+                <div class="result-text">开启摄像头，模仿目标表情，AI会识别你的表情！</div>
+            `;
+            
+            // 重置摄像头状态
+            gameState.cameraActive = false;
+            
+            // 禁用下一个按钮
+            document.getElementById('next-btn').disabled = true;
+            
+            // 重置并开始计时
+            startTimer();
+            
+            // 显示鼓励信息
+            if (gameState.progress === 1 && gameState.level > 1) {
+                alert(`恭喜！你已升级到第${gameState.level}关！继续加油！`);
+            }
+        }
+        
+        // 重置游戏
+        function resetGame() {
+            if (confirm('确定要重新开始游戏吗？当前进度将丢失。')) {
+                gameState = {
+                    score: 0,
+                    level: 1,
+                    progress: 1,
+                    totalChallenges: 8,
+                    currentExpression: 'happy',
+                    timer: 30,
+                    timerInterval: null,
+                    cameraActive: false
+                };
+                
+                // 重置UI
+                document.getElementById('score').textContent = '0';
+                document.getElementById('current-level').textContent = '1';
+                document.getElementById('current-progress').textContent = '1';
+                document.getElementById('progress-fill').style.width = '12.5%';
+                document.getElementById('camera-container').innerHTML = `
+                    <div class="camera-placeholder">📷</div>
+                    <div class="face-overlay" id="face-overlay"></div>
+                `;
+                document.getElementById('expression-result').innerHTML = `
+                    <div class="result-text">开启摄像头，模仿目标表情，AI会识别你的表情！</div>
+                `;
+                document.getElementById('next-btn').disabled = true;
+                
+                // 设置初始表情
+                setTargetExpression('happy');
+                
+                // 重置计时器
+                if (gameState.timerInterval) {
+                    clearInterval(gameState.timerInterval);
+                }
+                document.getElementById('timer').textContent = '30';
+                
+                // 清除保存的游戏状态
+                try {
+                    if (typeof localStorage !== 'undefined') {
+                        localStorage.removeItem('qmzg_expressionGame_state');
+                    }
+                } catch (error) {
+                    console.error('清除游戏状态失败:', error);
+                }
+                
+                // 开始计时
+                startTimer();
+            }
+        }
+        
+        // 为底部导航添加点击事件
+        // 初始化导航和页面
+        document.addEventListener('DOMContentLoaded', function() {
+            initAppNavigation();
+            
+            // 尝试加载保存的游戏状态
+            const hasLoadedState = loadGameState();
+            
+            // 初始化进度显示
+            document.getElementById('progress-fill').style.width = (gameState.progress / gameState.totalChallenges * 100) + '%';
+            
+            // 如果没有加载到状态，则设置初始表情
+            if (!hasLoadedState) {
+                setTargetExpression('happy');
+            }
+            
+            // 开始计时
+            startTimer();
+        });
+    </script>
+</body>
+</html>

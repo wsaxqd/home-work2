@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>创造湾 - 启蒙之光</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial Rounded MT Bold', 'Arial', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #fff0e6 0%, #ffe6f0 100%);
+            color: #333;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 0;
+            position: relative;
+            min-height: 100vh;
+            background: white;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: linear-gradient(135deg, #ff7b54 0%, #ff4081 100%);
+            color: white;
+            border-radius: 0 0 20px 20px;
+        }
+        
+        .back-button {
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        .page-title {
+            font-size: 20px;
+            text-align: center;
+            flex: 1;
+        }
+        
+        .main-content {
+            padding: 20px;
+            overflow-y: auto;
+            max-height: calc(100vh - 140px);
+        }
+        
+        .section-title {
+            font-size: 18px;
+            margin: 20px 0 15px;
+            color: #ff7b54;
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title::before {
+            content: "";
+            display: inline-block;
+            width: 5px;
+            height: 20px;
+            background: #ff7b54;
+            margin-right: 10px;
+            border-radius: 3px;
+        }
+        
+        /* 快速创作入口样式 */
+        .creation-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .creation-card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+        
+        .creation-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        
+        .creation-icon {
+            font-size: 40px;
+            margin-bottom: 15px;
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .creation-card h3 {
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        
+        .creation-card p {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        /* 创作画廊样式 */
+        .gallery-section {
+            background: white;
+            border-radius: 15px;
+            padding: 15px;
+            margin: 20px 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        .gallery-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .gallery-title {
+            font-size: 16px;
+            color: #ff7b54;
+        }
+        
+        .gallery-filters {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .filter-btn {
+            padding: 5px 10px;
+            background: #f5f5f5;
+            border: none;
+            border-radius: 15px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .filter-btn.active {
+            background: #ff7b54;
+            color: white;
+        }
+        
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .gallery-item {
+            background: #f9f9f9;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+            transition: transform 0.3s;
+            cursor: pointer;
+        }
+        
+        .gallery-item:hover {
+            transform: scale(1.03);
+        }
+        
+        .gallery-image {
+            height: 100px;
+            background: linear-gradient(135deg, #ff7b54 0%, #ff4081 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 30px;
+            color: white;
+        }
+        
+        .gallery-content {
+            padding: 10px;
+        }
+        
+        .gallery-title {
+            font-size: 14px;
+            margin-bottom: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .gallery-author {
+            font-size: 12px;
+            color: #999;
+            display: flex;
+            align-items: center;
+        }
+        
+        .author-avatar {
+            width: 20px;
+            height: 20px;
+            background: #ff7b54;
+            border-radius: 50%;
+            margin-right: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 10px;
+            color: white;
+        }
+        
+        /* 创作挑战样式 */
+        .challenge-section {
+            background: white;
+            border-radius: 15px;
+            padding: 15px;
+            margin: 20px 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            background: linear-gradient(135deg, #fff9f0 0%, #fff0f5 100%);
+            border: 2px dashed #ff7b54;
+        }
+        
+        .challenge-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .challenge-icon {
+            font-size: 24px;
+            margin-right: 10px;
+            color: #ff7b54;
+        }
+        
+        .challenge-title {
+            font-size: 16px;
+            color: #ff7b54;
+        }
+        
+        .challenge-desc {
+            font-size: 14px;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+        
+        .challenge-prizes {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .prize-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 12px;
+        }
+        
+        .prize-icon {
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+        
+        .join-button {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #ff7b54 0%, #ff4081 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .join-button:hover {
+            transform: scale(1.02);
+        }
+        
+        /* 我的作品样式 */
+        .my-works-section {
+            background: white;
+            border-radius: 15px;
+            padding: 15px;
+            margin: 20px 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        .works-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .works-title {
+            font-size: 16px;
+            color: #ff7b54;
+        }
+        
+        .view-all {
+            font-size: 14px;
+            color: #ff7b54;
+            cursor: pointer;
+        }
+        
+        .works-list {
+            display: flex;
+            overflow-x: auto;
+            gap: 15px;
+            padding-bottom: 10px;
+        }
+        
+        .work-item {
+            flex: 0 0 auto;
+            width: 150px;
+            background: #f9f9f9;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+        }
+        
+        .work-image {
+            height: 100px;
+            background: linear-gradient(135deg, #ff7b54 0%, #ff4081 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 30px;
+            color: white;
+        }
+        
+        .work-content {
+            padding: 10px;
+        }
+        
+        .work-title {
+            font-size: 14px;
+            margin-bottom: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .work-date {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .bottom-nav {
+            display: flex;
+            justify-content: space-around;
+            background: white;
+            padding: 15px 0;
+            border-radius: 20px 20px 0 0;
+            box-shadow: 0 -4px 12px rgba(0,0,0,0.05);
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            max-width: 480px;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        .nav-icon {
+            font-size: 24px;
+            margin-bottom: 5px;
+            color: #999;
+        }
+        
+        .nav-item.active .nav-icon {
+            color: #ff7b54;
+        }
+        
+        .nav-text {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .nav-item.active .nav-text {
+            color: #ff7b54;
+            font-weight: bold;
+        }
+        
+        /* 响应式调整 */
+        @media (max-width: 480px) {
+            .container {
+                padding-bottom: 70px;
+            }
+            
+            .creation-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .gallery-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="back-button" onclick="goBack()">←</div>
+            <div class="page-title">创造湾</div>
+            <div style="width: 24px;"></div> <!-- 占位保持对称 -->
+        </div>
+        
+        <div class="main-content">
+            <div class="section-title">快速创作</div>
+            <div class="creation-grid">
+                <div class="creation-card" onclick="startCreation('story')">
+                    <div class="creation-icon">📖</div>
+                    <h3>AI童话制造机</h3>
+                    <p>创造属于你的奇幻故事</p>
+                </div>
+                <div class="creation-card" onclick="startCreation('music')">
+                    <div class="creation-icon">🎵</div>
+                    <h3>AI音乐画布</h3>
+                    <p>用旋律表达心情</p>
+                </div>
+                <div class="creation-card" onclick="startCreation('art')">
+                    <div class="creation-icon">🎨</div>
+                    <h3>AI小画家</h3>
+                    <p>画出想象中的世界</p>
+                </div>
+                <div class="creation-card" onclick="startCreation('poem')">
+                    <div class="creation-icon">✍️</div>
+                    <h3>AI诗词助手</h3>
+                    <p>创作优美的小诗</p>
+                </div>
+            </div>
+            
+            <div class="section-title">创作挑战</div>
+            <div class="challenge-section">
+                <div class="challenge-header">
+                    <div class="challenge-icon">🏆</div>
+                    <div class="challenge-title">本月创作挑战</div>
+                </div>
+                <div class="challenge-desc">
+                    主题：<strong>"未来的智能学校"</strong><br>
+                    发挥你的想象力，描绘你心中未来的学校是什么样的？有哪些AI助手帮助学习？
+                </div>
+                <div class="challenge-prizes">
+                    <div class="prize-item">
+                        <div class="prize-icon">🥇</div>
+                        <div>创意之星</div>
+                    </div>
+                    <div class="prize-item">
+                        <div class="prize-icon">📚</div>
+                        <div>绘本套装</div>
+                    </div>
+                    <div class="prize-item">
+                        <div class="prize-icon">🎁</div>
+                        <div>神秘礼物</div>
+                    </div>
+                </div>
+                <button class="join-button" onclick="joinChallenge()">参加挑战</button>
+            </div>
+            
+            <div class="section-title">创作画廊</div>
+            <div class="gallery-section">
+                <div class="gallery-header">
+                    <div class="gallery-title">小伙伴们的作品</div>
+                    <div class="gallery-filters">
+                        <button class="filter-btn active">全部</button>
+                        <button class="filter-btn">故事</button>
+                        <button class="filter-btn">音乐</button>
+                        <button class="filter-btn">绘画</button>
+                    </div>
+                </div>
+                <div class="gallery-grid">
+                    <div class="gallery-item" onclick="viewWork(1)">
+                        <div class="gallery-image">📖</div>
+                        <div class="gallery-content">
+                            <div class="gallery-title">会说话的星星</div>
+                            <div class="gallery-author">
+                                <div class="author-avatar">乐</div>
+                                <span>小乐</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="gallery-item" onclick="viewWork(2)">
+                        <div class="gallery-image">🎵</div>
+                        <div class="gallery-content">
+                            <div class="gallery-title">彩虹之歌</div>
+                            <div class="gallery-author">
+                                <div class="author-avatar">明</div>
+                                <span>小明</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="gallery-item" onclick="viewWork(3)">
+                        <div class="gallery-image">🎨</div>
+                        <div class="gallery-content">
+                            <div class="gallery-title">我的AI朋友</div>
+                            <div class="gallery-author">
+                                <div class="author-avatar">芳</div>
+                                <span>小芳</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="gallery-item" onclick="viewWork(4)">
+                        <div class="gallery-image">✍️</div>
+                        <div class="gallery-content">
+                            <div class="gallery-title">春天的AI</div>
+                            <div class="gallery-author">
+                                <div class="author-avatar">强</div>
+                                <span>小强</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section-title">我的作品</div>
+            <div class="my-works-section">
+                <div class="works-header">
+                    <div class="works-title">最近创作</div>
+                    <div class="view-all" onclick="viewAllWorks()">查看全部</div>
+                </div>
+                <div class="works-list">
+                    <div class="work-item" onclick="editWork(1)">
+                        <div class="work-image">📖</div>
+                        <div class="work-content">
+                            <div class="work-title">太空冒险记</div>
+                            <div class="work-date">3天前</div>
+                        </div>
+                    </div>
+                    <div class="work-item" onclick="editWork(2)">
+                        <div class="work-image">🎵</div>
+                        <div class="work-content">
+                            <div class="work-title">快乐的小雨滴</div>
+                            <div class="work-date">1周前</div>
+                        </div>
+                    </div>
+                    <div class="work-item" onclick="editWork(3)">
+                        <div class="work-image">🎨</div>
+                        <div class="work-content">
+                            <div class="work-title">会飞的房子</div>
+                            <div class="work-date">2周前</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bottom-nav">
+            <div class="nav-item" onclick="navigateTo('index.html')">
+                <div class="nav-icon">🏠</div>
+                <div class="nav-text">首页</div>
+            </div>
+            <div class="nav-item" onclick="navigateTo('explore.html')">
+                <div class="nav-icon">🔍</div>
+                <div class="nav-text">探索</div>
+            </div>
+            <div class="nav-item active" onclick="navigateTo('create.html')">
+                <div class="nav-icon">🎨</div>
+                <div class="nav-text">创作</div>
+            </div>
+            <div class="nav-item" onclick="navigateTo('mind-garden.html')">
+                <div class="nav-icon">💝</div>
+                <div class="nav-text">心灵</div>
+            </div>
+            <div class="nav-item" onclick="navigateTo('profile.html')">
+                <div class="nav-icon">👤</div>
+                <div class="nav-text">我的</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="navigation-template.js"></script>
+    <script>
+        function goBack() {
+            // 检查是否可以安全地返回
+            const documentReferrer = document.referrer;
+            const origin = window.location.origin;
+            
+            // 如果没有历史记录或者来源不是当前网站，则导航到首页
+            if (window.history.length <= 1 || (!documentReferrer.startsWith(origin) && documentReferrer !== '')) {
+                navigateTo('index.html');
+            } else {
+                // 否则执行返回操作
+                window.history.back();
+            }
+        }
+        
+        // 初始化导航
+        document.addEventListener('DOMContentLoaded', function() {
+            initAppNavigation();
+        });
+        
+        // 使用统一的navigateTo函数，无需重复定义
+        
+        function startCreation(type) {
+            // 根据类型跳转到对应的创作工具页面
+            const creationMap = {
+                'story': 'story-creator.html',
+                'music': 'music-creator.html',
+                'art': 'art-creator.html',
+                'poem': 'poem-creator.html'
+            };
+            const url = creationMap[type];
+            if (url) {
+                navigateTo(url);
+            } else {
+                alert('未知的创作类型！');
+            }
+        }
+        
+        function getCreationTypeName(type) {
+            const types = {
+                'story': 'AI童话制造机',
+                'music': 'AI音乐画布',
+                'art': 'AI小画家',
+                'poem': 'AI诗词助手'
+            };
+            return types[type] || '未知创作类型';
+        }
+        
+        function joinChallenge() {
+            alert("已报名参加'未来的智能学校'创作挑战！加油！");
+            // 在实际应用中，这里会记录用户报名状态
+        }
+        
+        function viewWork(id) {
+            alert(`查看作品详情 (ID: ${id})`);
+            // 在实际应用中，这里会打开作品详情页面
+        }
+        
+        function editWork(id) {
+            alert(`编辑我的作品 (ID: ${id})`);
+            // 在实际应用中，这里会打开作品编辑器
+        }
+        
+        function viewAllWorks() {
+            alert("查看我的全部作品");
+            // 在实际应用中，这里会跳转到作品列表页面
+        }
+        
+        // 为过滤器添加点击事件
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                // 在实际应用中，这里会过滤画廊内容
+            });
+        });
+        
+
+    </script>
+</body>
+</html>

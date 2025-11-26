@@ -1,0 +1,110 @@
+.poem-theme.selected,
+.poem-style .style-card.selected {
+  border-color: #9c27b0;
+  background: #f3e5f5;
+}
+
+.keywords-section {
+  background: #f9f9f9;
+  border-radius: 15px;
+  padding: 20px;
+  margin-bottom: 25px;
+}
+
+.keyword-input-group {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.keyword-input-group input {
+  flex: 1;
+  padding: 12px 15px;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  font-size: 14px;
+  outline: none;
+}
+
+.keyword-input-group input:focus {
+  border-color: #9c27b0;
+}
+
+.keyword-input-group button {
+  padding: 12px 20px;
+  background: #9c27b0;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.keywords-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.keyword-tag {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 15px;
+  background: #e1bee7;
+  color: #4a148c;
+  border-radius: 20px;
+  font-size: 14px;
+}
+
+.keyword-tag .remove {
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.poem-preview {
+  background: linear-gradient(135deg, #f3e5f5 0%, #ede7f6 100%);
+  border-radius: 20px;
+  padding: 30px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.poem-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #9c27b0;
+  margin-bottom: 20px;
+}
+
+.poem-content {
+  font-size: 18px;
+  line-height: 2;
+  color: #333;
+  white-space: pre-line;
+  font-family: '楷体', 'STKaiti', serif;
+}
+
+.poem-actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 25px;
+  flex-wrap: wrap;
+}
+
+.poem-btn {
+  padding: 10px 15px;
+  background: #f3e5f5;
+  border: none;
+  border-radius: 20px;
+  font-size: 13px;
+  color: #9c27b0;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.poem-btn:hover {
+  background: #e1bee7;
+}

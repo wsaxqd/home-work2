@@ -1,0 +1,1214 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI小画家 - 启蒙之光</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial Rounded MT Bold', 'Arial', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #e8f4fd 0%, #fde8f7 100%);
+            color: #333;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 0;
+            position: relative;
+            min-height: 100vh;
+            background: white;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: linear-gradient(135deg, #2196f3 0%, #e91e63 100%);
+            color: white;
+            border-radius: 0 0 20px 20px;
+        }
+        
+        .back-button {
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        .page-title {
+            font-size: 20px;
+            text-align: center;
+            flex: 1;
+        }
+        
+        .main-content {
+            padding: 20px;
+            overflow-y: auto;
+            max-height: calc(100vh - 140px);
+        }
+        
+        .section-title {
+            font-size: 18px;
+            margin: 20px 0 15px;
+            color: #2196f3;
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title::before {
+            content: "";
+            display: inline-block;
+            width: 5px;
+            height: 20px;
+            background: #2196f3;
+            margin-right: 10px;
+            border-radius: 3px;
+        }
+        
+        /* 绘画模式选择样式 */
+        .mode-section {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            border: 2px solid #e8f4fd;
+        }
+        
+        .mode-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .mode-card {
+            background: #f9f9f9;
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: 2px solid transparent;
+        }
+        
+        .mode-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .mode-card.selected {
+            border-color: #2196f3;
+            background: #e8f4fd;
+        }
+        
+        .mode-icon {
+            font-size: 30px;
+            margin-bottom: 10px;
+            color: #2196f3;
+        }
+        
+        .mode-name {
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        
+        .mode-desc {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        /* 绘画工具样式 */
+        .tools-section {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            display: none;
+        }
+        
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+            justify-content: center;
+        }
+        
+        .tool-btn {
+            width: 50px;
+            height: 50px;
+            background: #f5f5f5;
+            border: none;
+            border-radius: 10px;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background 0.3s, transform 0.2s;
+        }
+        
+        .tool-btn:hover {
+            background: #e0e0e0;
+            transform: scale(1.1);
+        }
+        
+        .tool-btn.active {
+            background: #2196f3;
+            color: white;
+        }
+        
+        .color-palette {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 15px;
+            justify-content: center;
+        }
+        
+        .color-btn {
+            width: 30px;
+            height: 30px;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .color-btn:hover {
+            transform: scale(1.2);
+        }
+        
+        .color-btn.active {
+            border: 3px solid #333;
+            transform: scale(1.2);
+        }
+        
+        .brush-size {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .size-label {
+            font-size: 14px;
+            color: #333;
+        }
+        
+        .size-slider {
+            flex: 1;
+            -webkit-appearance: none;
+            height: 6px;
+            background: #e0e0e0;
+            border-radius: 3px;
+            outline: none;
+        }
+        
+        .size-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            background: #2196f3;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        
+        /* 画布区域样式 */
+        .canvas-section {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            display: none;
+        }
+        
+        .canvas-container {
+            background: #f5f5f5;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .drawing-canvas {
+            width: 100%;
+            height: 300px;
+            background: white;
+            border-radius: 10px;
+            border: 2px solid #ddd;
+            margin-bottom: 15px;
+            cursor: crosshair;
+            touch-action: none;
+        }
+        
+        .canvas-instructions {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .canvas-controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        
+        .canvas-btn {
+            padding: 8px 15px;
+            background: #f5f5f5;
+            border: none;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .canvas-btn:hover {
+            background: #e0e0e0;
+        }
+        
+        .canvas-btn.primary {
+            background: #2196f3;
+            color: white;
+        }
+        
+        /* AI增强样式 */
+        .ai-enhance-section {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            display: none;
+        }
+        
+        .enhance-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .enhance-card {
+            background: #f9f9f9;
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: 2px solid transparent;
+        }
+        
+        .enhance-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .enhance-card.selected {
+            border-color: #2196f3;
+            background: #e8f4fd;
+        }
+        
+        .enhance-icon {
+            font-size: 30px;
+            margin-bottom: 10px;
+            color: #2196f3;
+        }
+        
+        .enhance-name {
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        
+        .enhance-desc {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .enhance-preview {
+            background: #f9f9f9;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .preview-title {
+            font-size: 16px;
+            margin-bottom: 10px;
+            color: #2196f3;
+        }
+        
+        .preview-images {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+        
+        .preview-image {
+            width: 120px;
+            height: 120px;
+            background: white;
+            border-radius: 10px;
+            border: 2px solid #ddd;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 40px;
+            color: #666;
+        }
+        
+        .preview-label {
+            font-size: 12px;
+            margin-top: 5px;
+            color: #666;
+        }
+        
+        .loading-animation {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 200px;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #e8f4fd;
+            border-top: 4px solid #2196f3;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 15px;
+        }
+        
+        .loading-text {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        /* 作品展示样式 */
+        .artwork-section {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            display: none;
+        }
+        
+        .artwork-preview {
+            background: #f9f9f9;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .artwork-title {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #2196f3;
+            text-align: center;
+        }
+        
+        .artwork-image {
+            width: 100%;
+            max-width: 300px;
+            height: 250px;
+            background: white;
+            border-radius: 10px;
+            border: 2px solid #ddd;
+            margin: 0 auto 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 60px;
+            color: #666;
+        }
+        
+        .artwork-details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .detail-item {
+            flex: 1;
+            min-width: 100px;
+            background: white;
+            border-radius: 10px;
+            padding: 10px;
+            text-align: center;
+        }
+        
+        .detail-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .detail-value {
+            font-size: 16px;
+            font-weight: bold;
+            color: #2196f3;
+        }
+        
+        /* 控制按钮样式 */
+        .control-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.3s;
+        }
+        
+        .btn:disabled {
+            background: #e0e0e0;
+            color: #999;
+            cursor: not-allowed;
+        }
+        
+        .btn-primary {
+            background: #2196f3;
+            color: white;
+        }
+        
+        .btn-primary:hover:not(:disabled) {
+            background: #1976d2;
+            transform: scale(1.03);
+        }
+        
+        .btn-secondary {
+            background: #f5f5f5;
+            color: #333;
+        }
+        
+        .btn-secondary:hover {
+            background: #e0e0e0;
+            transform: scale(1.03);
+        }
+        
+        /* 底部导航样式 */
+        .bottom-nav {
+            display: flex;
+            justify-content: space-around;
+            background: white;
+            padding: 15px 0;
+            border-radius: 20px 20px 0 0;
+            box-shadow: 0 -4px 12px rgba(0,0,0,0.05);
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            max-width: 480px;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        .nav-icon {
+            font-size: 24px;
+            margin-bottom: 5px;
+            color: #999;
+        }
+        
+        .nav-item.active .nav-icon {
+            color: #2196f3;
+        }
+        
+        .nav-text {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .nav-item.active .nav-text {
+            color: #2196f3;
+            font-weight: bold;
+        }
+        
+        /* 动画 */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* 响应式调整 */
+        @media (max-width: 480px) {
+            .container {
+                padding-bottom: 70px;
+            }
+            
+            .mode-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .enhance-options {
+                grid-template-columns: 1fr;
+            }
+            
+            .control-buttons {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="back-button" onclick="goBack()">←</div>
+            <div class="page-title">AI小画家</div>
+            <div style="width: 24px;"></div> <!-- 占位保持对称 -->
+        </div>
+        
+        <div class="main-content">
+            <!-- 绘画模式选择 -->
+            <div id="mode-section" class="mode-section">
+                <div class="section-title">选择绘画模式</div>
+                <div class="mode-grid">
+                    <div class="mode-card" onclick="selectMode(this, 'free')">
+                        <div class="mode-icon">🎨</div>
+                        <div class="mode-name">自由绘画</div>
+                        <div class="mode-desc">随心所欲地创作</div>
+                    </div>
+                    <div class="mode-card" onclick="selectMode(this, 'ai')">
+                        <div class="mode-icon">🤖</div>
+                        <div class="mode-name">AI辅助绘画</div>
+                        <div class="mode-desc">AI帮你完善作品</div>
+                    </div>
+                    <div class="mode-card" onclick="selectMode(this, 'shape')">
+                        <div class="mode-icon">🔷</div>
+                        <div class="mode-name">形状绘画</div>
+                        <div class="mode-desc">使用几何图形创作</div>
+                    </div>
+                    <div class="mode-card" onclick="selectMode(this, 'coloring')">
+                        <div class="mode-icon">🖍️</div>
+                        <div class="mode-name">填色游戏</div>
+                        <div class="mode-desc">为线稿上色</div>
+                    </div>
+                </div>
+                
+                <div class="control-buttons">
+                    <button class="btn btn-secondary" onclick="goBack()">返回</button>
+                    <button class="btn btn-primary" id="mode-next" onclick="startDrawing()" disabled>开始绘画</button>
+                </div>
+            </div>
+            
+            <!-- 绘画工具 -->
+            <div id="tools-section" class="tools-section">
+                <div class="section-title">绘画工具</div>
+                
+                <div class="toolbar">
+                    <button class="tool-btn active" id="brush-btn" onclick="selectTool('brush')">✏️</button>
+                    <button class="tool-btn" id="eraser-btn" onclick="selectTool('eraser')">🧽</button>
+                    <button class="tool-btn" id="shape-btn" onclick="selectTool('shape')">🔺</button>
+                    <button class="tool-btn" id="fill-btn" onclick="selectTool('fill')">🪣</button>
+                </div>
+                
+                <div class="color-palette">
+                    <button class="color-btn active" style="background: #ff0000;" onclick="selectColor(this, '#ff0000')"></button>
+                    <button class="color-btn" style="background: #ff9900;" onclick="selectColor(this, '#ff9900')"></button>
+                    <button class="color-btn" style="background: #ffff00;" onclick="selectColor(this, '#ffff00')"></button>
+                    <button class="color-btn" style="background: #00ff00;" onclick="selectColor(this, '#00ff00')"></button>
+                    <button class="color-btn" style="background: #0000ff;" onclick="selectColor(this, '#0000ff')"></button>
+                    <button class="color-btn" style="background: #9900ff;" onclick="selectColor(this, '#9900ff')"></button>
+                    <button class="color-btn" style="background: #000000;" onclick="selectColor(this, '#000000')"></button>
+                    <button class="color-btn" style="background: #ffffff; border: 1px solid #ccc;" onclick="selectColor(this, '#ffffff')"></button>
+                </div>
+                
+                <div class="brush-size">
+                    <span class="size-label">画笔大小:</span>
+                    <input type="range" min="1" max="20" value="5" class="size-slider" id="brush-size" oninput="updateBrushSize()">
+                </div>
+                
+                <div class="control-buttons">
+                    <button class="btn btn-secondary" onclick="backToMode()">返回</button>
+                    <button class="btn btn-primary" onclick="goToCanvas()">开始绘画</button>
+                </div>
+            </div>
+            
+            <!-- 画布区域 -->
+            <div id="canvas-section" class="canvas-section">
+                <div class="section-title">创作你的画作</div>
+                <div class="canvas-container">
+                    <div class="canvas-instructions" id="canvas-instructions">在画布上自由绘画，发挥你的创意！</div>
+                    <canvas class="drawing-canvas" id="drawing-canvas" width="400" height="300"></canvas>
+                    <div class="canvas-controls">
+                        <button class="canvas-btn" onclick="clearCanvas()">清除画布</button>
+                        <button class="canvas-btn" onclick="undoAction()">撤销</button>
+                        <button class="canvas-btn primary" onclick="finishDrawing()">完成绘画</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- AI增强区域 -->
+            <div id="ai-enhance-section" class="ai-enhance-section">
+                <div class="section-title">AI增强你的作品</div>
+                
+                <div class="enhance-options">
+                    <div class="enhance-card" onclick="selectEnhance(this, 'complete')">
+                        <div class="enhance-icon">✨</div>
+                        <div class="enhance-name">完善细节</div>
+                        <div class="enhance-desc">AI帮你完善绘画细节</div>
+                    </div>
+                    <div class="enhance-card" onclick="selectEnhance(this, 'style')">
+                        <div class="enhance-icon">🎭</div>
+                        <div class="enhance-name">艺术风格</div>
+                        <div class="enhance-desc">应用不同艺术风格</div>
+                    </div>
+                    <div class="enhance-card" onclick="selectEnhance(this, 'color')">
+                        <div class="enhance-icon">🌈</div>
+                        <div class="enhance-name">智能上色</div>
+                        <div class="enhance-desc">AI自动为画作上色</div>
+                    </div>
+                    <div class="enhance-card" onclick="selectEnhance(this, 'animate')">
+                        <div class="enhance-icon">🎬</div>
+                        <div class="enhance-name">动态效果</div>
+                        <div class="enhance-desc">让画作动起来</div>
+                    </div>
+                </div>
+                
+                <div class="enhance-preview">
+                    <div class="preview-title">效果预览</div>
+                    <div class="preview-images">
+                        <div class="preview-image" id="original-preview">原作</div>
+                        <div class="preview-image" id="enhanced-preview">AI增强</div>
+                    </div>
+                    <div class="preview-images">
+                        <div class="preview-label">你的原作</div>
+                        <div class="preview-label">AI增强后</div>
+                    </div>
+                </div>
+                
+                <div class="loading-animation" id="enhance-loading" style="display: none;">
+                    <div class="spinner"></div>
+                    <div class="loading-text">AI正在增强你的作品，请稍候...</div>
+                </div>
+                
+                <div class="control-buttons">
+                    <button class="btn btn-secondary" onclick="backToCanvas()">重新绘画</button>
+                    <button class="btn btn-primary" id="enhance-btn" onclick="applyEnhancement()">应用增强</button>
+                </div>
+            </div>
+            
+            <!-- 作品展示区域 -->
+            <div id="artwork-section" class="artwork-section">
+                <div class="section-title">你的AI画作完成啦！</div>
+                
+                <div class="artwork-preview">
+                    <div class="artwork-title" id="artwork-title">我的AI画作</div>
+                    <div class="artwork-image" id="artwork-image">🖼️</div>
+                    
+                    <div class="artwork-details">
+                        <div class="detail-item">
+                            <div class="detail-label">创作模式</div>
+                            <div class="detail-value" id="artwork-mode">自由绘画</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">AI增强</div>
+                            <div class="detail-value" id="artwork-enhance">完善细节</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">创作时间</div>
+                            <div class="detail-value" id="artwork-time">今天</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="control-buttons">
+                    <button class="btn btn-secondary" onclick="createNewArt()">再画一幅</button>
+                    <button class="btn btn-primary" onclick="saveArtwork()">保存作品</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bottom-nav">
+            <div class="nav-item" onclick="navigateTo('index.html')">
+                <div class="nav-icon">🏠</div>
+                <div class="nav-text">首页</div>
+            </div>
+            <div class="nav-item" onclick="navigateTo('explore.html')">
+                <div class="nav-icon">🔍</div>
+                <div class="nav-text">探索</div>
+            </div>
+            <div class="nav-item" onclick="navigateTo('create.html')">
+                <div class="nav-icon">🎨</div>
+                <div class="nav-text">创作</div>
+            </div>
+            <div class="nav-item" onclick="navigateTo('garden.html')">
+                <div class="nav-icon">💝</div>
+                <div class="nav-text">心灵</div>
+            </div>
+            <div class="nav-item" onclick="navigateTo('profile.html')">
+                <div class="nav-icon">👤</div>
+                <div class="nav-text">我的</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 当前状态和数据
+        let currentMode = '';
+        let currentTool = 'brush';
+        let currentColor = '#ff0000';
+        let brushSize = 5;
+        let currentEnhance = '';
+        
+        // 画布状态
+        let canvas, ctx;
+        let isDrawing = false;
+        let lastX = 0;
+        let lastY = 0;
+        let drawingHistory = [];
+        
+        // 导航功能
+        function goBack() {
+            window.location.href = 'create.html';
+        }
+        
+        function navigateTo(page) {
+            window.location.href = page;
+        }
+        
+        // 选择绘画模式
+        function selectMode(caller, mode) {
+            // 支持 selectMode(mode) 或 selectMode(caller, mode)
+            if (typeof mode === 'undefined') {
+                mode = caller;
+                caller = null;
+            }
+
+            // 移除之前的选择
+            document.querySelectorAll('.mode-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+
+            // 设置新的选择
+            var targetEl = null;
+            if (caller && caller.nodeType) {
+                targetEl = caller;
+            } else if (typeof event !== 'undefined' && event.target) {
+                targetEl = event.target.closest ? event.target.closest('.mode-card') : event.target;
+            }
+
+            if (targetEl) targetEl.classList.add('selected');
+            currentMode = mode;
+
+            // 启用开始按钮
+            document.getElementById('mode-next').disabled = false;
+        }
+        
+        // 开始绘画
+        function startDrawing() {
+            // 隐藏模式选择，显示工具选择
+            document.getElementById('mode-section').style.display = 'none';
+            document.getElementById('tools-section').style.display = 'block';
+            
+            // 根据模式更新界面
+            updateToolsForMode();
+        }
+        
+        // 根据模式更新工具
+        function updateToolsForMode() {
+            const instructions = document.getElementById('canvas-instructions');
+            
+            switch(currentMode) {
+                case 'free':
+                    instructions.textContent = '在画布上自由绘画，发挥你的创意！';
+                    break;
+                case 'ai':
+                    instructions.textContent = '简单绘制轮廓，AI会帮你完善细节！';
+                    break;
+                case 'shape':
+                    instructions.textContent = '使用几何形状创作你的画作！';
+                    break;
+                case 'coloring':
+                    instructions.textContent = '为线稿上色，创造美丽的画面！';
+                    break;
+            }
+        }
+        
+        // 返回模式选择
+        function backToMode() {
+            document.getElementById('tools-section').style.display = 'none';
+            document.getElementById('mode-section').style.display = 'block';
+        }
+        
+        // 选择工具
+        function selectTool(tool) {
+            currentTool = tool;
+            
+            // 更新工具按钮状态
+            document.querySelectorAll('.tool-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.getElementById(`${tool}-btn`).classList.add('active');
+        }
+        
+        // 选择颜色
+        function selectColor(caller, color) {
+            // 支持 selectColor(color) 或 selectColor(caller, color)
+            if (typeof color === 'undefined') {
+                color = caller;
+                caller = null;
+            }
+
+            currentColor = color;
+
+            // 更新颜色按钮状态
+            document.querySelectorAll('.color-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            if (caller && caller.nodeType) {
+                caller.classList.add('active');
+            } else if (typeof event !== 'undefined' && event.target) {
+                event.target.classList.add('active');
+            }
+        }
+        
+        // 更新画笔大小
+        function updateBrushSize() {
+            brushSize = document.getElementById('brush-size').value;
+        }
+        
+        // 前往画布
+        function goToCanvas() {
+            document.getElementById('tools-section').style.display = 'none';
+            document.getElementById('canvas-section').style.display = 'block';
+            
+            // 初始化画布
+            initCanvas();
+        }
+        
+        // 初始化画布
+        function initCanvas() {
+            canvas = document.getElementById('drawing-canvas');
+            ctx = canvas.getContext('2d');
+            
+            // 设置画布尺寸
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = rect.height;
+            
+            // 设置画布背景
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // 添加事件监听器
+            canvas.addEventListener('mousedown', startDrawingEvent);
+            canvas.addEventListener('mousemove', drawEvent);
+            canvas.addEventListener('mouseup', stopDrawingEvent);
+            canvas.addEventListener('mouseout', stopDrawingEvent);
+            
+            // 触摸设备支持
+            canvas.addEventListener('touchstart', handleTouchStart);
+            canvas.addEventListener('touchmove', handleTouchMove);
+            canvas.addEventListener('touchend', handleTouchEnd);
+            
+            // 重置历史记录
+            drawingHistory = [];
+            saveCanvasState();
+        }
+        
+        // 开始绘制事件
+        function startDrawingEvent(e) {
+            isDrawing = true;
+            [lastX, lastY] = getEventCoordinates(e);
+            
+            if (currentTool === 'brush' || currentTool === 'eraser') {
+                ctx.beginPath();
+                ctx.moveTo(lastX, lastY);
+            }
+        }
+        
+        // 绘制事件
+        function drawEvent(e) {
+            if (!isDrawing) return;
+            
+            const [x, y] = getEventCoordinates(e);
+            
+            switch(currentTool) {
+                case 'brush':
+                    ctx.strokeStyle = currentColor;
+                    ctx.lineWidth = brushSize;
+                    ctx.lineCap = 'round';
+                    ctx.lineTo(x, y);
+                    ctx.stroke();
+                    break;
+                    
+                case 'eraser':
+                    ctx.strokeStyle = '#ffffff';
+                    ctx.lineWidth = brushSize * 2;
+                    ctx.lineCap = 'round';
+                    ctx.lineTo(x, y);
+                    ctx.stroke();
+                    break;
+                    
+                case 'shape':
+                    // 绘制形状的逻辑
+                    break;
+                    
+                case 'fill':
+                    // 填充逻辑
+                    break;
+            }
+            
+            [lastX, lastY] = [x, y];
+        }
+        
+        // 停止绘制事件
+        function stopDrawingEvent() {
+            if (isDrawing) {
+                isDrawing = false;
+                saveCanvasState();
+            }
+        }
+        
+        // 获取事件坐标
+        function getEventCoordinates(e) {
+            const rect = canvas.getBoundingClientRect();
+            let x, y;
+            
+            if (e.type.includes('touch')) {
+                x = e.touches[0].clientX - rect.left;
+                y = e.touches[0].clientY - rect.top;
+            } else {
+                x = e.clientX - rect.left;
+                y = e.clientY - rect.top;
+            }
+            
+            return [x, y];
+        }
+        
+        // 触摸事件处理
+        function handleTouchStart(e) {
+            e.preventDefault();
+            startDrawingEvent(e.touches[0]);
+        }
+        
+        function handleTouchMove(e) {
+            e.preventDefault();
+            drawEvent(e.touches[0]);
+        }
+        
+        function handleTouchEnd(e) {
+            e.preventDefault();
+            stopDrawingEvent();
+        }
+        
+        // 保存画布状态
+        function saveCanvasState() {
+            drawingHistory.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+            
+            // 限制历史记录数量
+            if (drawingHistory.length > 20) {
+                drawingHistory.shift();
+            }
+        }
+        
+        // 清除画布
+        function clearCanvas() {
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            saveCanvasState();
+        }
+        
+        // 撤销操作
+        function undoAction() {
+            if (drawingHistory.length > 1) {
+                drawingHistory.pop(); // 移除当前状态
+                const previousState = drawingHistory[drawingHistory.length - 1];
+                ctx.putImageData(previousState, 0, 0);
+            } else if (drawingHistory.length === 1) {
+                clearCanvas();
+            }
+        }
+        
+        // 完成绘画
+        function finishDrawing() {
+            document.getElementById('canvas-section').style.display = 'none';
+            
+            if (currentMode === 'ai' || currentMode === 'coloring') {
+                // 显示AI增强选项
+                document.getElementById('ai-enhance-section').style.display = 'block';
+                
+                // 更新预览
+                updatePreview();
+            } else {
+                // 直接显示作品
+                showArtwork();
+            }
+        }
+        
+        // 返回画布
+        function backToCanvas() {
+            document.getElementById('ai-enhance-section').style.display = 'none';
+            document.getElementById('canvas-section').style.display = 'block';
+        }
+        
+        // 更新预览
+        function updatePreview() {
+            // 在实际应用中，这里会生成预览图像
+            // 这里我们只是模拟
+            document.getElementById('original-preview').innerHTML = '原作';
+            document.getElementById('enhanced-preview').innerHTML = 'AI增强';
+        }
+        
+        // 选择增强选项
+        function selectEnhance(caller, enhance) {
+            // 支持 selectEnhance(enhance) 或 selectEnhance(caller, enhance)
+            if (typeof enhance === 'undefined') {
+                enhance = caller;
+                caller = null;
+            }
+
+            currentEnhance = enhance;
+
+            // 移除之前的选择
+            document.querySelectorAll('.enhance-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+
+            var targetEl = null;
+            if (caller && caller.nodeType) {
+                targetEl = caller;
+            } else if (typeof event !== 'undefined' && event.target) {
+                targetEl = event.target.closest ? event.target.closest('.enhance-card') : event.target;
+            }
+
+            if (targetEl) targetEl.classList.add('selected');
+
+            // 更新预览
+            updateEnhancePreview();
+        }
+        
+        // 更新增强预览
+        function updateEnhancePreview() {
+            const enhanceLabels = {
+                'complete': '完善细节',
+                'style': '艺术风格',
+                'color': '智能上色',
+                'animate': '动态效果'
+            };
+            
+            document.getElementById('enhanced-preview').innerHTML = enhanceLabels[currentEnhance] || 'AI增强';
+        }
+        
+        // 应用增强
+        function applyEnhancement() {
+            const loadingElement = document.getElementById('enhance-loading');
+            const enhanceBtn = document.getElementById('enhance-btn');
+            
+            // 显示加载动画
+            loadingElement.style.display = 'flex';
+            enhanceBtn.disabled = true;
+            
+            // 模拟AI处理（在实际应用中，这里会调用AI API）
+            setTimeout(() => {
+                // 隐藏加载动画
+                loadingElement.style.display = 'none';
+                enhanceBtn.disabled = false;
+                
+                // 显示最终作品
+                document.getElementById('ai-enhance-section').style.display = 'none';
+                showArtwork();
+            }, 3000);
+        }
+        
+        // 显示作品
+        function showArtwork() {
+            document.getElementById('artwork-section').style.display = 'block';
+            
+            // 更新作品信息
+            updateArtworkInfo();
+        }
+        
+        // 更新作品信息
+        function updateArtworkInfo() {
+            const modeLabels = {
+                'free': '自由绘画',
+                'ai': 'AI辅助绘画',
+                'shape': '形状绘画',
+                'coloring': '填色游戏'
+            };
+            
+            const enhanceLabels = {
+                'complete': '完善细节',
+                'style': '艺术风格',
+                'color': '智能上色',
+                'animate': '动态效果'
+            };
+            
+            document.getElementById('artwork-mode').textContent = modeLabels[currentMode] || '自由绘画';
+            document.getElementById('artwork-enhance').textContent = currentEnhance ? enhanceLabels[currentEnhance] : '无';
+            document.getElementById('artwork-time').textContent = '今天';
+            
+            // 设置作品标题
+            document.getElementById('artwork-title').textContent = `我的${modeLabels[currentMode]}作品`;
+            
+            // 设置作品图像（在实际应用中，这里会显示实际生成的作品）
+            document.getElementById('artwork-image').innerHTML = '🖼️';
+        }
+        
+        // 创建新作品
+        function createNewArt() {
+            document.getElementById('artwork-section').style.display = 'none';
+            document.getElementById('mode-section').style.display = 'block';
+            
+            // 重置状态
+            currentMode = '';
+            currentEnhance = '';
+            document.getElementById('mode-next').disabled = true;
+        }
+        
+        // 保存作品
+        function saveArtwork() {
+            // 在实际应用中，这里会保存作品到服务器或本地存储
+            alert("画作已保存！你可以在'我的作品'中查看和分享它。");
+            
+            // 返回创作湾
+            setTimeout(() => {
+                window.location.href = 'create.html';
+            }, 1500);
+        }
+        
+        // 为底部导航添加点击事件
+        document.querySelectorAll('.nav-item').forEach((item) => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>

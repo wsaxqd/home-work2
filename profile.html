@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人中心 - 启蒙之光</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial Rounded MT Bold', 'Arial', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4efe9 100%);
+            color: #333;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 0;
+            position: relative;
+            min-height: 100vh;
+            background: white;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: linear-gradient(135deg, #2ecc71 0%, #3498db 100%);
+            color: white;
+            border-radius: 0 0 20px 20px;
+        }
+        
+        .back-button {
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        .page-title {
+            font-size: 20px;
+            text-align: center;
+            flex: 1;
+        }
+        
+        .main-content {
+            padding: 20px;
+            overflow-y: auto;
+            max-height: calc(100vh - 140px);
+        }
+        
+        /* 用户信息区域 */
+        .user-profile {
+            display: flex;
+            align-items: center;
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        .user-avatar {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #2ecc71 0%, #3498db 100%);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 32px;
+            margin-right: 20px;
+        }
+        
+        .user-info {
+            flex: 1;
+        }
+        
+        .user-name {
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+        
+        .user-bio {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .user-stats {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2ecc71;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        /* 成就徽章区域 */
+        .achievements-section {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        .section-title {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #2ecc71;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .view-all {
+            font-size: 14px;
+            color: #3498db;
+            cursor: pointer;
+        }
+        
+        .badges-container {
+            display: flex;
+            overflow-x: auto;
+            gap: 15px;
+            padding-bottom: 10px;
+        }
+        
+        .badge {
+            flex: 0 0 auto;
+            width: 80px;
+            text-align: center;
+        }
+        
+        .badge-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #2ecc71 0%, #3498db 100%);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 24px;
+            margin: 0 auto 8px;
+        }
+        
+        .badge.unlocked .badge-icon {
+            box-shadow: 0 4px 8px rgba(46, 204, 113, 0.3);
+        }
+        
+        .badge.locked .badge-icon {
+            background: #e0e0e0;
+            color: #999;
+        }
+        
+        .badge-name {
+            font-size: 12px;
+            margin-bottom: 3px;
+        }
+        
+        .badge-status {
+            font-size: 10px;
+            color: #999;
+        }
+        
+        .badge.unlocked .badge-status {
+            color: #2ecc71;
+        }
+        
+        /* 成长档案区域 */
+        .growth-section {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        .growth-tabs {
+            display: flex;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .growth-tab {
+            padding: 8px 15px;
+            font-size: 14px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+        }
+        
+        .growth-tab.active {
+            border-bottom: 2px solid #2ecc71;
+            color: #2ecc71;
+            font-weight: bold;
+        }
+        
+        .growth-content {
+            min-height: 200px;
+        }
+        
+        .ability-chart {
+            text-align: center;
+        }
+        
+        .chart-container {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 15px;
+            position: relative;
+        }
+        
+        .chart-background {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: conic-gradient(
+                #3498db 0% 30%,
+                #2ecc71 30% 60%,
+                #f39c12 60% 80%,
+                #e74c3c 80% 90%,
+                #9b59b6 90% 100%
+            );
+        }
+        
+        .chart-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 120px;
+            height: 120px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .chart-score {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2ecc71;
+        }
+        
+        .chart-label {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .ability-labels {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .ability-label {
+            display: flex;
+            align-items: center;
+            font-size: 12px;
+        }
+        
+        .ability-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+        
+        .timeline-container {
+            padding: 10px 0;
+        }
+        
+        .timeline-item {
+            display: flex;
+            margin-bottom: 15px;
+        }
+        
+        .timeline-date {
+            width: 70px;
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .timeline-content {
+            flex: 1;
+            background: #f9f9f9;
+            padding: 10px 15px;
+            border-radius: 10px;
+        }
+        
+        .timeline-title {
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        
+        .timeline-desc {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        /* 内容管理区域 */
+        .content-section {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .content-item {
+            background: #f9f9f9;
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        
+        .content-item:hover {
+            transform: translateY(-5px);
+        }
+        
+        .content-icon {
+            font-size: 30px;
+            margin-bottom: 10px;
+            color: #2ecc71;
+        }
+        
+        .content-title {
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        
+        .content-count {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        /* 设置区域 */
+        .settings-section {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        .settings-list {
+            list-style: none;
+        }
+        
+        .settings-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+        }
+        
+        .settings-item:last-child {
+            border-bottom: none;
+        }
+        
+        .settings-info {
+            display: flex;
+            align-items: center;
+        }
+        
+        .settings-icon {
+            font-size: 20px;
+            margin-right: 15px;
+            color: #3498db;
+            width: 24px;
+            text-align: center;
+        }
+        
+        .settings-text {
+            font-size: 16px;
+        }
+        
+        .settings-arrow {
+            color: #ccc;
+        }
+        
+        .bottom-nav {
+            display: flex;
+            justify-content: space-around;
+            background: white;
+            padding: 15px 0;
+            border-radius: 20px 20px 0 0;
+            box-shadow: 0 -4px 12px rgba(0,0,0,0.05);
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            max-width: 480px;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        .nav-icon {
+            font-size: 24px;
+            margin-bottom: 5px;
+            color: #999;
+        }
+        
+        .nav-item.active .nav-icon {
+            color: #2ecc71;
+        }
+        
+        .nav-text {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .nav-item.active .nav-text {
+            color: #2ecc71;
+            font-weight: bold;
+        }
+        
+        /* 响应式调整 */
+        @media (max-width: 480px) {
+            .container {
+                padding-bottom: 70px;
+            }
+            
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="back-button" onclick="goBack()">←</div>
+            <div class="page-title">个人中心</div>
+            <div style="width: 24px;"></div> <!-- 占位保持对称 -->
+        </div>
+        
+        <div class="main-content">
+            <div class="user-profile">
+                <div class="user-avatar">乐</div>
+                <div class="user-info">
+                    <div class="user-name">小乐</div>
+                    <div class="user-bio">好奇的AI小探险家</div>
+                    <div class="user-stats">
+                        <div class="stat-item">
+                            <div class="stat-value">128</div>
+                            <div class="stat-label">星光值</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">15</div>
+                            <div class="stat-label">作品数</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">7</div>
+                            <div class="stat-label">徽章</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="achievements-section">
+                <div class="section-title">
+                    <span>成就徽章</span>
+                    <span class="view-all" onclick="viewAllBadges()">查看全部</span>
+                </div>
+                <div class="badges-container">
+                    <div class="badge unlocked">
+                        <div class="badge-icon">🌟</div>
+                        <div class="badge-name">好奇之星</div>
+                        <div class="badge-status">已获得</div>
+                    </div>
+                    <div class="badge unlocked">
+                        <div class="badge-icon">🎨</div>
+                        <div class="badge-name">创意达人</div>
+                        <div class="badge-status">已获得</div>
+                    </div>
+                    <div class="badge unlocked">
+                        <div class="badge-icon">🤖</div>
+                        <div class="badge-name">AI小专家</div>
+                        <div class="badge-status">已获得</div>
+                    </div>
+                    <div class="badge locked">
+                        <div class="badge-icon">📚</div>
+                        <div class="badge-name">学习大师</div>
+                        <div class="badge-status">待解锁</div>
+                    </div>
+                    <div class="badge locked">
+                        <div class="badge-icon">💝</div>
+                        <div class="badge-name">心灵伙伴</div>
+                        <div class="badge-status">待解锁</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="growth-section">
+                <div class="section-title">
+                    <span>成长档案</span>
+                </div>
+                <div class="growth-tabs">
+                    <div class="growth-tab active" onclick="switchTab(this, 'ability')">能力图谱</div>
+                    <div class="growth-tab" onclick="switchTab(this, 'timeline')">创造力时间线</div>
+                    <div class="growth-tab" onclick="switchTab(this, 'report')">好奇心报告</div>
+                </div>
+                <div class="growth-content">
+                    <div id="ability-tab" class="tab-content">
+                        <div class="ability-chart">
+                            <div class="chart-container">
+                                <div class="chart-background"></div>
+                                <div class="chart-center">
+                                    <div class="chart-score">85</div>
+                                    <div class="chart-label">综合能力</div>
+                                </div>
+                            </div>
+                            <div class="ability-labels">
+                                <div class="ability-label">
+                                    <div class="ability-color" style="background: #3498db"></div>
+                                    <span>探索能力</span>
+                                </div>
+                                <div class="ability-label">
+                                    <div class="ability-color" style="background: #2ecc71"></div>
+                                    <span>创造能力</span>
+                                </div>
+                                <div class="ability-label">
+                                    <div class="ability-color" style="background: #f39c12"></div>
+                                    <span>逻辑思维</span>
+                                </div>
+                                <div class="ability-label">
+                                    <div class="ability-color" style="background: #e74c3c"></div>
+                                    <span>情感表达</span>
+                                </div>
+                                <div class="ability-label">
+                                    <div class="ability-color" style="background: #9b59b6"></div>
+                                    <span>协作能力</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="timeline-tab" class="tab-content" style="display: none;">
+                        <div class="timeline-container">
+                            <div class="timeline-item">
+                                <div class="timeline-date">10月15日</div>
+                                <div class="timeline-content">
+                                    <div class="timeline-title">创作了《太空冒险记》</div>
+                                    <div class="timeline-desc">第一个AI生成的故事作品</div>
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-date">10月10日</div>
+                                <div class="timeline-content">
+                                    <div class="timeline-title">完成AI图像识别游戏</div>
+                                    <div class="timeline-desc">正确识别了20种不同物品</div>
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-date">10月5日</div>
+                                <div class="timeline-content">
+                                    <div class="timeline-title">创作了《快乐的小雨滴》</div>
+                                    <div class="timeline-desc">第一首AI辅助创作的音乐</div>
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-date">9月28日</div>
+                                <div class="timeline-content">
+                                    <div class="timeline-title">加入启蒙之光</div>
+                                    <div class="timeline-desc">开始了AI探索之旅</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="report-tab" class="tab-content" style="display: none;">
+                        <div class="timeline-container">
+                            <div class="timeline-item">
+                                <div class="timeline-date">本月数据</div>
+                                <div class="timeline-content">
+                                    <div class="timeline-title">提问数量：28次</div>
+                                    <div class="timeline-desc">比上月增长35%</div>
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-date">探索领域</div>
+                                <div class="timeline-content">
+                                    <div class="timeline-title">AI历史、机器学习、创意编程</div>
+                                    <div class="timeline-desc">最感兴趣的是AI历史</div>
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-date">热门问题</div>
+                                <div class="timeline-content">
+                                    <div class="timeline-title">"AI是怎么认出图片的？"</div>
+                                    <div class="timeline-desc">这个问题被询问了5次</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="content-section">
+                <div class="section-title">
+                    <span>我的内容</span>
+                </div>
+                <div class="content-grid">
+                    <div class="content-item" onclick="viewMyWorks()">
+                        <div class="content-icon">📚</div>
+                        <div class="content-title">我的作品</div>
+                        <div class="content-count">15个作品</div>
+                    </div>
+                    <div class="content-item" onclick="viewMyCollections()">
+                        <div class="content-icon">❤️</div>
+                        <div class="content-title">我的收藏</div>
+                        <div class="content-count">23个收藏</div>
+                    </div>
+                    <div class="content-item" onclick="viewLearningRecords()">
+                        <div class="content-icon">📊</div>
+                        <div class="content-title">学习记录</div>
+                        <div class="content-count">42小时</div>
+                    </div>
+                    <div class="content-item" onclick="viewMoodDiary()">
+                        <div class="content-icon">📓</div>
+                        <div class="content-title">心情日记</div>
+                        <div class="content-count">18篇日记</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="settings-section">
+                <div class="section-title">
+                    <span>设置</span>
+                </div>
+                <ul class="settings-list">
+                    <li class="settings-item" onclick="openSettings('account')">
+                        <div class="settings-info">
+                            <div class="settings-icon">👤</div>
+                            <div class="settings-text">账号管理</div>
+                        </div>
+                        <div class="settings-arrow">></div>
+                    </li>
+                    <li class="settings-item" onclick="openSettings('privacy')">
+                        <div class="settings-info">
+                            <div class="settings-icon">🔒</div>
+                            <div class="settings-text">隐私设置</div>
+                        </div>
+                        <div class="settings-arrow">></div>
+                    </li>
+                    <li class="settings-item" onclick="openSettings('preference')">
+                        <div class="settings-info">
+                            <div class="settings-icon">🎨</div>
+                            <div class="settings-text">内容偏好</div>
+                        </div>
+                        <div class="settings-arrow">></div>
+                    </li>
+                    <li class="settings-item" onclick="openSettings('parental')">
+                        <div class="settings-info">
+                            <div class="settings-icon">👨‍👩‍👧</div>
+                            <div class="settings-text">家长控制</div>
+                        </div>
+                        <div class="settings-arrow">></div>
+                    </li>
+                    <li class="settings-item" onclick="openSettings('about')">
+                        <div class="settings-info">
+                            <div class="settings-icon">ℹ️</div>
+                            <div class="settings-text">关于启蒙之光</div>
+                        </div>
+                        <div class="settings-arrow">></div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="bottom-nav">
+            <div class="nav-item" onclick="navigateTo('index.html')">
+                <div class="nav-icon">🏠</div>
+                <div class="nav-text">首页</div>
+            </div>
+            <div class="nav-item" onclick="navigateTo('explore.html')">
+                <div class="nav-icon">🔍</div>
+                <div class="nav-text">探索</div>
+            </div>
+            <div class="nav-item" onclick="navigateTo('create.html')">
+                <div class="nav-icon">🎨</div>
+                <div class="nav-text">创作</div>
+            </div>
+            <div class="nav-item" onclick="navigateTo('mind-garden.html')">
+                <div class="nav-icon">💝</div>
+                <div class="nav-text">心灵</div>
+            </div>
+            <div class="nav-item active" onclick="navigateTo('profile.html')">
+                <div class="nav-icon">👤</div>
+                <div class="nav-text">我的</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="navigation-template.js"></script>
+    <script>
+        function goBack() {
+            // 检查是否可以安全地返回
+            const documentReferrer = document.referrer;
+            const origin = window.location.origin;
+            
+            // 如果没有历史记录或者来源不是当前网站，则导航到首页
+            if (window.history.length <= 1 || (!documentReferrer.startsWith(origin) && documentReferrer !== '')) {
+                navigateTo('index.html');
+            } else {
+                // 否则执行返回操作
+                window.history.back();
+            }
+        }
+        
+        // 切换成长档案标签
+        function switchTab(caller, tabName) {
+            // 支持两种调用：switchTab(tabName) 或 switchTab(caller, tabName)
+            if (typeof tabName === 'undefined') {
+                tabName = caller;
+                caller = null;
+            }
+
+            // 隐藏所有标签内容
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.style.display = 'none';
+            });
+            
+            // 移除所有标签的active类
+            document.querySelectorAll('.growth-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // 显示选中的标签内容
+            document.getElementById(`${tabName}-tab`).style.display = 'block';
+            
+            // 为选中的标签添加active类
+            if (caller && caller.nodeType) {
+                caller.classList.add('active');
+            } else if (typeof event !== 'undefined' && event.target) {
+                event.target.classList.add('active');
+            }
+        }
+        
+        // 查看全部徽章
+        function viewAllBadges() {
+            alert("查看全部成就徽章");
+            // 在实际应用中，这里会跳转到徽章页面
+        }
+        
+        // 我的内容相关功能
+        function viewMyWorks() {
+            alert("查看我的作品");
+            // 在实际应用中，这里会跳转到作品列表页面
+        }
+        
+        function viewMyCollections() {
+            alert("查看我的收藏");
+            // 在实际应用中，这里会跳转到收藏页面
+        }
+        
+        function viewLearningRecords() {
+            alert("查看学习记录");
+            // 在实际应用中，这里会跳转到学习记录页面
+        }
+        
+        function viewMoodDiary() {
+            alert("查看心情日记");
+            // 在实际应用中，这里会跳转到心情日记页面
+        }
+        
+        // 设置相关功能
+        function openSettings(setting) {
+            const settings = {
+                'account': '账号管理',
+                'privacy': '隐私设置',
+                'preference': '内容偏好',
+                'parental': '家长控制',
+                'about': '关于启蒙之光'
+            };
+            
+            alert(`打开${settings[setting]}页面`);
+            // 在实际应用中，这里会打开对应的设置页面
+        }
+        
+        // 初始化导航
+        document.addEventListener('DOMContentLoaded', function() {
+            initAppNavigation();
+        });
+    </script>
+</body>
+</html>
