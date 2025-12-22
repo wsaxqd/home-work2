@@ -17,7 +17,7 @@ export default function Login() {
         nickname,
         age: parseInt(age)
       }))
-      navigate('/')
+      navigate('/home')
     }
   }
 

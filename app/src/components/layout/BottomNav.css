@@ -1,10 +1,11 @@
 .bottom-nav {
   display: flex;
   justify-content: space-around;
+  align-items: center;
   background: white;
-  padding: 15px 0;
-  border-radius: 20px 20px 0 0;
-  box-shadow: 0 -4px 12px rgba(0,0,0,0.05);
+  padding: 10px 10px 16px;
+  border-radius: 28px 28px 0 0;
+  box-shadow: 0 -8px 24px rgba(0,0,0,0.12);
   position: fixed;
   bottom: 0;
   width: 100%;
@@ -16,30 +17,97 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   cursor: pointer;
-  transition: transform 0.2s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 10px 16px;
+  border-radius: 20px;
+  position: relative;
+  flex: 1;
+  max-width: 120px;
 }
 
 .nav-item:hover {
-  transform: scale(1.05);
+  transform: translateY(-4px);
+}
+
+.nav-item.active {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.12) 0%, rgba(118, 75, 162, 0.12) 100%);
 }
 
 .nav-icon {
-  font-size: 24px;
-  margin-bottom: 5px;
-  color: #999;
+  font-size: 32px;
+  margin-bottom: 4px;
+  transition: all 0.3s;
+  filter: grayscale(80%);
+  opacity: 0.6;
+  position: relative;
 }
 
+/* 激活状态 - 添加背景圆圈 */
 .nav-item.active .nav-icon {
-  color: #4caf50;
+  filter: grayscale(0%);
+  opacity: 1;
+  animation: navBounce 0.5s ease;
+}
+
+.nav-item.active .nav-icon::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 50px;
+  height: 50px;
+  background: radial-gradient(circle, rgba(102, 126, 234, 0.15) 0%, transparent 70%);
+  border-radius: 50%;
+  z-index: -1;
+}
+
+@keyframes navBounce {
+  0%, 100% { transform: scale(1) translateY(0); }
+  50% { transform: scale(1.15) translateY(-6px); }
 }
 
 .nav-text {
   font-size: 12px;
-  color: #999;
+  color: #a0aec0;
+  font-weight: 600;
+  transition: all 0.3s;
+  text-align: center;
 }
 
 .nav-item.active .nav-text {
-  color: #4caf50;
-  font-weight: bold;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 800;
+  font-size: 13px;
+}
+
+/* 添加激活指示器 */
+.nav-item.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 24px;
+  height: 3px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 2px 2px 0 0;
+}
+
+/* 每个导航项的独特颜色 */
+.nav-item:nth-child(1).active .nav-icon {
+  filter: drop-shadow(0 4px 8px rgba(102, 126, 234, 0.4));
+}
+
+.nav-item:nth-child(2).active .nav-icon {
+  filter: drop-shadow(0 4px 8px rgba(240, 147, 251, 0.4));
+}
+
+.nav-item:nth-child(3).active .nav-icon {
+  filter: drop-shadow(0 4px 8px rgba(79, 172, 254, 0.4));
 }
