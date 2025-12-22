@@ -16,6 +16,8 @@ export default function Login() {
   const [confirmPassword, setConfirmPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [passwordStrength, setPasswordStrength] = useState(0)
+  const [showPasswordMatch, setShowPasswordMatch] = useState(false)
 
   // 切换登录/注册模式时清空表单和错误
   const handleModeSwitch = (loginMode: boolean) => {
@@ -23,6 +25,20 @@ export default function Login() {
     setError('')
     setPassword('')
     setConfirmPassword('')
+    setPasswordStrength(0)
+    setShowPasswordMatch(false)
+  }
+
+  // 检查密码强度
+  const checkPasswordStrength = (pwd: string) => {
+    let strength = 0
+    if (pwd.length >= 6) strength++
+    if (pwd.length >= 8) strength++
+    if (/[a-z]/.test(pwd)) strength++
+    if (/[A-Z]/.test(pwd)) strength++
+    if (/[0-9]/.test(pwd)) strength++
+    if (/[^a-zA-Z0-9]/.test(pwd)) strength++
+    return Math.min(strength, 3)
   }
 
   // 表单验证
@@ -166,20 +182,30 @@ export default function Login() {
 
         {error && (
           <div style={{
-            color: '#d32f2f',
+            color: '#c62828',
             textAlign: 'center',
-            marginBottom: '15px',
-            padding: '15px 20px',
+            marginBottom: '20px',
+            padding: '18px 24px',
             background: 'linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%)',
-            borderRadius: '12px',
-            border: '2px solid #ef5350',
-            fontSize: '16px',
-            fontWeight: '600',
-            boxShadow: '0 4px 12px rgba(211, 47, 47, 0.2)',
-            animation: 'shake 0.5s'
+            borderRadius: '16px',
+            border: '4px solid #ef5350',
+            fontSize: '18px',
+            fontWeight: '700',
+            boxShadow: '0 8px 24px rgba(211, 47, 47, 0.35), inset 0 2px 8px rgba(255, 255, 255, 0.5)',
+            animation: 'shake 0.6s, pulse 2s infinite',
+            position: 'relative',
+            zIndex: 10
           }}>
-            <div style={{ marginBottom: '5px', fontSize: '24px' }}>⚠️</div>
-            {error}
+            <div style={{
+              marginBottom: '8px',
+              fontSize: '32px',
+              animation: 'bounce 1s infinite'
+            }}>
+              ⚠️
+            </div>
+            <div style={{ lineHeight: '1.5' }}>
+              {error}
+            </div>
           </div>
         )}
 
@@ -201,8 +227,59 @@ export default function Login() {
             className="form-input"
             placeholder="请输入密码（至少6个字符）"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) => {
+              const pwd = e.target.value
+              setPassword(pwd)
+              if (!isLogin) {
+                setPasswordStrength(checkPasswordStrength(pwd))
+                if (confirmPassword) {
+                  setShowPasswordMatch(true)
+                }
+              }
+            }}
           />
+          {!isLogin && password && (
+            <div style={{ marginTop: '10px' }}>
+              <div style={{
+                fontSize: '13px',
+                color: '#666',
+                marginBottom: '6px',
+                fontWeight: '600'
+              }}>
+                密码强度：
+              </div>
+              <div style={{
+                display: 'flex',
+                gap: '6px',
+                marginBottom: '8px'
+              }}>
+                {[1, 2, 3].map((level) => (
+                  <div
+                    key={level}
+                    style={{
+                      flex: 1,
+                      height: '8px',
+                      borderRadius: '4px',
+                      backgroundColor: passwordStrength >= level
+                        ? (passwordStrength === 1 ? '#ef5350' : passwordStrength === 2 ? '#ffa726' : '#66bb6a')
+                        : '#e0e0e0',
+                      transition: 'all 0.3s ease'
+                    }}
+                  />
+                ))}
+              </div>
+              <div style={{
+                fontSize: '12px',
+                color: passwordStrength === 1 ? '#ef5350' : passwordStrength === 2 ? '#ffa726' : passwordStrength === 3 ? '#66bb6a' : '#999',
+                fontWeight: '500'
+              }}>
+                {passwordStrength === 0 && '请输入密码'}
+                {passwordStrength === 1 && '⚠️ 密码强度较弱'}
+                {passwordStrength === 2 && '✓ 密码强度中等'}
+                {passwordStrength === 3 && '✓ 密码强度很强'}
+              </div>
+            </div>
+          )}
         </div>
 
         {!isLogin && (
@@ -214,14 +291,35 @@ export default function Login() {
                 className="form-input"
                 placeholder="请再次输入密码"
                 value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
+                onChange={(e) => {
+                  setConfirmPassword(e.target.value)
+                  setShowPasswordMatch(true)
+                }}
                 style={{
-                  borderColor: confirmPassword && password !== confirmPassword ? '#ef5350' : undefined
+                  borderColor: confirmPassword && password !== confirmPassword ? '#ef5350' :
+                              confirmPassword && password === confirmPassword ? '#66bb6a' : undefined,
+                  borderWidth: confirmPassword ? '3px' : undefined
                 }}
               />
-              {confirmPassword && password !== confirmPassword && (
-                <div style={{ color: '#ef5350', fontSize: '12px', marginTop: '5px' }}>
-                  ⚠️ 两次密码不一致
+              {confirmPassword && (
+                <div style={{
+                  marginTop: '8px',
+                  padding: '10px 14px',
+                  borderRadius: '10px',
+                  fontSize: '14px',
+                  fontWeight: '600',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  backgroundColor: password === confirmPassword ? '#e8f5e9' : '#ffebee',
+                  color: password === confirmPassword ? '#2e7d32' : '#c62828',
+                  border: `2px solid ${password === confirmPassword ? '#66bb6a' : '#ef5350'}`,
+                  animation: 'fadeIn 0.3s ease'
+                }}>
+                  <span style={{ fontSize: '18px' }}>
+                    {password === confirmPassword ? '✓' : '✗'}
+                  </span>
+                  {password === confirmPassword ? '密码匹配！' : '两次密码不一致，请重新输入'}
                 </div>
               )}
             </div>

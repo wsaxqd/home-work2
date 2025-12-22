@@ -1,5 +1,5 @@
 import BottomNav from './BottomNav'
-import AIAssistant from '../AIAssistant'
+import { LogoutButton, ChatBot } from '../common'
 import './Layout.css'
 
 interface LayoutProps {
@@ -12,7 +12,8 @@ export default function Layout({ children, showNav = true }: LayoutProps) {
     <div className="container">
       {children}
       {showNav && <BottomNav />}
-      <AIAssistant />
+      <LogoutButton />
+      <ChatBot />
     </div>
   )
 }

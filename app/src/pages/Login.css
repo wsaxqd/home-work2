@@ -183,6 +183,29 @@
   20%, 40%, 60%, 80% { transform: translateX(8px); }
 }
 
+/* 脉冲动画 */
+@keyframes pulse {
+  0% {
+    box-shadow: 0 8px 24px rgba(211, 47, 47, 0.35), inset 0 2px 8px rgba(255, 255, 255, 0.5);
+  }
+  50% {
+    box-shadow: 0 12px 32px rgba(211, 47, 47, 0.5), inset 0 2px 8px rgba(255, 255, 255, 0.5);
+  }
+  100% {
+    box-shadow: 0 8px 24px rgba(211, 47, 47, 0.35), inset 0 2px 8px rgba(255, 255, 255, 0.5);
+  }
+}
+
+/* 弹跳动画 */
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
 /* 淡入动画 */
 @keyframes fadeIn {
   from {
@@ -199,4 +222,77 @@
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+/* 移动端优化 */
+@media (max-width: 768px) {
+  .login-container {
+    padding: 40px 15px 30px;
+  }
+
+  .login-header h1 {
+    font-size: 26px;
+  }
+
+  .login-header p {
+    font-size: 14px;
+  }
+
+  .login-logo {
+    font-size: 60px;
+  }
+
+  .login-form {
+    max-width: 100%;
+    padding: 30px 25px;
+    border-radius: 24px;
+  }
+
+  .form-label {
+    font-size: 17px;
+    margin-bottom: 12px;
+  }
+
+  .form-input,
+  .form-select {
+    padding: 16px 18px;
+    font-size: 16px;
+  }
+
+  .start-btn {
+    padding: 18px;
+    font-size: 18px;
+  }
+
+  .avatar-item {
+    width: 65px;
+    height: 65px;
+    font-size: 32px;
+  }
+
+  /* 增大移动端错误提示 */
+  .login-form > div:first-of-type[style*="color: #c62828"] {
+    font-size: 16px !important;
+    padding: 16px 20px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-form {
+    padding: 25px 20px;
+  }
+
+  .form-section {
+    margin-bottom: 28px;
+  }
+
+  .avatar-grid {
+    gap: 12px;
+  }
+
+  .avatar-item {
+    width: 55px;
+    height: 55px;
+    font-size: 28px;
+  }
 }
