@@ -10,19 +10,5 @@ export { notificationsApi } from './notifications'
 export { aiApi } from './ai'
 export { uploadApi } from './upload'
 
-// 统一导出
-export default {
-  auth: authApi,
-  user: userApi,
-  works: worksApi,
-  community: communityApi,
-  games: gamesApi,
-  diary: diaryApi,
-  assessment: assessmentApi,
-  notifications: notificationsApi,
-  ai: aiApi,
-  upload: uploadApi,
-}
-
 // 导出api工具
 export { api } from '../../config/api'

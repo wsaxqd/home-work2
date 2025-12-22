@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Layout, Header } from '../components/layout'
-import { authApi, userApi, worksApi } from '../services/api'
+import { authApi, worksApi } from '../services/api'
 import type { User } from '../types'
 import './Profile.css'
 
@@ -20,7 +20,6 @@ export default function Profile() {
     { label: '获赞数', value: 0, icon: '👍' },
     { label: '积分', value: 0, icon: '⭐' },
   ])
-  const [achievements, setAchievements] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -104,34 +103,16 @@ export default function Profile() {
         </div>
 
         {/* 成就展示 */}
-        {achievements.length > 0 && (
-          <>
-            <div className="section-header">
-              <div className="section-title">
-                <span className="section-icon">🏆</span>
-                我的成就
-              </div>
-              <div className="section-subtitle">继续努力，解锁更多成就</div>
-            </div>
-            <div className="achievements-list">
-              {achievements.map((item, idx) => (
-                <div key={idx} className="achievement-card-new">
-                  <div className="achievement-icon-big">{item.icon}</div>
-                  <div className="achievement-info">
-                    <div className="achievement-title-new">{item.title}</div>
-                    <div className="achievement-desc-new">{item.description}</div>
-                    <div className="achievement-progress">
-                      <div className="progress-bar">
-                        <div className="progress-fill" style={{ width: '100%' }}></div>
-                      </div>
-                      <div className="progress-text">已完成</div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </>
-        )}
+        <div className="section-header">
+          <div className="section-title">
+            <span className="section-icon">🏆</span>
+            我的成就
+          </div>
+          <div className="section-subtitle">继续努力，解锁更多成就</div>
+        </div>
+        <div style={{ textAlign: 'center', padding: '40px', color: '#999' }}>
+          暂无成就，快去完成任务解锁吧！
+        </div>
 
         {/* 功能入口 */}
         <div className="section-header">
