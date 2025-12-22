@@ -39,3 +39,14 @@ export const asyncHandler = (fn: Function) => {
     Promise.resolve(fn(req, res, next)).catch(next);
   };
 };
+
+export const notFoundHandler = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  res.status(404).json({
+    success: false,
+    message: `无法找到路径: ${req.originalUrl}`,
+  });
+};
