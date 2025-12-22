@@ -9,7 +9,14 @@
       "Bash(git remote remove:*)",
       "Bash(git remote add:*)",
       "Bash(git branch:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(docker exec:*)",
+      "Bash(docker info:*)",
+      "Bash(docker run:*)",
+      "Bash(docker pull:*)",
+      "Bash(docker cp:*)",
+      "Bash(cmd.exe /c \"docker exec ai_universal_edu ls /tmp/\")",
+      "Bash(MSYS_NO_PATHCONV=1 docker exec:*)"
     ],
     "deny": [],
     "ask": []
