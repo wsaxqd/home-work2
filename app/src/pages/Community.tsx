@@ -1,56 +1,131 @@
+import { useState, useEffect } from 'react'
 import { Layout, Header } from '../components/layout'
+import { communityApi } from '../services/api'
+import type { Post, Topic } from '../types'
 import './Community.css'
 
-const posts = [
-  { id: 1, avatar: '🦁', name: '小狮子', content: '看看我画的彩虹城堡！🌈🏰', image: '🖼️', likes: 28, comments: 5 },
-  { id: 2, avatar: '🐰', name: '小白兔', content: '我创作了一首关于春天的诗！', image: '📜', likes: 42, comments: 8 },
-  { id: 3, avatar: '🐼', name: '圆圆', content: '今天学会了用AI写故事，太棒了！', image: '📖', likes: 35, comments: 12 },
-  { id: 4, avatar: '🦊', name: '小狐狸', content: '和AI一起创作的音乐🎵', image: '🎵', likes: 56, comments: 15 },
-]
-
-const topics = [
-  { icon: '🎨', title: '绘画分享', count: 128 },
-  { icon: '📖', title: '故事接龙', count: 89 },
-  { icon: '🎵', title: '音乐创作', count: 67 },
-  { icon: '✍️', title: '诗词学习', count: 45 },
-]
-
 export default function Community() {
+  const [posts, setPosts] = useState<Post[]>([])
+  const [topics, setTopics] = useState<Topic[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    loadData()
+  }, [])
+
+  const loadData = async () => {
+    setLoading(true)
+    setError('')
+
+    try {
+      const [postsResponse, topicsResponse] = await Promise.all([
+        communityApi.getPosts({ page: 1, limit: 10 }),
+        communityApi.getTopics()
+      ])
+
+      if (postsResponse.success && postsResponse.data) {
+        setPosts(postsResponse.data.data || [])
+      }
+
+      if (topicsResponse.success && topicsResponse.data) {
+        setTopics(topicsResponse.data)
+      }
+    } catch (err: any) {
+      setError(err.message || '加载失败')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleLike = async (postId: string) => {
+    try {
+      const response = await communityApi.likePost(postId)
+      if (response.success) {
+        loadData()
+      }
+    } catch (err) {
+      console.error('点赞失败', err)
+    }
+  }
+  if (loading) {
+    return (
+      <Layout>
+        <Header title="创意社区" gradient="linear-gradient(135deg, #e91e63 0%, #9c27b0 100%)" />
+        <div className="main-content" style={{ textAlign: 'center', padding: '40px' }}>
+          <div>加载中...</div>
+        </div>
+      </Layout>
+    )
+  }
+
+  if (error) {
+    return (
+      <Layout>
+        <Header title="创意社区" gradient="linear-gradient(135deg, #e91e63 0%, #9c27b0 100%)" />
+        <div className="main-content" style={{ textAlign: 'center', padding: '40px' }}>
+          <div style={{ color: 'red', marginBottom: '20px' }}>{error}</div>
+          <button className="btn btn-primary" onClick={loadData}>重试</button>
+        </div>
+      </Layout>
+    )
+  }
+
   return (
     <Layout>
       <Header title="创意社区" gradient="linear-gradient(135deg, #e91e63 0%, #9c27b0 100%)" />
       <div className="main-content">
-        <div className="topics-section">
-          <div className="section-title">热门话题</div>
-          <div className="topics-grid">
-            {topics.map((topic) => (
-              <div key={topic.title} className="topic-card">
-                <div className="topic-icon">{topic.icon}</div>
-                <div className="topic-title">{topic.title}</div>
-                <div className="topic-count">{topic.count}篇</div>
+        {topics.length > 0 && (
+          <div className="topics-section">
+            <div className="section-title">热门话题</div>
+            <div className="topics-grid">
+              {topics.map((topic) => (
+                <div key={topic.id} className="topic-card">
+                  <div className="topic-icon">{topic.icon}</div>
+                  <div className="topic-title">{topic.title}</div>
+                  <div className="topic-count">{topic.postCount}篇</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <div className="section-title">最新分享</div>
+        {posts.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '40px', color: '#999' }}>
+            暂无动态，快来发布第一条吧！
+          </div>
+        ) : (
+          <div className="posts-list">
+            {posts.map((post) => (
+              <div key={post.id} className="post-card">
+                <div className="post-header">
+                  <div className="post-avatar">{post.user?.avatar || '👤'}</div>
+                  <div className="post-author">{post.user?.nickname || post.user?.username || '匿名用户'}</div>
+                </div>
+                <div className="post-content">{post.content}</div>
+                {post.images && post.images.length > 0 && (
+                  <div className="post-image">
+                    {post.images.map((img, idx) => (
+                      <img key={idx} src={img} alt="post" style={{ maxWidth: '100%', borderRadius: '8px', marginTop: '10px' }} />
+                    ))}
+                  </div>
+                )}
+                <div className="post-actions">
+                  <span
+                    className="action-item"
+                    onClick={() => handleLike(post.id)}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    {post.isLiked ? '❤️' : '🤍'} {post.likeCount}
+                  </span>
+                  <span className="action-item">💬 {post.commentCount}</span>
+                  <span className="action-item">🔗 分享</span>
+                </div>
               </div>
             ))}
           </div>
-        </div>
-
-        <div className="section-title">最新分享</div>
-        <div className="posts-list">
-          {posts.map((post) => (
-            <div key={post.id} className="post-card">
-              <div className="post-header">
-                <div className="post-avatar">{post.avatar}</div>
-                <div className="post-author">{post.name}</div>
-              </div>
-              <div className="post-content">{post.content}</div>
-              <div className="post-image">{post.image}</div>
-              <div className="post-actions">
-                <span className="action-item">❤️ {post.likes}</span>
-                <span className="action-item">💬 {post.comments}</span>
-                <span className="action-item">🔗 分享</span>
-              </div>
-            </div>
-          ))}
-        </div>
+        )}
 
         <div className="create-post-btn">
           <span>✏️</span>

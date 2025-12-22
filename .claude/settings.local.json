@@ -17,7 +17,8 @@
       "Bash(docker cp:*)",
       "Bash(cmd.exe /c \"docker exec ai_universal_edu ls /tmp/\")",
       "Bash(MSYS_NO_PATHCONV=1 docker exec:*)",
-      "Bash(gh --version:*)"
+      "Bash(gh --version:*)",
+      "Bash(psql:*)"
     ],
     "deny": [],
     "ask": []

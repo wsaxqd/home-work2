@@ -13,7 +13,9 @@ import {
   StoryCreator,
   PoemCreator,
   ExpressionGame,
-  ImageRecognitionGame
+  ImageRecognitionGame,
+  MyWorks,
+  Favorites
 } from './pages'
 import './styles/global.css'
 
@@ -71,6 +73,8 @@ function App() {
         <Route path="/poem-creator" element={<ProtectedRoute><PoemCreator /></ProtectedRoute>} />
         <Route path="/expression-game" element={<ProtectedRoute><ExpressionGame /></ProtectedRoute>} />
         <Route path="/image-recognition-game" element={<ProtectedRoute><ImageRecognitionGame /></ProtectedRoute>} />
+        <Route path="/my-works" element={<ProtectedRoute><MyWorks /></ProtectedRoute>} />
+        <Route path="/favorites" element={<ProtectedRoute><Favorites /></ProtectedRoute>} />
         {/* 未匹配的路由重定向到首页 */}
         <Route path="*" element={<Navigate to="/home" replace />} />
       </Routes>

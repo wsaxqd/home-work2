@@ -1,18 +1,9 @@
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Layout, Header } from '../components/layout'
+import { authApi, userApi, worksApi } from '../services/api'
+import type { User } from '../types'
 import './Profile.css'
-
-const stats = [
-  { label: '创作数', value: 15, icon: '🎨' },
-  { label: '获赞数', value: 128, icon: '👍' },
-  { label: '积分', value: 860, icon: '⭐' },
-]
-
-const achievements = [
-  { icon: '🎨', title: '小画家', desc: '完成10幅画作', progress: 100 },
-  { icon: '📖', title: '故事大王', desc: '创作5个故事', progress: 80 },
-  { icon: '🎵', title: '音乐达人', desc: '创作3首音乐', progress: 60 },
-]
 
 const menuItems = [
   { icon: '💝', title: '心灵花园', desc: '记录今天的心情', path: '/mind-garden', color: '#a8edea', bgColor: '#e0f7f6' },
@@ -23,7 +14,68 @@ const menuItems = [
 
 export default function Profile() {
   const navigate = useNavigate()
-  const userProfile = JSON.parse(localStorage.getItem('userProfile') || '{}')
+  const [user, setUser] = useState<User | null>(null)
+  const [stats, setStats] = useState([
+    { label: '创作数', value: 0, icon: '🎨' },
+    { label: '获赞数', value: 0, icon: '👍' },
+    { label: '积分', value: 0, icon: '⭐' },
+  ])
+  const [achievements, setAchievements] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    loadUserData()
+  }, [])
+
+  const loadUserData = async () => {
+    setLoading(true)
+
+    try {
+      // 获取当前用户信息
+      const userResponse = await authApi.getCurrentUser()
+
+      if (userResponse.success && userResponse.data) {
+        setUser(userResponse.data)
+
+        // 更新统计数据
+        const worksResponse = await worksApi.getMyWorks({ page: 1, limit: 1 })
+        const worksCount = worksResponse.data?.total || 0
+
+        setStats([
+          { label: '创作数', value: worksCount, icon: '🎨' },
+          { label: '获赞数', value: 0, icon: '👍' },
+          { label: '积分', value: userResponse.data.coins || 0, icon: '⭐' },
+        ])
+      } else {
+        // 如果获取失败，使用localStorage的数据
+        const localProfile = localStorage.getItem('userProfile')
+        if (localProfile) {
+          const profile = JSON.parse(localProfile)
+          setUser(profile)
+        }
+      }
+    } catch (err) {
+      console.error('加载用户数据失败', err)
+      // 回退到localStorage
+      const localProfile = localStorage.getItem('userProfile')
+      if (localProfile) {
+        setUser(JSON.parse(localProfile))
+      }
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (loading) {
+    return (
+      <Layout>
+        <Header title="个人中心" gradient="linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)" />
+        <div className="main-content" style={{ textAlign: 'center', padding: '40px' }}>
+          <div>加载中...</div>
+        </div>
+      </Layout>
+    )
+  }
 
   return (
     <Layout>
@@ -31,11 +83,11 @@ export default function Profile() {
       <div className="main-content">
         {/* 个人信息卡 */}
         <div className="profile-card-new">
-          <div className="profile-avatar-big">{userProfile.avatar || '🌟'}</div>
+          <div className="profile-avatar-big">{user?.avatar || '🌟'}</div>
           <div className="profile-info">
-            <div className="profile-name-big">{userProfile.nickname || '小朋友'}</div>
+            <div className="profile-name-big">{user?.nickname || user?.username || '小朋友'}</div>
             <div className="profile-age-big">
-              {userProfile.age || 8}岁 · Lv.5 创意小达人
+              {user?.age || 8}岁 · Lv.{user?.level || 1} {user?.level && user.level > 5 ? '创意大师' : '创意小达人'}
             </div>
           </div>
         </div>
@@ -52,30 +104,34 @@ export default function Profile() {
         </div>
 
         {/* 成就展示 */}
-        <div className="section-header">
-          <div className="section-title">
-            <span className="section-icon">🏆</span>
-            我的成就
-          </div>
-          <div className="section-subtitle">继续努力，解锁更多成就</div>
-        </div>
-        <div className="achievements-list">
-          {achievements.map((item) => (
-            <div key={item.title} className="achievement-card-new">
-              <div className="achievement-icon-big">{item.icon}</div>
-              <div className="achievement-info">
-                <div className="achievement-title-new">{item.title}</div>
-                <div className="achievement-desc-new">{item.desc}</div>
-                <div className="achievement-progress">
-                  <div className="progress-bar">
-                    <div className="progress-fill" style={{ width: `${item.progress}%` }}></div>
-                  </div>
-                  <div className="progress-text">{item.progress}%</div>
-                </div>
+        {achievements.length > 0 && (
+          <>
+            <div className="section-header">
+              <div className="section-title">
+                <span className="section-icon">🏆</span>
+                我的成就
               </div>
+              <div className="section-subtitle">继续努力，解锁更多成就</div>
             </div>
-          ))}
-        </div>
+            <div className="achievements-list">
+              {achievements.map((item, idx) => (
+                <div key={idx} className="achievement-card-new">
+                  <div className="achievement-icon-big">{item.icon}</div>
+                  <div className="achievement-info">
+                    <div className="achievement-title-new">{item.title}</div>
+                    <div className="achievement-desc-new">{item.description}</div>
+                    <div className="achievement-progress">
+                      <div className="progress-bar">
+                        <div className="progress-fill" style={{ width: '100%' }}></div>
+                      </div>
+                      <div className="progress-text">已完成</div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
 
         {/* 功能入口 */}
         <div className="section-header">
