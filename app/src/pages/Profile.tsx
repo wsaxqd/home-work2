@@ -68,7 +68,12 @@ export default function Profile() {
   if (loading) {
     return (
       <Layout>
-        <Header title="个人中心" gradient="linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)" />
+        <Header
+          title="个人中心"
+          gradient="linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)"
+          showBack={false}
+          showLogout={true}
+        />
         <div className="main-content" style={{ textAlign: 'center', padding: '40px' }}>
           <div>加载中...</div>
         </div>
@@ -78,7 +83,12 @@ export default function Profile() {
 
   return (
     <Layout>
-      <Header title="个人中心" gradient="linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)" />
+      <Header
+        title="个人中心"
+        gradient="linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)"
+        showBack={false}
+        showLogout={true}
+      />
       <div className="main-content">
         {/* 个人信息卡 */}
         <div className="profile-card-new">

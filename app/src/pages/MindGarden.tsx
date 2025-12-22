@@ -30,7 +30,12 @@ export default function MindGarden() {
 
   return (
     <Layout>
-      <Header title="心灵花园" gradient="linear-gradient(135deg, #e91e63 0%, #ff5722 100%)" />
+      <Header
+        title="心灵花园"
+        gradient="linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)"
+        showBack={false}
+        showLogout={true}
+      />
       <div className="main-content">
         <div className="garden-intro">
           <div className="intro-icon">🌸</div>

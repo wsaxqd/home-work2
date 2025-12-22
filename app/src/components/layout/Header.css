@@ -19,6 +19,33 @@
 
 .page-title {
   font-size: 20px;
+  font-weight: 700;
   text-align: center;
   flex: 1;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 60px;
+  justify-content: flex-end;
+}
+
+.logout-button {
+  padding: 6px 14px;
+  background: rgba(255,255,255,0.25);
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.3);
+}
+
+.logout-button:hover {
+  background: rgba(255,255,255,0.35);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }

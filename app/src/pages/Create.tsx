@@ -14,7 +14,12 @@ export default function Create() {
 
   return (
     <Layout>
-      <Header title="创意工坊" gradient="linear-gradient(135deg, #f093fb 0%, #f5576c 100%)" />
+      <Header
+        title="AI创作工坊"
+        gradient="linear-gradient(135deg, #f093fb 0%, #f5576c 100%)"
+        showBack={false}
+        showLogout={true}
+      />
       <div className="main-content">
         <div className="create-intro-new">
           <div className="intro-icon-big">✨</div>

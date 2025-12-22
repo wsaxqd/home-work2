@@ -5,6 +5,7 @@ interface HeaderProps {
   title: string
   gradient?: string
   showBack?: boolean
+  showLogout?: boolean
   rightContent?: React.ReactNode
 }
 
@@ -12,6 +13,7 @@ export default function Header({
   title,
   gradient = 'linear-gradient(135deg, #4caf50 0%, #8bc34a 100%)',
   showBack = true,
+  showLogout = false,
   rightContent
 }: HeaderProps) {
   const navigate = useNavigate()
@@ -20,7 +22,15 @@ export default function Header({
     if (window.history.length > 1) {
       navigate(-1)
     } else {
-      navigate('/')
+      navigate('/create')
+    }
+  }
+
+  const handleLogout = () => {
+    if (confirm('确定要退出登录吗？')) {
+      localStorage.removeItem('token')
+      localStorage.removeItem('userProfile')
+      navigate('/login')
     }
   }
 
@@ -32,7 +42,12 @@ export default function Header({
         <div style={{ width: 24 }} />
       )}
       <div className="page-title">{title}</div>
-      <div style={{ width: 24 }}>
+      <div className="header-right">
+        {showLogout && (
+          <div className="logout-button" onClick={handleLogout}>
+            退出
+          </div>
+        )}
         {rightContent}
       </div>
     </div>
