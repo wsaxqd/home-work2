@@ -94,7 +94,7 @@ export default function Login() {
     try {
       // 使用手机号登录
       const response = await authApi.login({
-        username: phone, // 使用手机号作为用户名
+        phone: phone,
         password
       })
 
@@ -175,7 +175,7 @@ export default function Login() {
 
     try {
       const response = await authApi.register({
-        username: phone, // 使用手机号作为用户名
+        phone: phone,
         password,
         nickname,
         avatar: selectedAvatar,
