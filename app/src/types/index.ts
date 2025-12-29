@@ -38,8 +38,8 @@ export interface RegisterRequest {
 
 export interface AuthResponse {
   user: User
-  token: string
-  refreshToken?: string
+  accessToken: string
+  refreshToken: string
 }
 
 // 作品相关类型

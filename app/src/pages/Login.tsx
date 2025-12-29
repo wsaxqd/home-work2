@@ -99,7 +99,8 @@ export default function Login() {
       })
 
       if (response.success && response.data) {
-        localStorage.setItem('token', response.data.token)
+        localStorage.setItem('token', response.data.accessToken)
+        localStorage.setItem('refreshToken', response.data.refreshToken)
         localStorage.setItem('userProfile', JSON.stringify(response.data.user))
         navigate('/create')
       } else {
@@ -183,7 +184,8 @@ export default function Login() {
       })
 
       if (response.success && response.data) {
-        localStorage.setItem('token', response.data.token)
+        localStorage.setItem('token', response.data.accessToken)
+        localStorage.setItem('refreshToken', response.data.refreshToken)
         localStorage.setItem('userProfile', JSON.stringify(response.data.user))
         navigate('/create')
       } else {
