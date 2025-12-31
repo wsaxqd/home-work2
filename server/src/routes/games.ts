@@ -1,10 +1,50 @@
 import { Router } from 'express';
 import { gameService } from '../services/gameService';
+import { questionService, GameQuestionType } from '../services/questionService';
 import { authMiddleware, AuthRequest } from '../middlewares/auth';
 import { asyncHandler } from '../utils/errorHandler';
 import { sendSuccess, sendPaginated } from '../utils/response';
 
 const router = Router();
+
+// 获取游戏题目
+router.get('/questions', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+  const gameType = req.query.gameType as GameQuestionType;
+  const difficulty = req.query.difficulty ? parseInt(req.query.difficulty as string) : undefined;
+  const limit = parseInt(req.query.limit as string) || 10;
+
+  if (!gameType) {
+    return res.status(400).json({ success: false, message: '请指定游戏类型' });
+  }
+
+  const questions = await questionService.getQuestions(gameType, difficulty, limit);
+
+  // 移除正确答案，避免泄露
+  const sanitizedQuestions = questions.map(q => ({
+    id: q.id,
+    gameType: q.gameType,
+    questionData: {
+      imageUrl: q.questionData.imageUrl,
+      question: q.questionData.question,
+      options: q.questionData.options,
+    },
+    difficulty: q.difficulty,
+  }));
+
+  sendSuccess(res, sanitizedQuestions);
+}));
+
+// 验证答案
+router.post('/verify-answer', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+  const { questionId, answer } = req.body;
+
+  if (!questionId || answer === undefined) {
+    return res.status(400).json({ success: false, message: '缺少必要参数' });
+  }
+
+  const result = await questionService.verifyAnswer(questionId, answer);
+  sendSuccess(res, result);
+}));
 
 // 保存游戏成绩
 router.post('/score', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {

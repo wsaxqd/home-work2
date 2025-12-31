@@ -17,6 +17,14 @@ import { migration_009_create_wishes } from './009_create_wishes';
 import { migration_010_create_notifications } from './010_create_notifications';
 import { migration_011_create_assessments } from './011_create_assessments';
 import { migration_012_create_learning_progress } from './012_create_learning_progress';
+import { migration_013_create_ai_conversations } from './013_create_ai_conversations';
+import { migration_014_create_ai_generations } from './014_create_ai_generations';
+import { migration_015_update_users_table } from './015_update_users_table';
+import { migration_016_create_game_questions } from './016_create_game_questions';
+import { migration_017_create_advanced_features } from './017_create_advanced_features';
+import { migration_018_add_more_game_questions } from './018_add_more_game_questions';
+import { migration_019_create_moderation_system } from './019_create_moderation_system';
+import { migration_020_add_last_login } from './020_add_last_login';
 
 const migrations: Migration[] = [
   migration_001_create_users,
@@ -31,6 +39,14 @@ const migrations: Migration[] = [
   migration_010_create_notifications,
   migration_011_create_assessments,
   migration_012_create_learning_progress,
+  migration_013_create_ai_conversations,
+  migration_014_create_ai_generations,
+  migration_015_update_users_table,
+  migration_016_create_game_questions,
+  migration_017_create_advanced_features,
+  migration_018_add_more_game_questions,
+  migration_019_create_moderation_system,
+  migration_020_add_last_login,
 ];
 
 async function run() {

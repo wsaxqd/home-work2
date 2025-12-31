@@ -79,4 +79,37 @@ router.get('/stats', authMiddleware, asyncHandler(async (req: AuthRequest, res) 
   sendSuccess(res, stats);
 }));
 
+// 获取对话上下文
+router.get('/conversation/context', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+  const userId = req.userId!;
+  const taskType = (req.query.taskType as any) || 'chat';
+
+  const context = await aiService.getConversationContext(userId, taskType);
+  sendSuccess(res, context);
+}));
+
+// 清除对话上下文
+router.delete('/conversation/context', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+  const userId = req.userId!;
+  const taskType = (req.query.taskType as any) || 'chat';
+
+  await aiService.clearConversationContext(userId, taskType);
+  sendSuccess(res, null, '对话已清除');
+}));
+
+// AI健康检查
+router.get('/health', asyncHandler(async (req, res) => {
+  const isHealthy = await aiService.healthCheck();
+
+  if (isHealthy) {
+    sendSuccess(res, { status: 'healthy' }, 'AI服务运行正常');
+  } else {
+    res.status(503).json({
+      success: false,
+      message: 'AI服务暂时不可用',
+      data: { status: 'unhealthy' },
+    });
+  }
+}));
+
 export default router;

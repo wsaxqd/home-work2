@@ -30,6 +30,18 @@ const config = {
   cors: {
     origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
   },
+
+  dify: {
+    apiUrl: process.env.DIFY_API_URL || 'http://localhost/v1',
+    apiKey: process.env.DIFY_API_KEY || '',
+    chatAppKey: process.env.DIFY_CHAT_APP_KEY || '',
+    storyAppKey: process.env.DIFY_STORY_APP_KEY || '',
+    emotionAppKey: process.env.DIFY_EMOTION_APP_KEY || '',
+    tutoringAppKey: process.env.DIFY_TUTORING_APP_KEY || '',
+    tutoringEvaluateAppKey: process.env.DIFY_TUTORING_EVALUATE_APP_KEY || '',
+    tutoringSummaryAppKey: process.env.DIFY_TUTORING_SUMMARY_APP_KEY || '',
+    timeout: parseInt(process.env.DIFY_TIMEOUT || '30000', 10),
+  },
 };
 
 export default config;

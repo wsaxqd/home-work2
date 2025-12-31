@@ -120,6 +120,12 @@ export class AuthService {
       throw new AppError('手机号或密码错误', 401);
     }
 
+    // 更新最后登录时间
+    await query(
+      'UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE id = $1',
+      [user.id]
+    );
+
     const tokens = this.generateTokens(user.id);
 
     return {

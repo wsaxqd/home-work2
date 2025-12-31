@@ -268,7 +268,238 @@
         .secondary-btn:active {
             box-shadow: 0 2px 0 #ff9a00 !important;
         }
-        
+
+        /* 密码可见性切换按钮 */
+        .password-toggle {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            font-size: 18px;
+            color: #ff9a00;
+            user-select: none;
+            transition: color 0.3s;
+        }
+
+        .password-toggle:hover {
+            color: #ff6a00;
+        }
+
+        .password-wrapper {
+            position: relative;
+        }
+
+        .password-wrapper input {
+            padding-right: 45px;
+        }
+
+        /* 密码强度指示器 */
+        .password-strength {
+            height: 4px;
+            background-color: #e0e0e0;
+            border-radius: 2px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+
+        .password-strength-bar {
+            height: 100%;
+            width: 0;
+            transition: all 0.3s;
+            border-radius: 2px;
+        }
+
+        .strength-weak {
+            width: 33%;
+            background-color: #e74c3c;
+        }
+
+        .strength-medium {
+            width: 66%;
+            background-color: #f39c12;
+        }
+
+        .strength-strong {
+            width: 100%;
+            background-color: #2ecc71;
+        }
+
+        .strength-text {
+            font-size: 12px;
+            margin-top: 4px;
+            font-weight: 500;
+        }
+
+        /* Toast提示 */
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            background-color: #333;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            z-index: 9999;
+            opacity: 0;
+            transition: all 0.3s;
+            font-size: 15px;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .toast.success {
+            background-color: #2ecc71;
+        }
+
+        .toast.error {
+            background-color: #e74c3c;
+        }
+
+        .toast.info {
+            background-color: #3498db;
+        }
+
+        /* 加载动画 */
+        .loading-spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.6s linear infinite;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* 记住我和忘记密码 */
+        .remember-forgot {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .remember-me input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+            cursor: pointer;
+        }
+
+        .forgot-password {
+            color: #ff9a00;
+            text-decoration: none;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .forgot-password:hover {
+            color: #ff6a00;
+            text-decoration: underline;
+        }
+
+        /* 验证码容器 */
+        .captcha-wrapper {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .captcha-wrapper input {
+            flex: 1;
+        }
+
+        .captcha-canvas {
+            border: 2px solid #ffd166;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: border-color 0.3s;
+            background: white;
+        }
+
+        .captcha-canvas:hover {
+            border-color: #ff9a00;
+        }
+
+        /* 登录方式切换 */
+        .login-method-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .login-method-tab {
+            flex: 1;
+            padding: 10px;
+            background-color: #f5f5f5;
+            border: 2px solid #ffd166;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+            color: #666;
+        }
+
+        .login-method-tab.active {
+            background: linear-gradient(to right, #ff9a00, #ff6a00);
+            color: white;
+            border-color: #ff6a00;
+        }
+
+        .login-method-tab:hover:not(.active) {
+            background-color: #fff9f0;
+        }
+
+        /* 验证码发送按钮 */
+        .send-code-btn {
+            min-width: 100px;
+            padding: 14px 15px;
+            background: linear-gradient(to right, #ff9a00, #ff6a00);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .send-code-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(255, 106, 0, 0.3);
+        }
+
+        .send-code-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
         .sun-icon {
             position: absolute;
             top: 10px;
@@ -335,6 +566,9 @@
     </style>
 </head>
 <body>
+    <!-- Toast提示容器 -->
+    <div id="toast" class="toast"></div>
+
     <div class="sun-rays"></div>
     
     <div class="floating-elements">
@@ -362,15 +596,34 @@
                     
                     <div class="input-group">
                         <label for="register-password">密码</label>
-                        <input type="password" id="register-password" placeholder="请输入密码" required>
+                        <div class="password-wrapper">
+                            <input type="password" id="register-password" placeholder="请输入密码" required>
+                            <span class="password-toggle" onclick="togglePassword('register-password', this)">👁️</span>
+                        </div>
+                        <div class="password-strength">
+                            <div class="password-strength-bar" id="strength-bar"></div>
+                        </div>
+                        <div id="strength-text" class="strength-text"></div>
                         <div class="password-requirements">密码需至少8位，包含大写字母、小写字母和数字</div>
                         <div id="password-error" class="error-message">密码不符合要求</div>
                     </div>
-                    
+
                     <div class="input-group">
                         <label for="confirm-password">确认密码</label>
-                        <input type="password" id="confirm-password" placeholder="请再次输入密码" required>
+                        <div class="password-wrapper">
+                            <input type="password" id="confirm-password" placeholder="请再次输入密码" required>
+                            <span class="password-toggle" onclick="togglePassword('confirm-password', this)">👁️</span>
+                        </div>
                         <div id="confirm-error" class="error-message">两次输入的密码不一致</div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="register-captcha">验证码</label>
+                        <div class="captcha-wrapper">
+                            <input type="text" id="register-captcha" placeholder="请输入验证码" required maxlength="4">
+                            <canvas id="register-captcha-canvas" class="captcha-canvas" width="100" height="40"></canvas>
+                        </div>
+                        <div id="captcha-error" class="error-message">验证码错误</div>
                     </div>
                     
                     <button type="submit" class="btn">注册</button>
@@ -387,25 +640,80 @@
             <div class="form-container">
                 <div class="ai-icon">🔐✨</div>
                 <h2 class="form-title">用户登录</h2>
-                <form id="login-form">
+
+                <!-- 登录方式切换 -->
+                <div class="login-method-tabs">
+                    <div class="login-method-tab active" data-method="password">密码登录</div>
+                    <div class="login-method-tab" data-method="code">验证码登录</div>
+                </div>
+
+                <!-- 密码登录表单 -->
+                <form id="login-form-password" class="login-form">
                     <div class="input-group">
                         <label for="login-phone">手机号</label>
                         <input type="tel" id="login-phone" placeholder="请输入您的手机号" required>
                         <div id="login-phone-error" class="error-message">请输入有效的手机号</div>
                     </div>
-                    
+
                     <div class="input-group">
                         <label for="login-password">密码</label>
-                        <input type="password" id="login-password" placeholder="请输入密码" required>
+                        <div class="password-wrapper">
+                            <input type="password" id="login-password" placeholder="请输入密码" required>
+                            <span class="password-toggle" onclick="togglePassword('login-password', this)">👁️</span>
+                        </div>
                         <div id="login-password-error" class="error-message">密码错误</div>
                     </div>
-                    
-                    <button type="submit" class="btn">登录</button>
-                    
-                    <div class="switch-form">
-                        没有账号？ <a id="to-register">立即注册</a>
+
+                    <div class="input-group">
+                        <label for="login-captcha">验证码</label>
+                        <div class="captcha-wrapper">
+                            <input type="text" id="login-captcha" placeholder="请输入验证码" required maxlength="4">
+                            <canvas id="login-captcha-canvas" class="captcha-canvas" width="100" height="40"></canvas>
+                        </div>
+                        <div id="login-captcha-error" class="error-message">验证码错误</div>
                     </div>
+
+                    <div class="remember-forgot">
+                        <label class="remember-me">
+                            <input type="checkbox" id="remember-me">
+                            <span>记住我</span>
+                        </label>
+                        <a class="forgot-password" id="forgot-password">忘记密码？</a>
+                    </div>
+
+                    <button type="submit" class="btn">登录</button>
                 </form>
+
+                <!-- 验证码登录表单 -->
+                <form id="login-form-code" class="login-form hidden">
+                    <div class="input-group">
+                        <label for="login-phone-code">手机号</label>
+                        <input type="tel" id="login-phone-code" placeholder="请输入您的手机号" required>
+                        <div id="login-phone-code-error" class="error-message">请输入有效的手机号</div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="sms-code">短信验证码</label>
+                        <div class="captcha-wrapper">
+                            <input type="text" id="sms-code" placeholder="请输入6位验证码" required maxlength="6">
+                            <button type="button" class="send-code-btn" id="send-code-btn">发送验证码</button>
+                        </div>
+                        <div id="sms-code-error" class="error-message">验证码错误</div>
+                    </div>
+
+                    <div class="remember-forgot">
+                        <label class="remember-me">
+                            <input type="checkbox" id="remember-me-code">
+                            <span>记住我</span>
+                        </label>
+                    </div>
+
+                    <button type="submit" class="btn">登录</button>
+                </form>
+
+                <div class="switch-form">
+                    没有账号？ <a id="to-register">立即注册</a>
+                </div>
             </div>
         </div>
         
@@ -427,216 +735,580 @@
 
     <script>
         // 防止动态模块加载错误
-window.addEventListener('error', function(e) {
-    if (e.target && e.target.src && e.target.src.includes('@vite/client')) {
-        e.preventDefault();
-        console.log('已拦截Vite客户端模块加载请求');
-    }
-}, true);
+        window.addEventListener('error', function(e) {
+            if (e.target && e.target.src && e.target.src.includes('@vite/client')) {
+                e.preventDefault();
+                console.log('已拦截Vite客户端模块加载请求');
+            }
+        }, true);
 
-// 在DOM加载完成后初始化应用导航
-document.addEventListener('DOMContentLoaded', function() {
-    // 初始化导航
-    initAppNavigation();
-});
-        
-        // 页面元素
+        // 在DOM加载完成后初始化应用导航
+        document.addEventListener('DOMContentLoaded', function() {
+            initAppNavigation();
+            initCaptcha();
+            initPasswordStrength();
+            initLoginMethodSwitch();
+            loadRememberedUser();
+        });
+
+        // ==================== 工具函数 ====================
+
+        // 密码加密函数（使用SHA-256）
+        async function hashPassword(password) {
+            const msgBuffer = new TextEncoder().encode(password);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        // Toast提示函数
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast ' + type;
+            toast.classList.add('show');
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // 密码可见性切换
+        function togglePassword(inputId, toggleIcon) {
+            const input = document.getElementById(inputId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                toggleIcon.textContent = '🙈';
+            } else {
+                input.type = 'password';
+                toggleIcon.textContent = '👁️';
+            }
+        }
+
+        // 验证码相关变量和函数
+        let registerCaptchaText = '';
+        let loginCaptchaText = '';
+
+        function generateCaptcha(canvasId, isRegister = true) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext('2d');
+
+            // 清空画布
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // 生成随机4位验证码
+            const chars = '0123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+            let captcha = '';
+            for (let i = 0; i < 4; i++) {
+                captcha += chars[Math.floor(Math.random() * chars.length)];
+            }
+
+            if (isRegister) {
+                registerCaptchaText = captcha;
+            } else {
+                loginCaptchaText = captcha;
+            }
+
+            // 绘制背景
+            ctx.fillStyle = '#fff9f0';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // 绘制干扰线
+            for (let i = 0; i < 3; i++) {
+                ctx.strokeStyle = `rgba(255, ${Math.random() * 100 + 100}, 0, 0.3)`;
+                ctx.beginPath();
+                ctx.moveTo(Math.random() * canvas.width, Math.random() * canvas.height);
+                ctx.lineTo(Math.random() * canvas.width, Math.random() * canvas.height);
+                ctx.stroke();
+            }
+
+            // 绘制验证码文字
+            for (let i = 0; i < captcha.length; i++) {
+                ctx.font = `${20 + Math.random() * 5}px Arial`;
+                ctx.fillStyle = `rgb(${Math.random() * 100}, ${Math.random() * 100 + 50}, 0)`;
+                ctx.save();
+                ctx.translate(20 + i * 20, 25);
+                ctx.rotate((Math.random() - 0.5) * 0.4);
+                ctx.fillText(captcha[i], 0, 0);
+                ctx.restore();
+            }
+
+            // 绘制干扰点
+            for (let i = 0; i < 30; i++) {
+                ctx.fillStyle = `rgba(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255}, 0.3)`;
+                ctx.beginPath();
+                ctx.arc(Math.random() * canvas.width, Math.random() * canvas.height, 1, 0, 2 * Math.PI);
+                ctx.fill();
+            }
+        }
+
+        function initCaptcha() {
+            const registerCanvas = document.getElementById('register-captcha-canvas');
+            const loginCanvas = document.getElementById('login-captcha-canvas');
+
+            if (registerCanvas) {
+                generateCaptcha('register-captcha-canvas', true);
+                registerCanvas.addEventListener('click', () => generateCaptcha('register-captcha-canvas', true));
+            }
+
+            if (loginCanvas) {
+                generateCaptcha('login-captcha-canvas', false);
+                loginCanvas.addEventListener('click', () => generateCaptcha('login-captcha-canvas', false));
+            }
+        }
+
+        // 密码强度检测
+        function checkPasswordStrength(password) {
+            const strengthBar = document.getElementById('strength-bar');
+            const strengthText = document.getElementById('strength-text');
+
+            if (!password) {
+                strengthBar.className = 'password-strength-bar';
+                strengthText.textContent = '';
+                return;
+            }
+
+            let strength = 0;
+
+            // 长度检查
+            if (password.length >= 8) strength++;
+            if (password.length >= 12) strength++;
+
+            // 包含小写字母
+            if (/[a-z]/.test(password)) strength++;
+
+            // 包含大写字母
+            if (/[A-Z]/.test(password)) strength++;
+
+            // 包含数字
+            if (/\d/.test(password)) strength++;
+
+            // 包含特殊字符
+            if (/[!@#$%^&*(),.?":{}|<>]/.test(password)) strength++;
+
+            // 根据强度设置样式
+            if (strength <= 2) {
+                strengthBar.className = 'password-strength-bar strength-weak';
+                strengthText.textContent = '密码强度：弱';
+                strengthText.style.color = '#e74c3c';
+            } else if (strength <= 4) {
+                strengthBar.className = 'password-strength-bar strength-medium';
+                strengthText.textContent = '密码强度：中';
+                strengthText.style.color = '#f39c12';
+            } else {
+                strengthBar.className = 'password-strength-bar strength-strong';
+                strengthText.textContent = '密码强度：强';
+                strengthText.style.color = '#2ecc71';
+            }
+        }
+
+        function initPasswordStrength() {
+            const registerPassword = document.getElementById('register-password');
+            if (registerPassword) {
+                registerPassword.addEventListener('input', (e) => {
+                    checkPasswordStrength(e.target.value);
+                });
+            }
+        }
+
+        // 登录方式切换
+        function initLoginMethodSwitch() {
+            const tabs = document.querySelectorAll('.login-method-tab');
+            const passwordForm = document.getElementById('login-form-password');
+            const codeForm = document.getElementById('login-form-code');
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+
+                    const method = tab.getAttribute('data-method');
+                    if (method === 'password') {
+                        passwordForm.classList.remove('hidden');
+                        codeForm.classList.add('hidden');
+                    } else {
+                        passwordForm.classList.add('hidden');
+                        codeForm.classList.remove('hidden');
+                    }
+                });
+            });
+        }
+
+        // 发送验证码
+        let countdown = 0;
+        function sendVerificationCode() {
+            const phone = document.getElementById('login-phone-code').value.trim();
+            const btn = document.getElementById('send-code-btn');
+
+            if (!validatePhone(phone)) {
+                showToast('请输入有效的手机号', 'error');
+                return;
+            }
+
+            // 模拟发送验证码
+            const code = Math.floor(100000 + Math.random() * 900000).toString();
+            localStorage.setItem('sms_code_' + phone, code);
+            localStorage.setItem('sms_code_time_' + phone, Date.now());
+
+            showToast('验证码已发送：' + code + '（仅用于演示）', 'success');
+
+            // 倒计时
+            countdown = 60;
+            btn.disabled = true;
+            const timer = setInterval(() => {
+                countdown--;
+                btn.textContent = countdown + '秒后重发';
+                if (countdown <= 0) {
+                    clearInterval(timer);
+                    btn.textContent = '发送验证码';
+                    btn.disabled = false;
+                }
+            }, 1000);
+        }
+
+        // 记住用户
+        function rememberUser(phone) {
+            localStorage.setItem('remembered_user', phone);
+        }
+
+        function loadRememberedUser() {
+            const rememberedUser = localStorage.getItem('remembered_user');
+            if (rememberedUser) {
+                const loginPhone = document.getElementById('login-phone');
+                if (loginPhone) {
+                    loginPhone.value = rememberedUser;
+                    document.getElementById('remember-me').checked = true;
+                }
+            }
+        }
+
+        // ==================== 页面元素 ====================
+
         const registerPage = document.getElementById('register-page');
         const loginPage = document.getElementById('login-page');
         const welcomePage = document.getElementById('welcome-page');
-        
+
         // 注册表单元素
         const registerForm = document.getElementById('register-form');
         const registerPhone = document.getElementById('register-phone');
         const registerPassword = document.getElementById('register-password');
         const confirmPassword = document.getElementById('confirm-password');
-        
-        // 登录表单元素
-        const loginForm = document.getElementById('login-form');
+        const registerCaptcha = document.getElementById('register-captcha');
+
+        // 登录表单元素（密码登录）
+        const loginFormPassword = document.getElementById('login-form-password');
         const loginPhone = document.getElementById('login-phone');
         const loginPassword = document.getElementById('login-password');
-        
-        // 错误提示元素
-        const phoneError = document.getElementById('phone-error');
-        const passwordError = document.getElementById('password-error');
-        const confirmError = document.getElementById('confirm-error');
-        const loginPhoneError = document.getElementById('login-phone-error');
-        const loginPasswordError = document.getElementById('login-password-error');
-        
+        const loginCaptcha = document.getElementById('login-captcha');
+
+        // 登录表单元素（验证码登录）
+        const loginFormCode = document.getElementById('login-form-code');
+        const loginPhoneCode = document.getElementById('login-phone-code');
+        const smsCode = document.getElementById('sms-code');
+
         // 按钮元素
         const toLoginLink = document.getElementById('to-login');
         const toRegisterLink = document.getElementById('to-register');
         const logoutBtn = document.getElementById('logout-btn');
         const profileBtn = document.getElementById('profile-btn');
-        
+        const sendCodeBtn = document.getElementById('send-code-btn');
+        const forgotPasswordLink = document.getElementById('forgot-password');
+
         // 使用localStorage模拟用户数据库
         let users = JSON.parse(localStorage.getItem('users')) || {};
-        
-        // 创建浮动元素
-        function createFloatingElements() {
-            const container = document.querySelector('.floating-elements');
-            const elementCount = 15;
-            
-            for (let i = 0; i < elementCount; i++) {
-                const element = document.createElement('div');
-                element.classList.add('floating-element');
-                
-                // 随机大小和位置
-                const size = Math.random() * 30 + 10;
-                element.style.width = `${size}px`;
-                element.style.height = `${size}px`;
-                element.style.left = `${Math.random() * 100}%`;
-                element.style.top = `${Math.random() * 100}%`;
-                
-                // 随机动画延迟
-                element.style.animationDelay = `${Math.random() * 5}s`;
-                element.style.animationDuration = `${Math.random() * 10 + 10}s`;
-                
-                container.appendChild(element);
-            }
+
+        // ==================== 验证函数 ====================
+
+        // 手机号验证
+        function validatePhone(phone) {
+            const phoneRegex = /^1[3-9]\d{9}$/;
+            return phoneRegex.test(phone);
         }
-        
-        // 显示页面
+
+        // 密码验证
+        function validatePassword(password) {
+            const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+            return passwordRegex.test(password);
+        }
+
+        // ==================== 页面切换 ====================
+
         function showPage(page) {
             registerPage.classList.add('hidden');
             loginPage.classList.add('hidden');
             welcomePage.classList.add('hidden');
             page.classList.remove('hidden');
         }
-        
-        // 手机号验证
-        function validatePhone(phone) {
-            const phoneRegex = /^1[3-9]\d{9}$/;
-            return phoneRegex.test(phone);
-        }
-        
-        // 密码验证
-        function validatePassword(password) {
-            // 至少8位，包含大写字母、小写字母和数字
-            const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
-            return passwordRegex.test(password);
-        }
-        
+
+        // ==================== 事件监听 ====================
+
         // 切换至登录页面
         toLoginLink.addEventListener('click', function() {
             showPage(loginPage);
+            generateCaptcha('login-captcha-canvas', false);
         });
-        
+
         // 切换至注册页面
         toRegisterLink.addEventListener('click', function() {
             showPage(registerPage);
+            generateCaptcha('register-captcha-canvas', true);
         });
-        
+
         // 退出登录
         logoutBtn.addEventListener('click', function() {
             showPage(loginPage);
-            // 清空登录表单
-            loginForm.reset();
+            loginFormPassword.reset();
+            loginFormCode.reset();
+            showToast('已退出登录', 'info');
         });
-        
+
         // 进入个人主页
         profileBtn.addEventListener('click', function() {
-            // 使用统一的导航函数跳转到个人主页
             navigateTo('profile.html');
         });
-        
-        // 注册表单提交
-        registerForm.addEventListener('submit', function(e) {
+
+        // 发送验证码
+        sendCodeBtn.addEventListener('click', sendVerificationCode);
+
+        // 忘记密码
+        forgotPasswordLink.addEventListener('click', function() {
+            showToast('请联系管理员重置密码', 'info');
+        });
+
+        // ==================== 注册表单提交 ====================
+
+        registerForm.addEventListener('submit', async function(e) {
             e.preventDefault();
-            
-            // 重置错误提示
-            phoneError.style.display = 'none';
-            passwordError.style.display = 'none';
-            confirmError.style.display = 'none';
-            
+
             const phone = registerPhone.value.trim();
             const password = registerPassword.value;
             const confirm = confirmPassword.value;
-            
+            const captcha = registerCaptcha.value.trim();
+
             let isValid = true;
-            
+
             // 验证手机号
             if (!validatePhone(phone)) {
-                phoneError.style.display = 'block';
+                document.getElementById('phone-error').style.display = 'block';
+                showToast('请输入有效的手机号', 'error');
                 isValid = false;
+            } else {
+                document.getElementById('phone-error').style.display = 'none';
             }
-            
+
             // 验证密码
             if (!validatePassword(password)) {
-                passwordError.style.display = 'block';
+                document.getElementById('password-error').style.display = 'block';
+                showToast('密码不符合要求', 'error');
                 isValid = false;
+            } else {
+                document.getElementById('password-error').style.display = 'none';
             }
-            
+
             // 验证确认密码
             if (password !== confirm) {
-                confirmError.style.display = 'block';
+                document.getElementById('confirm-error').style.display = 'block';
+                showToast('两次输入的密码不一致', 'error');
                 isValid = false;
+            } else {
+                document.getElementById('confirm-error').style.display = 'none';
             }
-            
+
+            // 验证验证码
+            if (captcha.toLowerCase() !== registerCaptchaText.toLowerCase()) {
+                document.getElementById('captcha-error').style.display = 'block';
+                showToast('验证码错误', 'error');
+                generateCaptcha('register-captcha-canvas', true);
+                isValid = false;
+            } else {
+                document.getElementById('captcha-error').style.display = 'none';
+            }
+
             // 检查手机号是否已注册
             if (users[phone]) {
-                phoneError.textContent = '该手机号已注册';
-                phoneError.style.display = 'block';
+                document.getElementById('phone-error').textContent = '该手机号已注册';
+                document.getElementById('phone-error').style.display = 'block';
+                showToast('该手机号已注册', 'error');
                 isValid = false;
             }
-            
+
             if (isValid) {
-                // 保存用户信息
-                users[phone] = password;
+                // 加密密码并保存
+                const hashedPassword = await hashPassword(password);
+                users[phone] = hashedPassword;
                 localStorage.setItem('users', JSON.stringify(users));
-                
+
+                showToast('注册成功！请登录', 'success');
+
                 // 跳转到登录页面
-                showPage(loginPage);
-                // 清空注册表单
-                registerForm.reset();
-                
-                // 自动填充手机号到登录表单
-                loginPhone.value = phone;
+                setTimeout(() => {
+                    showPage(loginPage);
+                    registerForm.reset();
+                    checkPasswordStrength('');
+                    loginPhone.value = phone;
+                }, 1500);
             }
         });
-        
-        // 登录表单提交
-        loginForm.addEventListener('submit', function(e) {
+
+        // ==================== 密码登录表单提交 ====================
+
+        loginFormPassword.addEventListener('submit', async function(e) {
             e.preventDefault();
-            
-            // 重置错误提示
-            loginPhoneError.style.display = 'none';
-            loginPasswordError.style.display = 'none';
-            
+
             const phone = loginPhone.value.trim();
             const password = loginPassword.value;
-            
+            const captcha = loginCaptcha.value.trim();
+            const rememberMe = document.getElementById('remember-me').checked;
+
             let isValid = true;
-            
+
             // 验证手机号
             if (!validatePhone(phone)) {
-                loginPhoneError.style.display = 'block';
+                document.getElementById('login-phone-error').style.display = 'block';
+                showToast('请输入有效的手机号', 'error');
                 isValid = false;
+            } else {
+                document.getElementById('login-phone-error').style.display = 'none';
             }
-            
+
+            // 验证验证码
+            if (captcha.toLowerCase() !== loginCaptchaText.toLowerCase()) {
+                document.getElementById('login-captcha-error').style.display = 'block';
+                showToast('验证码错误', 'error');
+                generateCaptcha('login-captcha-canvas', false);
+                isValid = false;
+            } else {
+                document.getElementById('login-captcha-error').style.display = 'none';
+            }
+
             // 验证用户是否存在
             if (!users[phone]) {
-                loginPhoneError.textContent = '该手机号未注册';
-                loginPhoneError.style.display = 'block';
+                document.getElementById('login-phone-error').textContent = '该手机号未注册';
+                document.getElementById('login-phone-error').style.display = 'block';
+                showToast('该手机号未注册', 'error');
                 isValid = false;
-            } else if (users[phone] !== password) {
+            } else {
                 // 验证密码
-                loginPasswordError.style.display = 'block';
-                isValid = false;
+                const hashedPassword = await hashPassword(password);
+                if (users[phone] !== hashedPassword) {
+                    document.getElementById('login-password-error').style.display = 'block';
+                    showToast('密码错误', 'error');
+                    isValid = false;
+                } else {
+                    document.getElementById('login-password-error').style.display = 'none';
+                }
             }
-            
+
             if (isValid) {
-                // 登录成功，跳转到首页
-                navigateTo('index.html');
+                // 记住用户
+                if (rememberMe) {
+                    rememberUser(phone);
+                } else {
+                    localStorage.removeItem('remembered_user');
+                }
+
                 // 保存登录状态
                 localStorage.setItem('isLoggedIn', 'true');
                 localStorage.setItem('currentUser', phone);
+
+                showToast('登录成功！', 'success');
+
+                // 跳转到首页
+                setTimeout(() => {
+                    navigateTo('index.html');
+                }, 1000);
             }
         });
-        
+
+        // ==================== 验证码登录表单提交 ====================
+
+        loginFormCode.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const phone = loginPhoneCode.value.trim();
+            const code = smsCode.value.trim();
+            const rememberMe = document.getElementById('remember-me-code').checked;
+
+            let isValid = true;
+
+            // 验证手机号
+            if (!validatePhone(phone)) {
+                document.getElementById('login-phone-code-error').style.display = 'block';
+                showToast('请输入有效的手机号', 'error');
+                isValid = false;
+            } else {
+                document.getElementById('login-phone-code-error').style.display = 'none';
+            }
+
+            // 验证验证码
+            const savedCode = localStorage.getItem('sms_code_' + phone);
+            const codeTime = localStorage.getItem('sms_code_time_' + phone);
+
+            if (!savedCode || Date.now() - codeTime > 300000) { // 5分钟有效期
+                document.getElementById('sms-code-error').textContent = '验证码已过期';
+                document.getElementById('sms-code-error').style.display = 'block';
+                showToast('验证码已过期，请重新获取', 'error');
+                isValid = false;
+            } else if (code !== savedCode) {
+                document.getElementById('sms-code-error').textContent = '验证码错误';
+                document.getElementById('sms-code-error').style.display = 'block';
+                showToast('验证码错误', 'error');
+                isValid = false;
+            } else {
+                document.getElementById('sms-code-error').style.display = 'none';
+            }
+
+            if (isValid) {
+                // 记住用户
+                if (rememberMe) {
+                    rememberUser(phone);
+                } else {
+                    localStorage.removeItem('remembered_user');
+                }
+
+                // 保存登录状态
+                localStorage.setItem('isLoggedIn', 'true');
+                localStorage.setItem('currentUser', phone);
+
+                // 清除验证码
+                localStorage.removeItem('sms_code_' + phone);
+                localStorage.removeItem('sms_code_time_' + phone);
+
+                showToast('登录成功！', 'success');
+
+                // 跳转到首页
+                setTimeout(() => {
+                    navigateTo('index.html');
+                }, 1000);
+            }
+        });
+
+        // ==================== 浮动元素 ====================
+
+        function createFloatingElements() {
+            const container = document.querySelector('.floating-elements');
+            const elementCount = 15;
+
+            for (let i = 0; i < elementCount; i++) {
+                const element = document.createElement('div');
+                element.classList.add('floating-element');
+
+                const size = Math.random() * 30 + 10;
+                element.style.width = `${size}px`;
+                element.style.height = `${size}px`;
+                element.style.left = `${Math.random() * 100}%`;
+                element.style.top = `${Math.random() * 100}%`;
+
+                element.style.animationDelay = `${Math.random() * 5}s`;
+                element.style.animationDuration = `${Math.random() * 10 + 10}s`;
+
+                container.appendChild(element);
+            }
+        }
+
         // 初始显示注册页面
         showPage(registerPage);
-        
+
         // 创建浮动元素
         createFloatingElements();
     </script>

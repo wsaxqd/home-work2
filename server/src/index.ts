@@ -15,6 +15,14 @@ import aiRoutes from './routes/ai';
 import assessmentRoutes from './routes/assessment';
 import notificationsRoutes from './routes/notifications';
 import uploadRoutes from './routes/upload';
+import homeRoutes from './routes/home';
+import creationRoutes from './routes/creation';
+import parentalRoutes from './routes/parental';
+import recommendationRoutes from './routes/recommendations';
+import tutoringRoutes from './routes/tutoring';
+import generationRoutes from './routes/generation';
+import moderationRoutes from './routes/moderation';
+import analyticsRoutes from './routes/analytics';
 
 const app = express();
 
@@ -49,6 +57,14 @@ app.use('/api/ai', aiRoutes);
 app.use('/api/assessment', assessmentRoutes);
 app.use('/api/notifications', notificationsRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/creation', creationRoutes);
+app.use('/api/parental', parentalRoutes);
+app.use('/api/recommendations', recommendationRoutes);
+app.use('/api/tutoring', tutoringRoutes);
+app.use('/api/generation', generationRoutes);
+app.use('/api/moderation', moderationRoutes);
+app.use('/api/analytics', analyticsRoutes);
+app.use('/api', homeRoutes);
 
 // 404处理
 app.use(notFoundHandler);
