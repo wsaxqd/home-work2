@@ -1078,10 +1078,23 @@
         
         // 更新预览
         function updatePreview() {
-            // 在实际应用中，这里会生成预览图像
-            // 这里我们只是模拟
-            document.getElementById('original-preview').innerHTML = '原作';
-            document.getElementById('enhanced-preview').innerHTML = 'AI增强';
+            const canvasElement = document.getElementById('drawing-canvas');
+
+            if (canvasElement) {
+                // 将canvas转换为图片数据URL
+                const imageDataUrl = canvasElement.toDataURL('image/png');
+
+                // 更新原作预览
+                const originalPreview = document.getElementById('original-preview');
+                originalPreview.innerHTML = `<img src="${imageDataUrl}" style="max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 10px;" alt="原作">`;
+
+                // 更新AI增强预览（这里先显示相同的，实际应用中会调用AI API）
+                const enhancedPreview = document.getElementById('enhanced-preview');
+                enhancedPreview.innerHTML = `<img src="${imageDataUrl}" style="max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 10px; filter: brightness(1.1) contrast(1.1);" alt="AI增强">`;
+            } else {
+                document.getElementById('original-preview').innerHTML = '原作';
+                document.getElementById('enhanced-preview').innerHTML = 'AI增强';
+            }
         }
         
         // 选择增强选项
@@ -1161,23 +1174,32 @@
                 'shape': '形状绘画',
                 'coloring': '填色游戏'
             };
-            
+
             const enhanceLabels = {
                 'complete': '完善细节',
                 'style': '艺术风格',
                 'color': '智能上色',
                 'animate': '动态效果'
             };
-            
+
             document.getElementById('artwork-mode').textContent = modeLabels[currentMode] || '自由绘画';
             document.getElementById('artwork-enhance').textContent = currentEnhance ? enhanceLabels[currentEnhance] : '无';
             document.getElementById('artwork-time').textContent = '今天';
-            
+
             // 设置作品标题
             document.getElementById('artwork-title').textContent = `我的${modeLabels[currentMode]}作品`;
-            
-            // 设置作品图像（在实际应用中，这里会显示实际生成的作品）
-            document.getElementById('artwork-image').innerHTML = '🖼️';
+
+            // 设置作品图像 - 显示实际的canvas内容
+            const artworkImageEl = document.getElementById('artwork-image');
+            const canvasElement = document.getElementById('drawing-canvas');
+
+            if (canvasElement) {
+                // 将canvas转换为图片并显示
+                const imageDataUrl = canvasElement.toDataURL('image/png');
+                artworkImageEl.innerHTML = `<img src="${imageDataUrl}" style="max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 10px;" alt="我的画作">`;
+            } else {
+                artworkImageEl.innerHTML = '🖼️';
+            }
         }
         
         // 创建新作品
@@ -1192,14 +1214,74 @@
         }
         
         // 保存作品
-        function saveArtwork() {
-            // 在实际应用中，这里会保存作品到服务器或本地存储
-            alert("画作已保存！你可以在'我的作品'中查看和分享它。");
-            
-            // 返回创作湾
-            setTimeout(() => {
-                window.location.href = 'create.html';
-            }, 1500);
+        async function saveArtwork() {
+            try {
+                // 获取token
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    alert('请先登录！');
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                // 将canvas转换为base64图片
+                const canvasElement = document.getElementById('drawing-canvas');
+                if (!canvasElement) {
+                    alert('画布未初始化');
+                    return;
+                }
+
+                const imageDataUrl = canvasElement.toDataURL('image/png');
+
+                // 准备作品数据
+                const modeLabels = {
+                    'free': '自由绘画',
+                    'ai': 'AI辅助绘画',
+                    'shape': '形状绘画',
+                    'coloring': '填色游戏'
+                };
+
+                const enhanceLabels = {
+                    'complete': '完善细节',
+                    'style': '艺术风格',
+                    'color': '智能上色',
+                    'animate': '动态效果'
+                };
+
+                const title = `我的${modeLabels[currentMode]}作品`;
+                const content = `创作模式：${modeLabels[currentMode]}${currentEnhance ? '\nAI增强：' + enhanceLabels[currentEnhance] : ''}`;
+
+                // 调用后端API保存作品
+                const response = await fetch('http://localhost:3000/api/works', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        type: 'art',
+                        title: title,
+                        content: content,
+                        coverImage: imageDataUrl
+                    })
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    alert("画作已保存成功！你可以在'我的作品'中查看和分享它。");
+
+                    // 返回创作页
+                    setTimeout(() => {
+                        window.location.href = 'create.html';
+                    }, 1500);
+                } else {
+                    alert('保存失败：' + (result.message || '未知错误'));
+                }
+            } catch (error) {
+                console.error('保存作品失败:', error);
+                alert('保存失败，请检查网络连接和后端服务');
+            }
         }
         
         // 为底部导航添加点击事件
