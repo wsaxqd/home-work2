@@ -768,11 +768,14 @@
 
     <script src="navigation-template.js"></script>
     <script>
+        // API配置
+        const API_BASE = 'http://localhost:3000/api';
+
         // 初始化导航
         document.addEventListener('DOMContentLoaded', function() {
             initAppNavigation();
         });
-        
+
         // 当前步骤和音乐数据
         let currentStep = 1;
         let musicData = {
@@ -1214,64 +1217,123 @@
         }
         
         // 保存音乐
-        function saveMusic() {
+        async function saveMusic() {
             try {
-                // 收集音乐数据
-                const timestamp = new Date().getTime();
-                const dateStr = new Date().toLocaleDateString('zh-CN').replace(/\//g, '-');
-                
-                const musicData = {
-                    id: timestamp,
-                    title: `我的${getMoodLabel() || '音乐'}作品`,
-                    filename: `我的${getMoodLabel() || '音乐'}作品_${dateStr}_${timestamp}`,
-                    mood: currentMood,
-                    tempo: currentTempo,
-                    instrument: currentInstrument,
-                    duration: 30, // 假设30秒
-                    timestamp: new Date().toISOString(),
-                    type: 'music'
-                };
-                
-                // 保存到localStorage
-                if (typeof localStorage !== 'undefined') {
-                    try {
-                        // 获取现有作品
-                        let artworks = JSON.parse(localStorage.getItem('qmzg_artworks') || '[]');
-                        
-                        // 添加到数组开头，确保最新的在前面
-                        artworks.unshift(musicData);
-                        
-                        // 限制保存数量，只保留最新的20个
-                        if (artworks.length > 20) {
-                            artworks = artworks.slice(0, 20);
-                        }
-                        
-                        // 尝试保存，如果localStorage空间不足则删除最旧的作品重试
-                        try {
-                            localStorage.setItem('qmzg_artworks', JSON.stringify(artworks));
-                        } catch (storageError) {
-                            console.warn('localStorage空间不足，删除部分旧作品:', storageError);
-                            // 删除旧作品并重试
-                            artworks = artworks.slice(0, 10); // 只保留10个
-                            localStorage.setItem('qmzg_artworks', JSON.stringify(artworks));
-                        }
-                    } catch (storageError) {
-                        console.error('保存到localStorage失败:', storageError);
-                        // 这是一个非关键错误，不应该阻止整个保存流程
-                    }
+                // 检查JWT token
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    alert('请先登录！');
+                    window.location.href = 'login.html';
+                    return;
                 }
-                
+
+                // 显示保存中提示
+                const saveBtn = event?.target;
+                if (saveBtn) {
+                    saveBtn.textContent = '保存中...';
+                    saveBtn.disabled = true;
+                }
+
+                // 获取音乐类型标签
+                const genreLabels = {
+                    'happy': '快乐旋律',
+                    'calm': '宁静氛围',
+                    'adventure': '冒险之旅',
+                    'dream': '梦幻世界',
+                    'electronic': '电子节奏',
+                    'nature': '自然之声'
+                };
+
+                const musicTitle = `我的${genreLabels[musicData.genre] || '音乐'}作品`;
+
+                // 准备作品数据
+                const workData = {
+                    type: 'music',
+                    title: musicTitle,
+                    content: JSON.stringify({
+                        melodyPoints: musicData.melodyPoints || [],
+                        description: `${genreLabels[musicData.genre]}，节奏：${musicData.tempo}，时长：${musicData.duration}秒`
+                    }),
+                    metadata: {
+                        genre: musicData.genre,
+                        tempo: musicData.tempo,
+                        mood: musicData.mood,
+                        instruments: musicData.instruments,
+                        duration: musicData.duration,
+                        melodyPoints: musicData.melodyPoints || []
+                    }
+                };
+
+                // 调用后端API保存作品
+                const response = await fetch(`${API_BASE}/works`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(workData)
+                });
+
+                const result = await response.json();
+
+                if (!response.ok || !result.success) {
+                    throw new Error(result.message || '保存失败');
+                }
+
+                // 同时保存到localStorage作为备份
+                try {
+                    const timestamp = new Date().getTime();
+                    const dateStr = new Date().toLocaleDateString('zh-CN').replace(/\//g, '-');
+
+                    const musicDataBackup = {
+                        id: result.data?.id || timestamp,
+                        title: musicTitle,
+                        filename: `${musicTitle}_${dateStr}_${timestamp}`,
+                        genre: musicData.genre,
+                        tempo: musicData.tempo,
+                        mood: musicData.mood,
+                        instruments: musicData.instruments,
+                        duration: musicData.duration,
+                        timestamp: new Date().toISOString(),
+                        type: 'music'
+                    };
+
+                    let artworks = JSON.parse(localStorage.getItem('qmzg_artworks') || '[]');
+                    artworks.unshift(musicDataBackup);
+
+                    if (artworks.length > 20) {
+                        artworks = artworks.slice(0, 20);
+                    }
+
+                    localStorage.setItem('qmzg_artworks', JSON.stringify(artworks));
+                } catch (storageError) {
+                    console.warn('localStorage保存失败:', storageError);
+                    // 不影响主要流程
+                }
+
+                // 恢复按钮状态
+                if (saveBtn) {
+                    saveBtn.textContent = '保存音乐';
+                    saveBtn.disabled = false;
+                }
+
                 alert("音乐已成功保存！你可以在'我的作品'中查看和分享它。");
+
+                // 返回创作页
+                setTimeout(() => {
+                    navigateTo('create.html');
+                }, 1500);
+
             } catch (error) {
                 console.error('保存音乐失败:', error);
-                alert('保存失败：' + error.message + '，请刷新页面重试。');
-                return; // 出错时不继续执行后续操作
+                alert('保存失败：' + error.message);
+
+                // 恢复按钮状态
+                if (event && event.target) {
+                    event.target.textContent = '保存音乐';
+                    event.target.disabled = false;
+                }
             }
-            
-            // 返回创作湾
-            setTimeout(() => {
-                navigateTo('create.html');
-            }, 1500);
         }
         
         // 获取情绪标签
