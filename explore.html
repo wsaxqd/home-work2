@@ -512,6 +512,55 @@
                 </div>
                 <button class="ask-button" onclick="askQuestion()">向小光提问</button>
             </div>
+
+            <div class="section-title">AI知识小课堂</div>
+            <div class="qa-section">
+                <div class="qa-title">今日推荐</div>
+                <div class="qa-item">
+                    <div class="question">什么是机器学习？</div>
+                    <div class="answer">机器学习就像教小朋友认字一样！通过看很多例子，AI可以自己学会识别和分类东西，而不需要人类一步步教它。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="question">神经网络是什么？</div>
+                    <div class="answer">神经网络模仿人类大脑的工作方式！就像我们大脑里有很多神经元互相连接，AI的神经网络也有很多"人工神经元"一起工作。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="question">AI能帮我们做什么？</div>
+                    <div class="answer">AI可以帮我们识别图片、翻译语言、推荐音乐、玩游戏、辅助学习，甚至帮助医生诊断疾病！它是我们的好帮手。</div>
+                </div>
+            </div>
+
+            <div class="section-title">趣味AI实验</div>
+            <div class="game-grid">
+                <div class="game-card" onclick="navigateTo('quiz-game.html')">
+                    <div class="game-image">🎯</div>
+                    <div class="game-content">
+                        <div class="game-title">AI知识问答</div>
+                        <div class="game-desc">测试你对AI的了解</div>
+                        <div class="game-progress">
+                            <div class="progress-bar" style="width: 0%"></div>
+                        </div>
+                        <div class="game-stats">
+                            <span>立即开始</span>
+                            <span>🆕</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="game-card" onclick="alert('AI绘画创作即将上线！')">
+                    <div class="game-image">🎨</div>
+                    <div class="game-content">
+                        <div class="game-title">AI绘画助手</div>
+                        <div class="game-desc">让AI帮你完成画作</div>
+                        <div class="game-progress">
+                            <div class="progress-bar" style="width: 0%"></div>
+                        </div>
+                        <div class="game-stats">
+                            <span>即将上线</span>
+                            <span>✨</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         
         <div class="bottom-nav">
@@ -540,11 +589,13 @@
 
     <script src="navigation-template.js"></script>
     <script>
+        const API_BASE = 'http://localhost:3000/api';
+
         function goBack() {
             // 检查是否可以安全地返回
             const documentReferrer = document.referrer;
             const origin = window.location.origin;
-            
+
             // 如果没有历史记录或者来源不是当前网站，则导航到首页
             if (window.history.length <= 1 || (!documentReferrer.startsWith(origin) && documentReferrer !== '')) {
                 navigateTo('index.html');
@@ -553,12 +604,28 @@
                 window.history.back();
             }
         }
-        
+
         function enterArea(area) {
-            alert(`正在进入${getAreaName(area)}，准备开始探索之旅！`);
-            // 在实际应用中，这里会加载对应区域的内容
+            switch(area) {
+                case 'history':
+                    // 滚动到历史时间轴部分
+                    document.querySelector('.timeline-container').scrollIntoView({ behavior: 'smooth' });
+                    break;
+                case 'games':
+                    // 滚动到游戏区域
+                    const gameSection = document.querySelectorAll('.section-title')[1];
+                    gameSection.scrollIntoView({ behavior: 'smooth' });
+                    break;
+                case 'programming':
+                    alert('创意编程工坊即将上线，敬请期待！');
+                    break;
+                case 'qa':
+                    // 滚动到问答区域
+                    document.querySelector('.qa-section').scrollIntoView({ behavior: 'smooth' });
+                    break;
+            }
         }
-        
+
         function getAreaName(area) {
             const areas = {
                 'history': 'AI历史长河',
@@ -568,12 +635,25 @@
             };
             return areas[area] || '未知区域';
         }
-        
+
         function playGame(game) {
-            alert(`开始玩${getGameName(game)}游戏！`);
-            // 在实际应用中，这里会启动对应游戏
+            switch(game) {
+                case 'image-recognition':
+                case 'expression':
+                    // 跳转到AI知识问答游戏
+                    window.location.href = 'quiz-game.html';
+                    break;
+                case 'training':
+                    alert('训练我的小怪兽游戏即将上线，敬请期待！');
+                    break;
+                case 'programming':
+                    alert('编程思维挑战即将上线，敬请期待！');
+                    break;
+                default:
+                    alert('游戏开发中...');
+            }
         }
-        
+
         function getGameName(game) {
             const games = {
                 'image-recognition': '猜猜我是谁',
@@ -583,18 +663,110 @@
             };
             return games[game] || '未知游戏';
         }
-        
-        function askQuestion() {
+
+        // AI问答功能
+        async function askQuestion() {
             const question = prompt("向小光提问关于AI的问题：");
-            if (question) {
-                alert(`你的问题"${question}"已提交，小光正在思考中...`);
-                // 在实际应用中，这里会调用AI问答接口
+            if (!question || question.trim() === '') {
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    alert('请先登录！');
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                // 显示加载提示
+                const loadingMsg = document.createElement('div');
+                loadingMsg.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 9999; text-align: center;';
+                loadingMsg.innerHTML = `
+                    <div style="font-size: 40px; margin-bottom: 15px;">🤔</div>
+                    <div style="font-size: 16px; color: #666;">小光正在思考中...</div>
+                `;
+                document.body.appendChild(loadingMsg);
+
+                // 调用AI接口
+                const response = await fetch(`${API_BASE}/ai/chat`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        message: question,
+                        context: 'AI探索岛 - 儿童友好模式'
+                    })
+                });
+
+                const result = await response.json();
+
+                // 移除加载提示
+                document.body.removeChild(loadingMsg);
+
+                if (response.ok && result.success) {
+                    // 显示回答
+                    const answerMsg = document.createElement('div');
+                    answerMsg.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 9999; max-width: 400px; max-height: 60vh; overflow-y: auto;';
+                    answerMsg.innerHTML = `
+                        <div style="font-size: 40px; text-align: center; margin-bottom: 15px;">💡</div>
+                        <div style="font-weight: bold; margin-bottom: 10px; color: #4a90e2;">你的问题：</div>
+                        <div style="background: #f0f9ff; padding: 10px; border-radius: 8px; margin-bottom: 15px; font-size: 14px;">${question}</div>
+                        <div style="font-weight: bold; margin-bottom: 10px; color: #4a90e2;">小光的回答：</div>
+                        <div style="background: #fff4e6; padding: 10px; border-radius: 8px; margin-bottom: 20px; font-size: 14px; line-height: 1.6;">${result.data.reply || result.data.response || '小光暂时无法回答这个问题哦'}</div>
+                        <button onclick="this.parentElement.remove()" style="width: 100%; padding: 12px; background: linear-gradient(135deg, #4a90e2 0%, #8e44ad 100%); color: white; border: none; border-radius: 10px; font-size: 16px; cursor: pointer;">知道了</button>
+                    `;
+                    document.body.appendChild(answerMsg);
+                } else {
+                    throw new Error(result.message || 'AI回答失败');
+                }
+
+            } catch (error) {
+                console.error('AI问答失败:', error);
+                alert('小光遇到了问题：' + error.message);
+                // 如果有加载提示，移除它
+                const loadingMsg = document.querySelector('div[style*="position: fixed"]');
+                if (loadingMsg) {
+                    loadingMsg.remove();
+                }
             }
         }
-        
-        // 初始化导航
+
+        // 加载学习进度
+        async function loadGameProgress() {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    return; // 未登录时不加载进度
+                }
+
+                const response = await fetch(`${API_BASE}/games/progress`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    if (result.success && result.data) {
+                        // 更新游戏进度显示
+                        const progress = result.data;
+                        // 这里可以根据实际返回的数据结构更新进度条
+                        console.log('游戏进度:', progress);
+                    }
+                }
+            } catch (error) {
+                console.error('加载游戏进度失败:', error);
+                // 静默失败，不影响用户体验
+            }
+        }
+
+        // 初始化
         document.addEventListener('DOMContentLoaded', function() {
             initAppNavigation();
+            loadGameProgress(); // 加载游戏进度
         });
     </script>
 </body>
