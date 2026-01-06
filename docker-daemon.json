@@ -1,0 +1,17 @@
+{
+  "registry-mirrors": [
+    "https://docker.m.daocloud.io",
+    "https://docker.nju.edu.cn",
+    "https://mirror.baidubce.com",
+    "https://dockerproxy.cn"
+  ],
+  "max-concurrent-downloads": 10,
+  "max-concurrent-uploads": 5,
+  "builder": {
+    "gc": {
+      "enabled": true,
+      "defaultKeepStorage": "20GB"
+    }
+  },
+  "experimental": false
+}
