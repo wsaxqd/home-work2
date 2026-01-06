@@ -1,0 +1,600 @@
+.chess-game-container {
+  padding: 20px;
+  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+  min-height: 100vh;
+}
+
+/* 游戏布局 */
+.chess-layout {
+  display: flex;
+  gap: 30px;
+  max-width: 1400px;
+  margin: 0 auto;
+  align-items: flex-start;
+}
+
+/* 棋盘区域 */
+.chess-board-section {
+  flex: 0 0 auto;
+}
+
+/* 玩家信息 */
+.player-info {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 15px;
+  padding: 15px 20px;
+  margin-bottom: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.player-info.white-player {
+  margin-top: 15px;
+  margin-bottom: 0;
+}
+
+.player-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;
+  font-weight: bold;
+  color: white;
+}
+
+.player-icon {
+  font-size: 32px;
+}
+
+.current-turn {
+  font-size: 12px;
+  background: #ffd32a;
+  color: #333;
+  padding: 4px 12px;
+  border-radius: 15px;
+  font-weight: bold;
+  animation: turnPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes turnPulse {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(255, 211, 42, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(255, 211, 42, 0.8);
+  }
+}
+
+.captured-pieces {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.captured-piece {
+  font-size: 24px;
+  opacity: 0.6;
+  filter: grayscale(0.5);
+}
+
+/* 棋盘容器 */
+.chessboard-wrapper {
+  background: rgba(0, 0, 0, 0.3);
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+}
+
+/* 棋盘 */
+.chessboard {
+  display: grid;
+  grid-template-columns: repeat(8, 60px);
+  grid-template-rows: repeat(8, 60px);
+  border: 3px solid #8b7355;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+/* 棋盘方格 */
+.chess-square {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.chess-square.light {
+  background: #f0d9b5;
+}
+
+.chess-square.dark {
+  background: #b58863;
+}
+
+.chess-square:hover {
+  filter: brightness(1.1);
+}
+
+.chess-square.selected {
+  background: #baca44 !important;
+  box-shadow: inset 0 0 20px rgba(186, 202, 68, 0.8);
+}
+
+.chess-square.valid-move {
+  cursor: pointer;
+}
+
+/* 坐标标签 */
+.row-label {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  font-size: 10px;
+  font-weight: bold;
+  color: rgba(0, 0, 0, 0.3);
+  user-select: none;
+}
+
+.col-label {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  font-size: 10px;
+  font-weight: bold;
+  color: rgba(0, 0, 0, 0.3);
+  user-select: none;
+}
+
+.chess-square.dark .row-label,
+.chess-square.dark .col-label {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+/* 棋子 */
+.chess-piece {
+  font-size: 48px;
+  user-select: none;
+  transition: all 0.2s ease;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+  z-index: 10;
+}
+
+.chess-piece.white {
+  color: #ffffff;
+  text-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+}
+
+.chess-piece.black {
+  color: #000000;
+  text-shadow: 0 0 3px rgba(255, 255, 255, 0.3);
+}
+
+.chess-square:hover .chess-piece {
+  transform: scale(1.1);
+}
+
+.chess-square.selected .chess-piece {
+  transform: scale(1.15);
+  animation: pieceFloat 0.8s ease-in-out infinite;
+}
+
+@keyframes pieceFloat {
+  0%, 100% {
+    transform: scale(1.15) translateY(0);
+  }
+  50% {
+    transform: scale(1.15) translateY(-5px);
+  }
+}
+
+/* 移动指示器 */
+.move-indicator {
+  width: 20px;
+  height: 20px;
+  background: rgba(186, 202, 68, 0.6);
+  border-radius: 50%;
+  animation: indicatorPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes indicatorPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1.3);
+    opacity: 0.9;
+  }
+}
+
+.capture-indicator {
+  position: absolute;
+  inset: 0;
+  border: 3px solid rgba(255, 87, 87, 0.7);
+  border-radius: 50%;
+  animation: captureRing 1.5s ease-in-out infinite;
+}
+
+@keyframes captureRing {
+  0%, 100% {
+    transform: scale(0.9);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* 信息区域 */
+.chess-info-section {
+  flex: 1;
+  min-width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.game-status,
+.move-history,
+.game-controls,
+.game-rules {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.game-status h3,
+.move-history h3,
+.game-rules h3 {
+  margin: 0 0 15px 0;
+  font-size: 18px;
+  color: white;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+  padding-bottom: 10px;
+}
+
+.status-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  color: white;
+}
+
+.status-label {
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+.status-value {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.status-value.white {
+  color: #ffffff;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+.status-value.black {
+  color: #333;
+  background: white;
+  padding: 4px 12px;
+  border-radius: 8px;
+}
+
+.check-alert {
+  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+  color: white;
+  padding: 10px 15px;
+  border-radius: 10px;
+  text-align: center;
+  font-weight: bold;
+  margin-top: 10px;
+  animation: alertFlash 1s ease-in-out infinite;
+}
+
+@keyframes alertFlash {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+/* 移动历史 */
+.history-list {
+  max-height: 300px;
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+.history-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.history-list::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+}
+
+.history-item {
+  display: flex;
+  gap: 10px;
+  padding: 8px 12px;
+  margin-bottom: 5px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  color: white;
+  font-size: 14px;
+}
+
+.move-number {
+  font-weight: bold;
+  color: #ffd32a;
+  min-width: 30px;
+}
+
+.move-notation {
+  flex: 1;
+  font-family: 'Courier New', monospace;
+}
+
+.empty-history {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.5);
+  padding: 20px;
+  font-style: italic;
+}
+
+/* 游戏控制 */
+.game-controls {
+  display: flex;
+  gap: 10px;
+}
+
+.control-btn {
+  flex: 1;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.control-btn.restart {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.control-btn.restart:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+}
+
+.control-btn.hint {
+  background: rgba(255, 211, 42, 0.3);
+  color: #ffd32a;
+  border: 2px solid #ffd32a;
+}
+
+.control-btn.hint:hover:not(:disabled) {
+  background: rgba(255, 211, 42, 0.5);
+}
+
+.control-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* 游戏规则 */
+.game-rules ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  color: white;
+}
+
+.game-rules li {
+  padding: 8px 0;
+  font-size: 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.game-rules li:last-child {
+  border-bottom: none;
+}
+
+/* 游戏弹窗 */
+.game-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.modal-content.checkmate {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  border-radius: 30px;
+  padding: 40px;
+  text-align: center;
+  max-width: 400px;
+  animation: modalSlideUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  color: white;
+}
+
+@keyframes modalSlideUp {
+  from {
+    transform: translateY(100px) scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+.modal-emoji {
+  font-size: 80px;
+  margin-bottom: 20px;
+  animation: modalEmojiFloat 2s ease-in-out infinite;
+}
+
+@keyframes modalEmojiFloat {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-15px) rotate(10deg);
+  }
+}
+
+.modal-content h2 {
+  font-size: 32px;
+  margin-bottom: 10px;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.winner-announce {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.modal-stats {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 15px;
+  padding: 20px;
+  margin-bottom: 30px;
+  text-align: left;
+}
+
+.modal-stats p {
+  margin: 10px 0;
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.modal-stats strong {
+  font-size: 20px;
+  color: #fff;
+  float: right;
+}
+
+.modal-btn {
+  padding: 15px 40px;
+  border: none;
+  border-radius: 25px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: rgba(255, 255, 255, 0.9);
+  color: #333;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.modal-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+  background: #fff;
+}
+
+/* 响应式设计 */
+@media (max-width: 1200px) {
+  .chess-layout {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .chess-info-section {
+    width: 100%;
+    max-width: 600px;
+  }
+}
+
+@media (max-width: 768px) {
+  .chess-game-container {
+    padding: 15px;
+  }
+
+  .chessboard {
+    grid-template-columns: repeat(8, 45px);
+    grid-template-rows: repeat(8, 45px);
+  }
+
+  .chess-piece {
+    font-size: 36px;
+  }
+
+  .player-icon {
+    font-size: 24px;
+  }
+
+  .chessboard-wrapper {
+    padding: 15px;
+  }
+
+  .game-controls {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 480px) {
+  .chessboard {
+    grid-template-columns: repeat(8, 35px);
+    grid-template-rows: repeat(8, 35px);
+  }
+
+  .chess-piece {
+    font-size: 28px;
+  }
+
+  .player-label {
+    font-size: 14px;
+  }
+
+  .captured-piece {
+    font-size: 18px;
+  }
+
+  .modal-content.checkmate {
+    margin: 20px;
+    padding: 30px 20px;
+  }
+}
+
+/* 加载动画 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

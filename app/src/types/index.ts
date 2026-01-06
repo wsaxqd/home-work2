@@ -23,14 +23,15 @@ export interface UserProfile extends User {
 
 // 认证相关类型
 export interface LoginRequest {
-  phone: string
+  phone?: string
+  email?: string
   password: string
 }
 
 export interface RegisterRequest {
-  phone: string
-  password: string
+  phone?: string
   email?: string
+  password: string
   nickname?: string
   avatar?: string
   age?: number

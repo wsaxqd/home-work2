@@ -1,0 +1,778 @@
+/* ==========================================
+   中国象棋样式 - 优化版本 v2.0
+   更新日期：2026-01-06
+   优化：增强文字对比度和可读性
+   ========================================== */
+
+.chinese-chess-container {
+  padding: 20px;
+  background: linear-gradient(135deg, #8b0000 0%, #4b0000 100%);
+  min-height: 100vh;
+  background-image:
+    radial-gradient(circle at 20% 50%, rgba(255, 215, 0, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 50%, rgba(255, 215, 0, 0.1) 0%, transparent 50%);
+}
+
+/* 游戏布局 */
+.chess-layout {
+  display: flex;
+  gap: 30px;
+  max-width: 1400px;
+  margin: 0 auto;
+  align-items: flex-start;
+}
+
+/* 棋盘区域 */
+.chess-board-section {
+  flex: 0 0 auto;
+}
+
+/* 玩家信息 */
+.player-info {
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(10px);
+  border-radius: 15px;
+  padding: 15px 20px;
+  margin-bottom: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+  border: 2px solid rgba(255, 215, 0, 0.5);
+}
+
+.player-info.red-player {
+  margin-top: 15px;
+  margin-bottom: 0;
+  border-color: rgba(220, 20, 60, 0.5);
+}
+
+.player-info.black-player {
+  border-color: rgba(50, 50, 50, 0.5);
+}
+
+.player-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;
+  font-weight: bold;
+  color: #ffffff;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.7);
+}
+
+.player-icon {
+  font-size: 32px;
+}
+
+.current-turn {
+  font-size: 12px;
+  background: #ffd700;
+  color: #8b0000;
+  padding: 4px 12px;
+  border-radius: 15px;
+  font-weight: bold;
+  animation: turnPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes turnPulse {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.9);
+  }
+}
+
+.captured-pieces {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.captured-piece {
+  font-size: 20px;
+  opacity: 0.7;
+  filter: grayscale(0.7);
+  color: #f5f5f5;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 3px 7px;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 215, 0, 0.3);
+}
+
+/* 棋盘容器 */
+.chessboard-wrapper {
+  background: linear-gradient(135deg, #d4a574 0%, #c19a6b 100%);
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow:
+    0 10px 40px rgba(0, 0, 0, 0.5),
+    inset 0 0 20px rgba(139, 69, 19, 0.3);
+  border: 3px solid #8b4513;
+}
+
+/* 中国象棋棋盘 */
+.chinese-chessboard {
+  display: grid;
+  grid-template-columns: repeat(9, 50px);
+  grid-template-rows: repeat(10, 50px);
+  gap: 0;
+  position: relative;
+  background: #f5e6d3;
+  padding: 0;
+  border: 2px solid #8b4513;
+  box-shadow: inset 0 0 30px rgba(139, 69, 19, 0.2);
+}
+
+/* 棋盘交叉点 */
+.chess-point {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.chess-point:hover {
+  background: rgba(255, 215, 0, 0.1);
+}
+
+.chess-point.selected {
+  background: rgba(255, 215, 0, 0.3) !important;
+}
+
+.chess-point.valid-move {
+  cursor: pointer;
+}
+
+/* 棋盘线条 */
+.point-lines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.line-h {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  right: 0;
+  height: 2px;
+  background: #8b4513;
+  transform: translateY(-50%);
+}
+
+.line-v {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  bottom: 0;
+  width: 2px;
+  background: #8b4513;
+  transform: translateX(-50%);
+}
+
+/* 九宫格斜线 */
+.line-diagonal-1 {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 141%;
+  height: 2px;
+  background: #8b4513;
+  transform: translate(-50%, -50%) rotate(45deg);
+  transform-origin: center;
+}
+
+.line-diagonal-2 {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 141%;
+  height: 2px;
+  background: #8b4513;
+  transform: translate(-50%, -50%) rotate(-45deg);
+  transform-origin: center;
+}
+
+/* 楚河汉界 */
+.river-text {
+  position: absolute;
+  top: 50%;
+  font-size: 16px;
+  font-weight: bold;
+  color: #8b4513;
+  transform: translateY(-50%);
+  font-family: "KaiTi", "楷体", serif;
+  letter-spacing: 8px;
+  text-shadow:
+    1px 1px 2px rgba(255, 215, 0, 0.5),
+    -1px -1px 2px rgba(139, 69, 19, 0.3);
+  pointer-events: none;
+  z-index: 5;
+}
+
+.river-text.left {
+  left: -40px;
+}
+
+.river-text.right {
+  right: -40px;
+}
+
+/* 棋子 */
+.chess-piece {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.piece-bg {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+}
+
+.chess-piece.red .piece-bg {
+  background: radial-gradient(circle at 30% 30%, #ff6b6b, #dc143c);
+  border: 3px solid #8b0000;
+}
+
+.chess-piece.black .piece-bg {
+  background: radial-gradient(circle at 30% 30%, #555555, #1a1a1a);
+  border: 3px solid #000000;
+}
+
+.piece-text {
+  position: relative;
+  font-size: 24px;
+  font-weight: bold;
+  font-family: "KaiTi", "楷体", serif;
+  z-index: 1;
+  text-shadow:
+    1px 1px 2px rgba(0, 0, 0, 0.5),
+    -1px -1px 1px rgba(255, 255, 255, 0.3);
+}
+
+.chess-piece.red .piece-text {
+  color: #ffd700;
+}
+
+.chess-piece.black .piece-text {
+  color: #f5f5f5;
+}
+
+.chess-point:hover .chess-piece {
+  transform: scale(1.08);
+  filter: brightness(1.15);
+}
+
+.chess-point.selected .chess-piece {
+  transform: scale(1.12);
+  animation: pieceFloat 0.8s ease-in-out infinite;
+}
+
+@keyframes pieceFloat {
+  0%, 100% {
+    transform: scale(1.12) translateY(0);
+  }
+  50% {
+    transform: scale(1.12) translateY(-4px);
+  }
+}
+
+/* 移动指示器 */
+.move-indicator {
+  width: 16px;
+  height: 16px;
+  background: rgba(50, 205, 50, 0.7);
+  border-radius: 50%;
+  border: 2px solid rgba(34, 139, 34, 0.9);
+  animation: indicatorPulse 1.5s ease-in-out infinite;
+  z-index: 8;
+}
+
+@keyframes indicatorPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1.3);
+    opacity: 1;
+  }
+}
+
+.capture-indicator {
+  position: absolute;
+  inset: 4px;
+  border: 3px solid rgba(220, 20, 60, 0.8);
+  border-radius: 50%;
+  animation: captureRing 1.5s ease-in-out infinite;
+  z-index: 9;
+}
+
+@keyframes captureRing {
+  0%, 100% {
+    transform: scale(0.95);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 1;
+  }
+}
+
+/* 信息区域 */
+.chess-info-section {
+  flex: 1;
+  min-width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.game-status,
+.move-history,
+.game-controls,
+.game-rules {
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  border: 2px solid rgba(255, 215, 0, 0.5);
+}
+
+.game-status h3,
+.move-history h3,
+.game-rules h3 {
+  margin: 0 0 15px 0;
+  font-size: 18px;
+  color: #ffd700;
+  border-bottom: 2px solid rgba(255, 215, 0, 0.3);
+  padding-bottom: 10px;
+  font-family: "KaiTi", "楷体", serif;
+}
+
+.status-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  color: #f5f5f5;
+  font-weight: 500;
+}
+
+.status-label {
+  font-size: 15px;
+  opacity: 1;
+  color: #ffd700;
+}
+
+.status-value {
+  font-size: 18px;
+  font-weight: bold;
+  color: #ffffff;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.status-value.red {
+  color: #ff6b6b;
+  text-shadow: 0 0 10px rgba(255, 107, 107, 0.8);
+  font-size: 20px;
+}
+
+.status-value.black {
+  color: #1a1a1a;
+  background: #ffffff;
+  padding: 4px 12px;
+  border-radius: 8px;
+  font-size: 20px;
+  box-shadow: 0 2px 8px rgba(255, 255, 255, 0.3);
+}
+
+.check-alert {
+  background: linear-gradient(135deg, #dc143c 0%, #8b0000 100%);
+  color: white;
+  padding: 10px 15px;
+  border-radius: 10px;
+  text-align: center;
+  font-weight: bold;
+  margin-top: 10px;
+  animation: alertFlash 1s ease-in-out infinite;
+  border: 2px solid #ffd700;
+}
+
+@keyframes alertFlash {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.85;
+    transform: scale(1.02);
+  }
+}
+
+/* 移动历史 */
+.history-list {
+  max-height: 300px;
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+.history-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.history-list::-webkit-scrollbar-thumb {
+  background: rgba(255, 215, 0, 0.4);
+  border-radius: 3px;
+}
+
+.history-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 215, 0, 0.6);
+}
+
+.history-item {
+  display: flex;
+  gap: 10px;
+  padding: 10px 12px;
+  margin-bottom: 6px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  color: #f5f5f5;
+  font-size: 14px;
+  border-left: 3px solid rgba(255, 215, 0, 0.6);
+  transition: all 0.2s ease;
+}
+
+.history-item:hover {
+  background: rgba(0, 0, 0, 0.4);
+  border-left-color: #ffd700;
+}
+
+.move-number {
+  font-weight: bold;
+  color: #ffd700;
+  min-width: 30px;
+}
+
+.move-notation {
+  flex: 1;
+  font-family: 'KaiTi', '楷体', serif;
+  color: #ffffff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.captured-mark {
+  color: #ff8888;
+  font-weight: bold;
+  text-shadow: 0 0 8px rgba(255, 136, 136, 0.6);
+}
+
+.empty-history {
+  text-align: center;
+  color: rgba(255, 215, 0, 0.6);
+  padding: 20px;
+  font-style: italic;
+  font-size: 14px;
+}
+
+/* 游戏控制 */
+.game-controls {
+  display: flex;
+  gap: 10px;
+}
+
+.control-btn {
+  flex: 1;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.control-btn.restart {
+  background: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%);
+  color: #8b0000;
+  box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+  border: 2px solid #8b4513;
+}
+
+.control-btn.restart:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(255, 215, 0, 0.6);
+}
+
+.control-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* 游戏规则 */
+.game-rules ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  color: #f5f5f5;
+}
+
+.game-rules li {
+  padding: 10px 0;
+  padding-left: 24px;
+  font-size: 15px;
+  line-height: 1.6;
+  border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+  position: relative;
+  color: #ffffff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.game-rules li::before {
+  content: "◆";
+  position: absolute;
+  left: 0;
+  color: #ffd700;
+  font-size: 16px;
+  text-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
+}
+
+.game-rules li:last-child {
+  border-bottom: none;
+}
+
+/* 游戏弹窗 */
+.game-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.modal-content.checkmate {
+  background: linear-gradient(135deg, #8b0000 0%, #4b0000 100%);
+  border: 3px solid #ffd700;
+  border-radius: 30px;
+  padding: 40px;
+  text-align: center;
+  max-width: 400px;
+  animation: modalSlideUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.7),
+    inset 0 0 40px rgba(255, 215, 0, 0.1);
+  color: white;
+}
+
+@keyframes modalSlideUp {
+  from {
+    transform: translateY(100px) scale(0.8) rotate(-5deg);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+.modal-emoji {
+  font-size: 80px;
+  margin-bottom: 20px;
+  animation: modalEmojiFloat 2s ease-in-out infinite;
+  filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.6));
+}
+
+@keyframes modalEmojiFloat {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg) scale(1);
+  }
+  25% {
+    transform: translateY(-10px) rotate(-5deg) scale(1.05);
+  }
+  75% {
+    transform: translateY(-10px) rotate(5deg) scale(1.05);
+  }
+}
+
+.modal-content h2 {
+  font-size: 32px;
+  margin-bottom: 10px;
+  color: #ffd700;
+  text-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.5),
+    0 0 20px rgba(255, 215, 0, 0.3);
+  font-family: "KaiTi", "楷体", serif;
+}
+
+.winner-announce {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #ffd700;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.modal-stats {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 15px;
+  padding: 20px;
+  margin-bottom: 30px;
+  text-align: left;
+  border: 2px solid rgba(255, 215, 0, 0.3);
+}
+
+.modal-stats p {
+  margin: 10px 0;
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.modal-stats strong {
+  font-size: 20px;
+  color: #ffd700;
+  float: right;
+}
+
+.modal-btn {
+  padding: 15px 40px;
+  border: none;
+  border-radius: 25px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%);
+  color: #8b0000;
+  box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+  border: 2px solid #8b4513;
+}
+
+.modal-btn:hover {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 8px 25px rgba(255, 215, 0, 0.6);
+}
+
+/* 响应式设计 */
+@media (max-width: 1200px) {
+  .chess-layout {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .chess-info-section {
+    width: 100%;
+    max-width: 600px;
+  }
+}
+
+@media (max-width: 768px) {
+  .chinese-chess-container {
+    padding: 15px;
+  }
+
+  .chinese-chessboard {
+    grid-template-columns: repeat(9, 40px);
+    grid-template-rows: repeat(10, 40px);
+  }
+
+  .chess-piece {
+    width: 36px;
+    height: 36px;
+  }
+
+  .piece-text {
+    font-size: 18px;
+  }
+
+  .player-icon {
+    font-size: 24px;
+  }
+
+  .chessboard-wrapper {
+    padding: 20px;
+  }
+
+  .river-text {
+    font-size: 12px;
+    letter-spacing: 4px;
+  }
+
+  .river-text.left {
+    left: -30px;
+  }
+
+  .river-text.right {
+    right: -30px;
+  }
+}
+
+@media (max-width: 480px) {
+  .chinese-chessboard {
+    grid-template-columns: repeat(9, 32px);
+    grid-template-rows: repeat(10, 32px);
+  }
+
+  .chess-piece {
+    width: 28px;
+    height: 28px;
+  }
+
+  .piece-text {
+    font-size: 14px;
+  }
+
+  .player-label {
+    font-size: 14px;
+  }
+
+  .captured-piece {
+    font-size: 16px;
+  }
+
+  .modal-content.checkmate {
+    margin: 20px;
+    padding: 30px 20px;
+  }
+
+  .chessboard-wrapper {
+    padding: 15px;
+  }
+
+  .river-text {
+    font-size: 10px;
+    letter-spacing: 2px;
+  }
+}
+
+/* 加载动画 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

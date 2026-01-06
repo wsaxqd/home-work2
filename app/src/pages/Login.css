@@ -597,3 +597,39 @@
     padding: 14px 20px;
   }
 }
+
+
+/* 登录方式切换按钮 */
+.login-type-switch {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  background: #f7fafc;
+  padding: 6px;
+  border-radius: 16px;
+}
+
+.type-btn {
+  flex: 1;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #718096;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.type-btn:hover {
+  color: #4a5568;
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.type-btn.active {
+  color: white;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+

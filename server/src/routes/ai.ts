@@ -1,14 +1,14 @@
 import { Router } from 'express';
 import { aiService, AITaskType } from '../services/aiService';
-import { authMiddleware, AuthRequest } from '../middlewares/auth';
+import { authMiddleware, optionalAuth, AuthRequest } from '../middlewares/auth';
 import { asyncHandler } from '../utils/errorHandler';
 import { sendSuccess, sendPaginated } from '../utils/response';
 
 const router = Router();
 
-// AI对话
-router.post('/chat', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
-  const userId = req.userId!;
+// AI对话（支持可选认证 - 游客也可以使用）
+router.post('/chat', optionalAuth, asyncHandler(async (req: AuthRequest, res) => {
+  const userId = req.userId || 'guest'; // 如果未登录，使用游客ID
   const { messages, context } = req.body;
 
   const result = await aiService.chat(userId, messages, context);
