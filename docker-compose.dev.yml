@@ -1,0 +1,365 @@
+# ============================================================
+# 启蒙之光 - 工业级开发环境配置
+# 项目：qmzg (启蒙之光)
+# 架构：前端(React) + 后端(Node.js) + 数据库(PostgreSQL)
+# ============================================================
+#
+# 🏗️ 架构设计原则：
+# 1. 内部通话（显式网络）- 服务通过服务名通信，网络隔离安全
+# 2. 依赖保护区（匿名卷）- 防止本地空目录覆盖镜像内的 node_modules
+# 3. 数据安全（持久化）- 数据库使用命名卷，重启不丢失数据
+# 4. 变量剥离（安全）- 所有敏感信息通过 .env 文件引用
+#
+# ============================================================
+
+version: '3.8'
+
+# ==================== 服务定义 ====================
+services:
+
+  # ┌─────────────────────────────────────────────────────────┐
+  # │ PostgreSQL 数据库服务                                     │
+  # │ - 专用命名卷持久化数据                                     │
+  # │ - 健康检查确保服务可用                                     │
+  # │ - 所有配置通过环境变量注入                                 │
+  # └─────────────────────────────────────────────────────────┘
+  postgres:
+    image: postgres:15-alpine
+    container_name: ${COMPOSE_PROJECT_NAME:-qmzg}-postgres-dev
+    restart: unless-stopped
+
+    # 🔐 环境变量（从 .env 文件读取）
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_INITDB_ARGS: "-E UTF8 --locale=C"
+      # 性能优化参数
+      POSTGRES_SHARED_BUFFERS: ${DB_SHARED_BUFFERS:-128MB}
+      POSTGRES_MAX_CONNECTIONS: ${DB_MAX_CONNECTIONS:-100}
+
+    # 🌐 端口映射（主机:容器）
+    ports:
+      - "${DB_PORT:-5432}:5432"
+
+    # 💾 数据持久化（命名卷）
+    volumes:
+      # 【原则3: 数据安全】使用命名卷持久化数据库数据
+      - postgres-data-dev:/var/lib/postgresql/data
+      # 可选：初始化脚本目录
+      # - ./server/migrations:/docker-entrypoint-initdb.d:ro
+
+    # ✅ 健康检查（确保数据库完全启动）
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+    # 🔗 网络连接
+    # 【原则1: 内部通话】连接到显式命名的内部网络
+    networks:
+      - qmzg-internal-network
+
+  # ┌─────────────────────────────────────────────────────────┐
+  # │ 后端 Node.js 服务                                         │
+  # │ - 代码挂载 + 匿名卷保护依赖                                │
+  # │ - 热重载开发模式                                          │
+  # │ - 通过服务名 "postgres" 访问数据库                         │
+  # └─────────────────────────────────────────────────────────┘
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+      target: development
+      args:
+        NODE_VERSION: ${NODE_VERSION:-18-alpine}
+
+    image: ${COMPOSE_PROJECT_NAME:-qmzg}-server:dev
+    container_name: ${COMPOSE_PROJECT_NAME:-qmzg}-server-dev
+    restart: unless-stopped
+
+    # 🔐 环境变量（从 .env 文件读取）
+    environment:
+      # 运行环境
+      NODE_ENV: development
+      PORT: ${SERVER_PORT:-3000}
+
+      # 【原则1: 内部通话】数据库主机使用服务名（内部域名）
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+
+      # JWT 配置
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
+
+      # Dify AI 配置
+      DIFY_API_URL: ${DIFY_API_URL}
+      DIFY_CHAT_APP_KEY: ${DIFY_CHAT_APP_KEY}
+      DIFY_STORY_APP_KEY: ${DIFY_STORY_APP_KEY}
+      DIFY_EMOTION_APP_KEY: ${DIFY_EMOTION_APP_KEY}
+
+      # CORS 配置
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:5173}
+
+    # 🌐 端口映射
+    ports:
+      - "${SERVER_PORT:-3000}:${SERVER_PORT:-3000}"
+
+    # 💾 卷挂载配置
+    volumes:
+      # 【核心配置】本地代码同步 + 依赖保护
+      # 挂载本地代码目录（支持热重载）
+      - ./server:/app
+
+      # 【原则2: 依赖保护区】🔥 匿名卷保护 node_modules
+      # 防止本地空的 node_modules 覆盖镜像内已安装的依赖
+      - /app/node_modules
+
+      # 【原则2: 依赖保护区】保护编译输出目录
+      - /app/dist
+
+      # 【原则3: 数据安全】上传文件持久化
+      - uploads-data-dev:/app/uploads
+
+    # 🔗 依赖服务（等待数据库健康后启动）
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+    # 🔗 网络连接
+    # 【原则1: 内部通话】连接到显式命名的内部网络
+    networks:
+      - qmzg-internal-network
+
+    # 🐛 开发工具（支持交互式调试）
+    stdin_open: true
+    tty: true
+
+    # 📊 健康检查
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get(`http://localhost:$${process.env.PORT || 3000}/health`, (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # ┌─────────────────────────────────────────────────────────┐
+  # │ 前端 React + Vite 服务                                    │
+  # │ - 代码挂载 + 匿名卷保护依赖                                │
+  # │ - Vite HMR 热模块替换                                     │
+  # │ - 通过服务名 "server" 访问后端 API                         │
+  # └─────────────────────────────────────────────────────────┘
+  app:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+      target: development
+      args:
+        NODE_VERSION: 20-alpine  # 前端使用 Node 20
+
+    image: ${COMPOSE_PROJECT_NAME:-qmzg}-app:dev
+    container_name: ${COMPOSE_PROJECT_NAME:-qmzg}-app-dev
+    restart: unless-stopped
+
+    # 🔐 环境变量
+    environment:
+      NODE_ENV: development
+      # 【原则1: 内部通话】API 地址使用服务名
+      VITE_API_URL: ${VITE_API_URL:-http://localhost:3000}
+
+    # 🌐 端口映射（Vite 开发服务器）
+    ports:
+      - "${APP_PORT:-5173}:${APP_PORT:-5173}"
+
+    # 💾 卷挂载配置
+    volumes:
+      # 【核心配置】本地代码同步 + 依赖保护
+      # 挂载本地代码目录（支持 HMR 热重载）
+      - ./app:/app
+
+      # 【原则2: 依赖保护区】🔥 匿名卷保护 node_modules
+      # 这是关键！防止本地空目录覆盖镜像内的依赖
+      - /app/node_modules
+
+      # 【原则2: 依赖保护区】保护构建输出目录
+      - /app/dist
+
+    # 🔗 依赖服务
+    depends_on:
+      - server
+
+    # 🔗 网络连接
+    # 【原则1: 内部通话】连接到显式命名的内部网络
+    networks:
+      - qmzg-internal-network
+
+    # 🐛 开发工具
+    stdin_open: true
+    tty: true
+
+    # 📊 健康检查
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:5173/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ┌─────────────────────────────────────────────────────────┐
+  # │ Nginx 静态文件服务                                        │
+  # │ - 提供根目录的 HTML 静态文件访问                           │
+  # │ - 只读挂载，安全隔离                                       │
+  # └─────────────────────────────────────────────────────────┘
+  nginx:
+    image: nginx:alpine
+    container_name: ${COMPOSE_PROJECT_NAME:-qmzg}-nginx-dev
+    restart: unless-stopped
+
+    # 🌐 端口映射
+    ports:
+      - "${NGINX_PORT:-8080}:80"
+
+    # 💾 卷挂载（只读模式）
+    volumes:
+      # 挂载项目根目录的静态 HTML 文件（只读）
+      - ./:/usr/share/nginx/html:ro
+
+    # 🔗 网络连接
+    networks:
+      - qmzg-internal-network
+
+    # 📊 健康检查
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ┌─────────────────────────────────────────────────────────┐
+  # │ Redis 缓存服务（可选）                                     │
+  # │ - 开发环境缓存和会话存储                                   │
+  # │ - 数据持久化，重启不丢失                                   │
+  # └─────────────────────────────────────────────────────────┘
+  # redis:
+  #   image: redis:7-alpine
+  #   container_name: ${COMPOSE_PROJECT_NAME:-qmzg}-redis-dev
+  #   restart: unless-stopped
+  #
+  #   # 🔐 Redis 配置（可选密码保护）
+  #   command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-}
+  #
+  #   # 🌐 端口映射
+  #   ports:
+  #     - "${REDIS_PORT:-6379}:6379"
+  #
+  #   # 💾 数据持久化
+  #   volumes:
+  #     - redis-data-dev:/data
+  #
+  #   # 🔗 网络连接
+  #   networks:
+  #     - qmzg-internal-network
+  #
+  #   # 📊 健康检查
+  #   healthcheck:
+  #     test: ["CMD", "redis-cli", "ping"]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 3
+
+# ==================== 网络配置 ====================
+# 【原则1: 内部通话】显式创建命名的虚拟网络
+networks:
+  qmzg-internal-network:
+    # 网络驱动类型
+    driver: bridge
+    # 显式命名（便于识别和管理）
+    name: ${COMPOSE_PROJECT_NAME:-qmzg}-internal-dev-network
+    # 网络配置
+    driver_opts:
+      com.docker.network.bridge.name: br-qmzg-dev
+    # 子网配置（可选，明确 IP 范围）
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.30.0.0/16
+          gateway: 172.30.0.1
+
+# ==================== 数据卷配置 ====================
+# 【原则3: 数据安全】所有持久化数据使用命名卷
+volumes:
+  # PostgreSQL 数据持久化卷
+  postgres-data-dev:
+    name: ${COMPOSE_PROJECT_NAME:-qmzg}-postgres-data-dev
+    driver: local
+
+  # 上传文件持久化卷
+  uploads-data-dev:
+    name: ${COMPOSE_PROJECT_NAME:-qmzg}-uploads-data-dev
+    driver: local
+
+  # Redis 数据持久化卷（可选）
+  # redis-data-dev:
+  #   name: ${COMPOSE_PROJECT_NAME:-qmzg}-redis-data-dev
+  #   driver: local
+
+# ============================================================
+# 🚀 快速开始指南
+# ============================================================
+#
+# 1️⃣ 准备工作：
+#    cp .env.development.example .env.development
+#    vim .env.development  # 配置环境变量
+#
+# 2️⃣ 启动开发环境：
+#    docker-compose -f docker-compose.dev.yml up -d --build
+#
+# 3️⃣ 查看服务状态：
+#    docker-compose -f docker-compose.dev.yml ps
+#
+# 4️⃣ 查看实时日志：
+#    docker-compose -f docker-compose.dev.yml logs -f
+#
+# 5️⃣ 进入容器调试：
+#    docker exec -it qmzg-server-dev sh
+#
+# 6️⃣ 停止所有服务：
+#    docker-compose -f docker-compose.dev.yml down
+#
+# 7️⃣ 停止并删除数据：
+#    docker-compose -f docker-compose.dev.yml down -v
+#
+# ============================================================
+# 🌐 服务访问地址
+# ============================================================
+#
+# 📱 React 前端（Vite HMR）:  http://localhost:5173
+# 🚀 后端 API 服务:           http://localhost:3000
+# 📄 静态 HTML 页面:          http://localhost:8080
+# 🗄️ PostgreSQL 数据库:       localhost:5432
+# 🔴 Redis 缓存（可选）:       localhost:6379
+#
+# ============================================================
+# 🔍 架构验证
+# ============================================================
+#
+# ✅ 网络隔离测试：
+#    docker network inspect qmzg-internal-dev-network
+#
+# ✅ 依赖保护验证：
+#    docker exec qmzg-server-dev ls -la /app/node_modules
+#    （应该看到镜像内安装的依赖，而不是空目录）
+#
+# ✅ 数据持久化验证：
+#    docker volume ls | grep qmzg
+#    （应该看到命名卷存在）
+#
+# ✅ 内部通信测试：
+#    docker exec qmzg-server-dev ping postgres
+#    （应该能 ping 通数据库服务）
+#
+# ============================================================
