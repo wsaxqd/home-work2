@@ -7,8 +7,16 @@ export const aiApi = {
     api.post<AIGenerateResponse>('/ai/generate', data),
 
   // AI生成故事
-  generateStory: (prompt: string, options?: Record<string, any>) =>
-    api.post<AIGenerateResponse>('/ai/generate/story', { prompt, options }),
+  generateStory: (data: {
+    prompt: string
+    theme?: string
+    characters?: string[]
+    setting?: string
+    style?: string
+    length?: 'short' | 'medium' | 'long'
+    age_group?: string
+  }) =>
+    api.post<{ story: string; title: string }>('/ai/story', data),
 
   // AI生成诗歌
   generatePoem: (prompt: string, options?: Record<string, any>) =>

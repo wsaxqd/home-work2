@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Layout, Header } from '../components/layout'
+import { classicPoems, getAllCategories, getRandomPoem, type Poem } from '../data/classicPoems'
 import './Creator.css'
 import './PoemCreator.css'
 
@@ -20,6 +21,7 @@ const styles = [
 ]
 
 export default function PoemCreator() {
+  const [mode, setMode] = useState<'create' | 'browse'>('create') // 'create' 创作模式, 'browse' 浏览模式
   const [step, setStep] = useState(1)
   const [selectedTheme, setSelectedTheme] = useState('')
   const [selectedStyle, setSelectedStyle] = useState('')
@@ -27,6 +29,12 @@ export default function PoemCreator() {
   const [keywordInput, setKeywordInput] = useState('')
   const [isGenerating, setIsGenerating] = useState(false)
   const [poem, setPoem] = useState({ title: '', content: '' })
+
+  // 诗词浏览模式状态
+  const [selectedDynasty, setSelectedDynasty] = useState<'all' | '唐' | '宋'>('all')
+  const [selectedCategory, setSelectedCategory] = useState<string>('all')
+  const [selectedPoem, setSelectedPoem] = useState<Poem | null>(null)
+  const [displayPoems, setDisplayPoems] = useState<Poem[]>(classicPoems)
 
   const addKeyword = () => {
     if (keywordInput && keywords.length < 5) {
@@ -54,20 +62,69 @@ export default function PoemCreator() {
     }, 3000)
   }
 
+  // 诗词筛选
+  const filterPoems = (dynasty: 'all' | '唐' | '宋', category: string) => {
+    let filtered = classicPoems
+    if (dynasty !== 'all') {
+      filtered = filtered.filter(p => p.dynasty === dynasty)
+    }
+    if (category !== 'all') {
+      filtered = filtered.filter(p => p.category === category)
+    }
+    setDisplayPoems(filtered)
+  }
+
+  // 处理朝代选择
+  const handleDynastyChange = (dynasty: 'all' | '唐' | '宋') => {
+    setSelectedDynasty(dynasty)
+    filterPoems(dynasty, selectedCategory)
+  }
+
+  // 处理分类选择
+  const handleCategoryChange = (category: string) => {
+    setSelectedCategory(category)
+    filterPoems(selectedDynasty, category)
+  }
+
+  // 随机一首
+  const handleRandomPoem = () => {
+    const randomPoem = getRandomPoem()
+    setSelectedPoem(randomPoem)
+  }
+
   return (
     <Layout>
       <Header title="AI诗词助手" gradient="linear-gradient(135deg, #9c27b0 0%, #673ab7 100%)" />
       <div className="main-content">
-        <div className="wizard-steps">
-          {[1, 2, 3, 4].map((s) => (
-            <div key={s} className={`wizard-step ${step >= s ? 'active' : ''}`}>
-              <div className="step-circle">{s}</div>
-              <div className="step-label">
-                {s === 1 ? '主题' : s === 2 ? '风格' : s === 3 ? '关键词' : '生成'}
-              </div>
-            </div>
-          ))}
+        {/* 模式切换 */}
+        <div className="mode-switcher">
+          <button
+            className={`mode-btn ${mode === 'create' ? 'active' : ''}`}
+            onClick={() => setMode('create')}
+          >
+            ✍️ AI创作诗词
+          </button>
+          <button
+            className={`mode-btn ${mode === 'browse' ? 'active' : ''}`}
+            onClick={() => setMode('browse')}
+          >
+            📚 唐诗宋词500首
+          </button>
         </div>
+
+        {/* AI创作模式 */}
+        {mode === 'create' && (
+          <>
+            <div className="wizard-steps">
+              {[1, 2, 3, 4].map((s) => (
+                <div key={s} className={`wizard-step ${step >= s ? 'active' : ''}`}>
+                  <div className="step-circle">{s}</div>
+                  <div className="step-label">
+                    {s === 1 ? '主题' : s === 2 ? '风格' : s === 3 ? '关键词' : '生成'}
+                  </div>
+                </div>
+              ))}
+            </div>
 
         {step === 1 && (
           <div className="step-content">
@@ -182,6 +239,122 @@ export default function PoemCreator() {
                   <button className="btn btn-primary">保存诗词</button>
                 </div>
               </div>
+            )}
+          </div>
+        )}
+          </>
+        )}
+
+        {/* 唐诗宋词浏览模式 */}
+        {mode === 'browse' && (
+          <div className="classic-poems-section">
+            {!selectedPoem ? (
+              <>
+                {/* 筛选器 */}
+                <div className="poem-filters">
+                  <div className="filter-group">
+                    <div className="filter-label">朝代:</div>
+                    <div className="filter-options">
+                      <button
+                        className={`filter-btn ${selectedDynasty === 'all' ? 'active' : ''}`}
+                        onClick={() => handleDynastyChange('all')}
+                      >
+                        全部
+                      </button>
+                      <button
+                        className={`filter-btn ${selectedDynasty === '唐' ? 'active' : ''}`}
+                        onClick={() => handleDynastyChange('唐')}
+                      >
+                        唐诗
+                      </button>
+                      <button
+                        className={`filter-btn ${selectedDynasty === '宋' ? 'active' : ''}`}
+                        onClick={() => handleDynastyChange('宋')}
+                      >
+                        宋词
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="filter-group">
+                    <div className="filter-label">分类:</div>
+                    <div className="filter-options">
+                      <button
+                        className={`filter-btn ${selectedCategory === 'all' ? 'active' : ''}`}
+                        onClick={() => handleCategoryChange('all')}
+                      >
+                        全部
+                      </button>
+                      {getAllCategories().map(cat => (
+                        <button
+                          key={cat}
+                          className={`filter-btn ${selectedCategory === cat ? 'active' : ''}`}
+                          onClick={() => handleCategoryChange(cat)}
+                        >
+                          {cat}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <button className="random-btn" onClick={handleRandomPoem}>
+                    🎲 随机一首
+                  </button>
+                </div>
+
+                {/* 诗词列表 */}
+                <div className="poems-list">
+                  {displayPoems.map(poem => (
+                    <div
+                      key={poem.id}
+                      className="poem-item"
+                      onClick={() => setSelectedPoem(poem)}
+                    >
+                      <div className="poem-item-header">
+                        <div className="poem-item-title">{poem.title}</div>
+                        <div className="poem-item-dynasty">{poem.dynasty}</div>
+                      </div>
+                      <div className="poem-item-author">{poem.author}</div>
+                      <div className="poem-item-preview">
+                        {poem.content.split('\n')[0]}...
+                      </div>
+                      <div className="poem-item-category">{poem.category}</div>
+                    </div>
+                  ))}
+                </div>
+              </>
+            ) : (
+              <>
+                {/* 诗词详情 */}
+                <div className="poem-detail">
+                  <button className="back-btn" onClick={() => setSelectedPoem(null)}>
+                    ← 返回列表
+                  </button>
+                  <div className="poem-detail-header">
+                    <div className="poem-detail-title">{selectedPoem.title}</div>
+                    <div className="poem-detail-meta">
+                      <span className="dynasty-tag">{selectedPoem.dynasty}代</span>
+                      <span className="author-tag">{selectedPoem.author}</span>
+                      <span className="category-tag">{selectedPoem.category}</span>
+                    </div>
+                  </div>
+                  <div className="poem-detail-content">
+                    {selectedPoem.content}
+                  </div>
+                  {selectedPoem.translation && (
+                    <div className="poem-translation">
+                      <div className="translation-title">译文:</div>
+                      <div className="translation-content">{selectedPoem.translation}</div>
+                    </div>
+                  )}
+                  <div className="poem-actions-bottom">
+                    <button className="action-icon-btn">❤️ 收藏</button>
+                    <button className="action-icon-btn">📖 朗读</button>
+                    <button className="action-icon-btn">🎨 临摹</button>
+                    <button className="action-icon-btn">📱 分享</button>
+                  </div>
+                </div>
+              </>
             )}
           </div>
         )}

@@ -5,17 +5,17 @@ import { sendSuccess } from '../utils/response';
 import { AuthRequest } from '../middlewares/auth';
 
 export const register = asyncHandler(async (req: Request, res: Response) => {
-  const { phone, password, nickname } = req.body;
+  const { phone, email, password, nickname } = req.body;
 
-  const result = await authService.register({ phone, password, nickname });
+  const result = await authService.register({ phone, email, password, nickname });
 
   sendSuccess(res, result, '注册成功', 201);
 });
 
 export const login = asyncHandler(async (req: Request, res: Response) => {
-  const { phone, password } = req.body;
+  const { phone, email, password } = req.body;
 
-  const result = await authService.login({ phone, password });
+  const result = await authService.login({ phone, email, password });
 
   sendSuccess(res, result, '登录成功');
 });

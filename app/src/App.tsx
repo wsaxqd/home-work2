@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import {
   Splash,
   Login,
+  Home,
   Create,
   Games,
   Profile,
@@ -15,7 +16,13 @@ import {
   ExpressionGame,
   ImageRecognitionGame,
   MyWorks,
-  Favorites
+  Favorites,
+  StoryLibrary,
+  FruitMatch,
+  TankBattle,
+  ChessGame,
+  ChineseChess,
+  CrystalMatch
 } from './pages'
 import './styles/global.css'
 
@@ -52,7 +59,7 @@ function InitialRoute() {
     return <div>Loading...</div>
   }
 
-  return isLoggedIn ? <Navigate to="/create" replace /> : <Navigate to="/splash" replace />
+  return isLoggedIn ? <Navigate to="/home" replace /> : <Navigate to="/splash" replace />
 }
 
 function App() {
@@ -64,10 +71,16 @@ function App() {
         <Route path="/login" element={<Login />} />
 
         {/* 4个主导航页面 */}
+        <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
         <Route path="/create" element={<ProtectedRoute><Create /></ProtectedRoute>} />
         <Route path="/games" element={<ProtectedRoute><Games /></ProtectedRoute>} />
-        <Route path="/mind-garden" element={<ProtectedRoute><MindGarden /></ProtectedRoute>} />
         <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+
+        {/* 个人中心子页面 */}
+        <Route path="/mind-garden" element={<ProtectedRoute><MindGarden /></ProtectedRoute>} />
+        <Route path="/assessment" element={<ProtectedRoute><Assessment /></ProtectedRoute>} />
+        <Route path="/my-works" element={<ProtectedRoute><MyWorks /></ProtectedRoute>} />
+        <Route path="/favorites" element={<ProtectedRoute><Favorites /></ProtectedRoute>} />
 
         {/* 创作工具子页面 */}
         <Route path="/art-creator" element={<ProtectedRoute><ArtCreator /></ProtectedRoute>} />
@@ -78,14 +91,17 @@ function App() {
         {/* 游戏子页面 */}
         <Route path="/expression-game" element={<ProtectedRoute><ExpressionGame /></ProtectedRoute>} />
         <Route path="/image-recognition-game" element={<ProtectedRoute><ImageRecognitionGame /></ProtectedRoute>} />
+        <Route path="/fruit-match" element={<ProtectedRoute><FruitMatch /></ProtectedRoute>} />
+        <Route path="/tank-battle" element={<ProtectedRoute><TankBattle /></ProtectedRoute>} />
+        <Route path="/chess-game" element={<ProtectedRoute><ChessGame /></ProtectedRoute>} />
+        <Route path="/chinese-chess" element={<ProtectedRoute><ChineseChess /></ProtectedRoute>} />
+        <Route path="/crystal-match" element={<ProtectedRoute><CrystalMatch /></ProtectedRoute>} />
 
-        {/* 个人中心子页面 */}
-        <Route path="/assessment" element={<ProtectedRoute><Assessment /></ProtectedRoute>} />
-        <Route path="/my-works" element={<ProtectedRoute><MyWorks /></ProtectedRoute>} />
-        <Route path="/favorites" element={<ProtectedRoute><Favorites /></ProtectedRoute>} />
+        {/* 故事库页面 */}
+        <Route path="/story-library" element={<ProtectedRoute><StoryLibrary /></ProtectedRoute>} />
 
-        {/* 未匹配的路由重定向到创作页 */}
-        <Route path="*" element={<Navigate to="/create" replace />} />
+        {/* 未匹配的路由重定向到首页 */}
+        <Route path="*" element={<Navigate to="/home" replace />} />
       </Routes>
     </BrowserRouter>
   )

@@ -108,3 +108,310 @@
 .poem-btn:hover {
   background: #e1bee7;
 }
+
+/* 模式切换器 */
+.mode-switcher {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 25px;
+  justify-content: center;
+}
+
+.mode-btn {
+  flex: 1;
+  padding: 15px 20px;
+  background: #f5f5f5;
+  border: 2px solid #e0e0e0;
+  border-radius: 15px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.mode-btn.active {
+  background: linear-gradient(135deg, #9c27b0 0%, #673ab7 100%);
+  color: white;
+  border-color: #9c27b0;
+  box-shadow: 0 4px 12px rgba(156, 39, 176, 0.3);
+}
+
+/* 唐诗宋词浏览模式 */
+.classic-poems-section {
+  animation: fadeIn 0.4s ease;
+}
+
+.poem-filters {
+  background: #f9f9f9;
+  border-radius: 15px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.filter-group {
+  margin-bottom: 15px;
+}
+
+.filter-group:last-child {
+  margin-bottom: 0;
+}
+
+.filter-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #666;
+  margin-bottom: 10px;
+}
+
+.filter-options {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.filter-btn {
+  padding: 8px 16px;
+  background: white;
+  border: 2px solid #e0e0e0;
+  border-radius: 20px;
+  font-size: 13px;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.filter-btn.active {
+  background: #9c27b0;
+  color: white;
+  border-color: #9c27b0;
+}
+
+.filter-btn:hover {
+  border-color: #9c27b0;
+}
+
+.random-btn {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(135deg, #9c27b0 0%, #673ab7 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 15px;
+  box-shadow: 0 4px 12px rgba(156, 39, 176, 0.3);
+}
+
+/* 诗词列表 */
+.poems-list {
+  display: grid;
+  gap: 15px;
+  max-height: 500px;
+  overflow-y: auto;
+  padding-right: 5px;
+}
+
+.poem-item {
+  background: white;
+  border-radius: 15px;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.3s;
+  border: 2px solid #f0f0f0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.poem-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(156, 39, 176, 0.15);
+  border-color: #e1bee7;
+}
+
+.poem-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.poem-item-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: #9c27b0;
+}
+
+.poem-item-dynasty {
+  font-size: 12px;
+  padding: 4px 10px;
+  background: #f3e5f5;
+  color: #9c27b0;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+.poem-item-author {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 10px;
+}
+
+.poem-item-preview {
+  font-size: 14px;
+  color: #999;
+  margin-bottom: 10px;
+  font-family: '楷体', 'STKaiti', serif;
+  line-height: 1.6;
+}
+
+.poem-item-category {
+  display: inline-block;
+  font-size: 12px;
+  padding: 4px 12px;
+  background: #ede7f6;
+  color: #673ab7;
+  border-radius: 12px;
+}
+
+/* 诗词详情 */
+.poem-detail {
+  background: white;
+  border-radius: 20px;
+  padding: 25px;
+  animation: fadeIn 0.4s ease;
+}
+
+.back-btn {
+  padding: 8px 16px;
+  background: #f5f5f5;
+  border: none;
+  border-radius: 12px;
+  font-size: 14px;
+  color: #666;
+  cursor: pointer;
+  margin-bottom: 20px;
+  transition: all 0.3s;
+}
+
+.back-btn:hover {
+  background: #e0e0e0;
+}
+
+.poem-detail-header {
+  text-align: center;
+  margin-bottom: 25px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.poem-detail-title {
+  font-size: 28px;
+  font-weight: bold;
+  color: #9c27b0;
+  margin-bottom: 15px;
+  font-family: '楷体', 'STKaiti', serif;
+}
+
+.poem-detail-meta {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.dynasty-tag,
+.author-tag,
+.category-tag {
+  padding: 6px 14px;
+  border-radius: 15px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.dynasty-tag {
+  background: #f3e5f5;
+  color: #9c27b0;
+}
+
+.author-tag {
+  background: #ede7f6;
+  color: #673ab7;
+}
+
+.category-tag {
+  background: #e1bee7;
+  color: #4a148c;
+}
+
+.poem-detail-content {
+  font-size: 20px;
+  line-height: 2.2;
+  color: #333;
+  white-space: pre-line;
+  font-family: '楷体', 'STKaiti', serif;
+  text-align: center;
+  margin-bottom: 25px;
+  padding: 25px;
+  background: linear-gradient(135deg, #f9f9f9 0%, #f5f5f5 100%);
+  border-radius: 15px;
+}
+
+.poem-translation {
+  background: #f3e5f5;
+  border-radius: 15px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.translation-title {
+  font-size: 16px;
+  font-weight: bold;
+  color: #9c27b0;
+  margin-bottom: 10px;
+}
+
+.translation-content {
+  font-size: 15px;
+  line-height: 1.8;
+  color: #555;
+}
+
+.poem-actions-bottom {
+  display: flex;
+  justify-content: space-around;
+  gap: 10px;
+  padding-top: 20px;
+  border-top: 2px solid #f0f0f0;
+}
+
+.action-icon-btn {
+  flex: 1;
+  padding: 12px;
+  background: #f9f9f9;
+  border: none;
+  border-radius: 12px;
+  font-size: 14px;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.action-icon-btn:hover {
+  background: #f3e5f5;
+  color: #9c27b0;
+  transform: translateY(-2px);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+

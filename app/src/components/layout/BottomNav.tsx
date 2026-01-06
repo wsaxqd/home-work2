@@ -2,10 +2,41 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import './BottomNav.css'
 
 const navItems = [
-  { path: '/create', icon: '✨', text: 'AI创作', gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' },
-  { path: '/games', icon: '🎮', text: 'AI游戏', gradient: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)' },
-  { path: '/mind-garden', icon: '💝', text: '心灵花园', gradient: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)' },
-  { path: '/profile', icon: '👤', text: '我的', gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' },
+  {
+    path: '/home',
+    icon: '🏠',
+    text: '首页',
+    gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    activeColor: '#667eea'
+  },
+  {
+    path: '/create',
+    icon: '✨',
+    text: '创作',
+    gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+    activeColor: '#f093fb'
+  },
+  {
+    path: '/games',
+    icon: '🎮',
+    text: '探索',
+    gradient: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+    activeColor: '#fa709a'
+  },
+  {
+    path: '/story-library',
+    icon: '📚',
+    text: '作品',
+    gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+    activeColor: '#4facfe'
+  },
+  {
+    path: '/profile',
+    icon: '👤',
+    text: '我的',
+    gradient: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+    activeColor: '#43e97b'
+  },
 ]
 
 export default function BottomNav() {
@@ -14,16 +45,28 @@ export default function BottomNav() {
 
   return (
     <div className="bottom-nav">
-      {navItems.map((item) => (
-        <div
-          key={item.path}
-          className={`nav-item ${location.pathname === item.path ? 'active' : ''}`}
-          onClick={() => navigate(item.path)}
-        >
-          <div className="nav-icon">{item.icon}</div>
-          <div className="nav-text">{item.text}</div>
-        </div>
-      ))}
+      <div className="nav-background"></div>
+      {navItems.map((item) => {
+        const isActive = location.pathname === item.path
+        return (
+          <div
+            key={item.path}
+            className={`nav-item ${isActive ? 'active' : ''}`}
+            onClick={() => navigate(item.path)}
+            style={{
+              '--item-gradient': item.gradient,
+              '--item-color': item.activeColor,
+            } as React.CSSProperties}
+          >
+            <div className="nav-icon-wrapper">
+              <div className="nav-icon">{item.icon}</div>
+              {isActive && <div className="icon-glow"></div>}
+            </div>
+            <div className="nav-text">{item.text}</div>
+            {isActive && <div className="active-dot"></div>}
+          </div>
+        )
+      })}
     </div>
   )
 }

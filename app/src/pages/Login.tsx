@@ -12,7 +12,9 @@ export default function Login() {
   const [mode, setMode] = useState<LoginMode>('password')
 
   // 通用字段
+  const [loginType, setLoginType] = useState<'phone' | 'email'>('phone') // 新增:登录类型
   const [phone, setPhone] = useState('')
+  const [email, setEmail] = useState('') // 新增:邮箱
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -51,6 +53,11 @@ export default function Login() {
     return /^1[3-9]\d{9}$/.test(phoneNum)
   }
 
+  // 验证邮箱
+  const validateEmail = (emailStr: string) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailStr)
+  }
+
   // 检查密码强度
   const checkPasswordStrength = (pwd: string) => {
     let strength = 0
@@ -78,9 +85,17 @@ export default function Login() {
 
   // 密码登录
   const handlePasswordLogin = async () => {
-    if (!validatePhone(phone)) {
-      setError('⚠️ 请输入正确的手机号')
-      return
+    // 验证输入
+    if (loginType === 'phone') {
+      if (!validatePhone(phone)) {
+        setError('⚠️ 请输入正确的手机号')
+        return
+      }
+    } else {
+      if (!validateEmail(email)) {
+        setError('⚠️ 请输入正确的邮箱地址')
+        return
+      }
     }
 
     if (!password || password.length < 6) {
@@ -92,9 +107,10 @@ export default function Login() {
     setError('')
 
     try {
-      // 使用手机号登录
+      // 使用手机号或邮箱登录
       const response = await authApi.login({
-        phone: phone,
+        phone: loginType === 'phone' ? phone : undefined,
+        email: loginType === 'email' ? email : undefined,
         password
       })
 
@@ -104,7 +120,7 @@ export default function Login() {
         localStorage.setItem('userProfile', JSON.stringify(response.data.user))
         navigate('/create')
       } else {
-        setError('❌ ' + (response.error || '登录失败，请检查手机号和密码'))
+        setError('❌ ' + (response.error || '登录失败，请检查账号和密码'))
       }
     } catch (err: any) {
       setError('❌ ' + (err.message || '网络错误，请检查连接后重试'))
@@ -146,9 +162,17 @@ export default function Login() {
 
   // 注册
   const handleRegister = async () => {
-    if (!validatePhone(phone)) {
-      setError('⚠️ 请输入正确的手机号')
-      return
+    // 验证输入
+    if (loginType === 'phone') {
+      if (!validatePhone(phone)) {
+        setError('⚠️ 请输入正确的手机号')
+        return
+      }
+    } else {
+      if (!validateEmail(email)) {
+        setError('⚠️ 请输入正确的邮箱地址')
+        return
+      }
     }
 
     if (!password || password.length < 6) {
@@ -176,7 +200,8 @@ export default function Login() {
 
     try {
       const response = await authApi.register({
-        phone: phone,
+        phone: loginType === 'phone' ? phone : undefined,
+        email: loginType === 'email' ? email : undefined,
         password,
         nickname,
         avatar: selectedAvatar,
@@ -194,7 +219,7 @@ export default function Login() {
     } catch (err: any) {
       // 注册失败时，使用localStorage模拟
       const user = {
-        username: phone,
+        username: loginType === 'phone' ? phone : email,
         nickname,
         avatar: selectedAvatar,
         age: parseInt(age),
@@ -265,24 +290,63 @@ export default function Login() {
 
         {/* 表单内容 */}
         <div className="form-content">
-          {/* 手机号输入（所有模式共用） */}
-          <div className="input-wrapper">
-            <label className="input-label">
-              <span className="label-icon">📱</span>
-              手机号
-            </label>
-            <input
-              type="tel"
-              className="input-field"
-              placeholder="请输入11位手机号"
-              value={phone}
-              maxLength={11}
-              onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
-            />
-            {phone && !validatePhone(phone) && (
-              <div className="input-hint error">请输入正确的手机号格式</div>
-            )}
-          </div>
+          {/* 登录方式切换 (密码登录和注册模式) */}
+          {(mode === 'password' || mode === 'register') && (
+            <div className="login-type-switch">
+              <button
+                className={`type-btn ${loginType === 'phone' ? 'active' : ''}`}
+                onClick={() => setLoginType('phone')}
+                type="button"
+              >
+                📱 手机号
+              </button>
+              <button
+                className={`type-btn ${loginType === 'email' ? 'active' : ''}`}
+                onClick={() => setLoginType('email')}
+                type="button"
+              >
+                📧 邮箱
+              </button>
+            </div>
+          )}
+
+          {/* 手机号或邮箱输入 */}
+          {loginType === 'phone' ? (
+            <div className="input-wrapper">
+              <label className="input-label">
+                <span className="label-icon">📱</span>
+                手机号
+              </label>
+              <input
+                type="tel"
+                className="input-field"
+                placeholder="请输入11位手机号"
+                value={phone}
+                maxLength={11}
+                onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
+              />
+              {phone && !validatePhone(phone) && (
+                <div className="input-hint error">请输入正确的手机号格式</div>
+              )}
+            </div>
+          ) : (
+            <div className="input-wrapper">
+              <label className="input-label">
+                <span className="label-icon">📧</span>
+                邮箱
+              </label>
+              <input
+                type="email"
+                className="input-field"
+                placeholder="请输入邮箱地址"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+              {email && !validateEmail(email) && (
+                <div className="input-hint error">请输入正确的邮箱格式</div>
+              )}
+            </div>
+          )}
 
           {/* 密码登录模式 */}
           {mode === 'password' && (

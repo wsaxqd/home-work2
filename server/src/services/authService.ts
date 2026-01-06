@@ -5,13 +5,15 @@ import { config } from '../config';
 import { AppError } from '../utils/errorHandler';
 
 export interface RegisterInput {
-  phone: string;
+  phone?: string;
+  email?: string;
   password: string;
   nickname?: string;
 }
 
 export interface LoginInput {
-  phone: string;
+  phone?: string;
+  email?: string;
   password: string;
 }
 
@@ -20,6 +22,12 @@ export class AuthService {
   private validatePhone(phone: string): boolean {
     const phoneRegex = /^1[3-9]\d{9}$/;
     return phoneRegex.test(phone);
+  }
+
+  // 验证邮箱格式
+  private validateEmail(email: string): boolean {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
   }
 
   // 验证密码强度
@@ -48,11 +56,21 @@ export class AuthService {
 
   // 用户注册
   async register(input: RegisterInput) {
-    const { phone, password, nickname } = input;
+    const { phone, email, password, nickname } = input;
 
-    // 验证手机号
-    if (!this.validatePhone(phone)) {
+    // 必须提供手机号或邮箱
+    if (!phone && !email) {
+      throw new AppError('请提供手机号或邮箱', 400);
+    }
+
+    // 验证手机号（如果提供）
+    if (phone && !this.validatePhone(phone)) {
       throw new AppError('手机号格式不正确', 400);
+    }
+
+    // 验证邮箱（如果提供）
+    if (email && !this.validateEmail(email)) {
+      throw new AppError('邮箱格式不正确', 400);
     }
 
     // 验证密码
@@ -60,14 +78,26 @@ export class AuthService {
       throw new AppError('密码至少8位，需包含大小写字母和数字', 400);
     }
 
-    // 检查手机号是否已注册
-    const existingUser = await query(
-      'SELECT id FROM users WHERE phone = $1',
-      [phone]
-    );
+    // 检查手机号或邮箱是否已注册
+    let existingUser;
+    if (phone) {
+      existingUser = await query(
+        'SELECT id FROM users WHERE phone = $1',
+        [phone]
+      );
+      if (existingUser.rows.length > 0) {
+        throw new AppError('该手机号已注册', 400);
+      }
+    }
 
-    if (existingUser.rows.length > 0) {
-      throw new AppError('该手机号已注册', 400);
+    if (email) {
+      existingUser = await query(
+        'SELECT id FROM users WHERE email = $1',
+        [email]
+      );
+      if (existingUser.rows.length > 0) {
+        throw new AppError('该邮箱已注册', 400);
+      }
     }
 
     // 加密密码
@@ -75,10 +105,10 @@ export class AuthService {
 
     // 创建用户
     const result = await query(
-      `INSERT INTO users (phone, password, nickname)
-       VALUES ($1, $2, $3)
-       RETURNING id, phone, nickname, avatar, bio, created_at`,
-      [phone, hashedPassword, nickname || `用户${phone.slice(-4)}`]
+      `INSERT INTO users (phone, email, password, nickname)
+       VALUES ($1, $2, $3, $4)
+       RETURNING id, phone, email, nickname, avatar, bio, created_at`,
+      [phone || null, email || null, hashedPassword, nickname || `用户${(phone || email)?.slice(-4)}`]
     );
 
     const user = result.rows[0];
@@ -88,6 +118,7 @@ export class AuthService {
       user: {
         id: user.id,
         phone: user.phone,
+        email: user.email,
         nickname: user.nickname,
         avatar: user.avatar,
         bio: user.bio,
@@ -99,16 +130,29 @@ export class AuthService {
 
   // 用户登录
   async login(input: LoginInput) {
-    const { phone, password } = input;
+    const { phone, email, password } = input;
+
+    // 必须提供手机号或邮箱
+    if (!phone && !email) {
+      throw new AppError('请提供手机号或邮箱', 400);
+    }
 
     // 查找用户
-    const result = await query(
-      'SELECT * FROM users WHERE phone = $1',
-      [phone]
-    );
+    let result;
+    if (phone) {
+      result = await query(
+        'SELECT * FROM users WHERE phone = $1',
+        [phone]
+      );
+    } else if (email) {
+      result = await query(
+        'SELECT * FROM users WHERE email = $1',
+        [email]
+      );
+    }
 
-    if (result.rows.length === 0) {
-      throw new AppError('手机号或密码错误', 401);
+    if (!result || result.rows.length === 0) {
+      throw new AppError('账号或密码错误', 401);
     }
 
     const user = result.rows[0];
@@ -117,7 +161,7 @@ export class AuthService {
     const isValidPassword = await bcrypt.compare(password, user.password);
 
     if (!isValidPassword) {
-      throw new AppError('手机号或密码错误', 401);
+      throw new AppError('账号或密码错误', 401);
     }
 
     // 更新最后登录时间
@@ -132,6 +176,7 @@ export class AuthService {
       user: {
         id: user.id,
         phone: user.phone,
+        email: user.email,
         nickname: user.nickname,
         avatar: user.avatar,
         bio: user.bio,
