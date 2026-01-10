@@ -19,16 +19,9 @@ const navItems = [
   {
     path: '/games',
     icon: '🎮',
-    text: '探索',
+    text: '游戏',
     gradient: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
     activeColor: '#fa709a'
-  },
-  {
-    path: '/story-library',
-    icon: '📚',
-    text: '作品',
-    gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-    activeColor: '#4facfe'
   },
   {
     path: '/profile',
