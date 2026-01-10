@@ -22,7 +22,8 @@ import {
   TankBattle,
   ChessGame,
   ChineseChess,
-  CrystalMatch
+  CrystalMatch,
+  AIEncyclopedia
 } from './pages'
 import './styles/global.css'
 
@@ -99,6 +100,9 @@ function App() {
 
         {/* 故事库页面 */}
         <Route path="/story-library" element={<ProtectedRoute><StoryLibrary /></ProtectedRoute>} />
+
+        {/* AI百科页面 */}
+        <Route path="/ai-encyclopedia" element={<ProtectedRoute><AIEncyclopedia /></ProtectedRoute>} />
 
         {/* 未匹配的路由重定向到首页 */}
         <Route path="*" element={<Navigate to="/home" replace />} />

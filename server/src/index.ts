@@ -38,8 +38,16 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 // 静态文件服务（上传的文件）
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
-// 健康检查
+// 健康检查（放在/api路径下）
 app.get('/health', (req, res) => {
+  res.json({
+    success: true,
+    message: '服务运行正常',
+    timestamp: new Date().toISOString(),
+  });
+});
+
+app.get('/api/health', (req, res) => {
   res.json({
     success: true,
     message: '服务运行正常',
