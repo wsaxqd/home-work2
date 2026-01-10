@@ -121,11 +121,6 @@ export default function CrystalMatch() {
     setSelectedCrystal(null)
   }, [initializeGrid])
 
-  // 检查位置是否有效
-  const isValidPosition = (row: number, col: number): boolean => {
-    return row >= 0 && row < GRID_SIZE && col >= 0 && col < GRID_SIZE
-  }
-
   // 检查两个水晶是否相邻
   const isAdjacent = (pos1: Position, pos2: Position): boolean => {
     const rowDiff = Math.abs(pos1.row - pos2.row)
