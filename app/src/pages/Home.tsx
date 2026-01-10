@@ -24,7 +24,8 @@ const gameItems = [
 
 // 其他功能模块
 const otherFeatures = [
-  { icon: '📚', title: '作品展示', desc: '查看和分享作品', path: '/story-library', color: '#4facfe', bgColor: '#e0f7fa' },
+  { icon: '📚', title: '故事库', desc: '阅读经典故事', path: '/story-library', color: '#4facfe', bgColor: '#e0f7fa' },
+  { icon: '💭', title: 'AI百科', desc: 'AI十万个为什么', path: '/ai-encyclopedia', color: '#9b59b6', bgColor: '#f4e7ff' },
   { icon: '💝', title: '心灵花园', desc: '记录心情日记', path: '/mind-garden', color: '#a29bfe', bgColor: '#f3e5f5' },
 ]
 
