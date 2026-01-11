@@ -11,17 +11,6 @@ const createTools = [
   { icon: '✍️', title: 'AI诗词', desc: '学习古诗，创作诗词', path: '/poem-creator', color: '#fd79a8', bgColor: '#ffeef5' },
 ]
 
-// AI游戏乐园 - 7款游戏
-const gameItems = [
-  { icon: '😊', title: '表情识别', desc: '识别表情，学习情感', path: '/expression-game', color: '#feca57', bgColor: '#fff9e6' },
-  { icon: '🖼️', title: '图像认知', desc: '识别物品，提升观察', path: '/image-recognition-game', color: '#48dbfb', bgColor: '#e3f9ff' },
-  { icon: '🍎', title: '水果连连看', desc: '水果配对，锻炼记忆', path: '/fruit-match', color: '#ff6b6b', bgColor: '#ffe5e5' },
-  { icon: '💎', title: '水晶消消乐', desc: '消除游戏，挑战高分', path: '/crystal-match', color: '#667eea', bgColor: '#e8e4ff' },
-  { icon: '🚀', title: '坦克大战', desc: '射击游戏，挑战反应', path: '/tank-battle', color: '#5f27cd', bgColor: '#e8e3f3' },
-  { icon: '♟️', title: '国际象棋', desc: '智力对弈，策略思维', path: '/chess-game', color: '#2c3e50', bgColor: '#ecf0f1' },
-  { icon: '🀄', title: '中国象棋', desc: '传统棋艺，经典对弈', path: '/chinese-chess', color: '#8b0000', bgColor: '#ffe4e1' },
-]
-
 // 其他功能模块
 const otherFeatures = [
   { icon: '📚', title: '故事库', desc: '阅读经典故事', path: '/story-library', color: '#4facfe', bgColor: '#e0f7fa' },
@@ -85,33 +74,6 @@ export default function Home() {
               <div className="function-desc">{tool.desc}</div>
               <div className="function-action" style={{ backgroundColor: tool.color }}>
                 立即使用 →
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* AI游戏乐园区域 */}
-        <div className="section-header">
-          <div className="section-title">
-            <span className="section-icon">🎮</span>
-            AI游戏乐园
-          </div>
-          <div className="section-subtitle">7款趣味游戏，边玩边学习</div>
-        </div>
-
-        <div className="function-grid">
-          {gameItems.map((game) => (
-            <div
-              key={game.path}
-              className="function-card"
-              style={{ backgroundColor: game.bgColor, borderColor: game.color }}
-              onClick={() => navigate(game.path)}
-            >
-              <div className="function-icon" style={{ color: game.color }}>{game.icon}</div>
-              <div className="function-title">{game.title}</div>
-              <div className="function-desc">{game.desc}</div>
-              <div className="function-action" style={{ backgroundColor: game.color }}>
-                开始游戏 →
               </div>
             </div>
           ))}
