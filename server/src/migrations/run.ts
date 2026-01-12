@@ -26,6 +26,7 @@ import { migration_018_add_more_game_questions } from './018_add_more_game_quest
 import { migration_019_create_moderation_system } from './019_create_moderation_system';
 import { migration_020_add_last_login } from './020_add_last_login';
 import { migration_021_add_email_to_users } from './021_add_email_to_users';
+import { migration_022_create_encyclopedia } from './022_create_encyclopedia';
 
 const migrations: Migration[] = [
   migration_001_create_users,
@@ -49,6 +50,7 @@ const migrations: Migration[] = [
   migration_019_create_moderation_system,
   migration_020_add_last_login,
   migration_021_add_email_to_users,
+  migration_022_create_encyclopedia,
 ];
 
 async function run() {

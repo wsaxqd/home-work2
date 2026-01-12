@@ -120,7 +120,7 @@ router.get('/explore', optionalAuth, asyncHandler(async (req: AuthRequest, res) 
   const experiments = [
     { id: 'image-game', title: 'AI图像识别游戏', icon: '🎮', type: 'game' },
     { id: 'emotion-game', title: '情绪识别挑战', icon: '😊', type: 'game' },
-    { id: 'chat-ai', title: '和小光聊天', icon: '💬', type: 'chat' }
+    { id: 'chat-ai', title: '和启启聊天', icon: '💬', type: 'chat' }
   ];
 
   // 如果用户已登录，获取学习进度
