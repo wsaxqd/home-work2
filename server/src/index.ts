@@ -24,6 +24,7 @@ import generationRoutes from './routes/generation';
 import moderationRoutes from './routes/moderation';
 import analyticsRoutes from './routes/analytics';
 import storiesRoutes from './routes/stories';
+import encyclopediaRoutes from './routes/encyclopedia';
 
 const app = express();
 
@@ -74,6 +75,7 @@ app.use('/api/generation', generationRoutes);
 app.use('/api/moderation', moderationRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/stories', storiesRoutes);
+app.use('/api/encyclopedia', encyclopediaRoutes);
 app.use('/api', homeRoutes);
 
 // 404处理

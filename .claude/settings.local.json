@@ -44,7 +44,13 @@
       "Bash(if exist .env type .env)",
       "Bash(if exist .env.development type .env.development)",
       "Bash(npx tsc:*)",
-      "Bash(del \"server\\src\\routes\\aiRoutes.ts\")"
+      "Bash(del \"server\\src\\routes\\aiRoutes.ts\")",
+      "Bash(git checkout:*)",
+      "Bash(npm run migrate:*)",
+      "Bash(pg_isready:*)",
+      "Bash(net start:*)",
+      "Bash(sc query:*)",
+      "Bash(docker:*)"
     ],
     "deny": [],
     "ask": []

@@ -14,7 +14,7 @@ export default function AIChatbot() {
     {
       id: '1',
       role: 'assistant',
-      content: '你好！我是AI助手小光，很高兴为你服务。有什么我可以帮助你的吗？😊',
+      content: '你好！我是AI助手启启，很高兴为你服务。有什么我可以帮助你的吗？😊',
       timestamp: new Date()
     }
   ])
@@ -155,7 +155,7 @@ export default function AIChatbot() {
             <div className="header-info">
               <div className="bot-avatar">🤖</div>
               <div className="bot-details">
-                <div className="bot-name">AI助手小光</div>
+                <div className="bot-name">AI助手启启</div>
                 <div className="bot-status">
                   <span className="status-dot"></span>
                   <span className="status-text">在线</span>

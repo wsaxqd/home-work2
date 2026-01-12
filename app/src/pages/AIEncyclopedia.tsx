@@ -1,5 +1,5 @@
 // src/pages/AIEncyclopedia.tsx
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './AIEncyclopedia.css';
 
@@ -52,7 +52,7 @@ const AIEncyclopedia: React.FC = () => {
     {
       id: 5,
       question: 'AI能成为我的朋友吗？',
-      answer: '当然可以！我就是你的AI朋友小光，随时陪你聊天、学习和玩游戏！',
+      answer: '当然可以！我就是你的AI朋友启启，随时陪你聊天、学习和玩游戏！',
       category: '应用',
       difficulty: '简单',
       liked: true
@@ -161,7 +161,7 @@ const AIEncyclopedia: React.FC = () => {
         </button>
       </header>
 
-      {/* 小光机器人助手 */}
+      {/* 启启机器人助手 */}
       <div className="ai-assistant-banner">
         <div className="assistant-avatar">
           <div className="robot-face">
@@ -171,7 +171,7 @@ const AIEncyclopedia: React.FC = () => {
           </div>
         </div>
         <div className="assistant-info">
-          <h3>我是小光 🤖</h3>
+          <h3>我是启启 🤖</h3>
           <p>有什么关于AI的好奇问题，尽管问我吧！</p>
           <button className="talk-to-me-btn" onClick={askQuestionToAI}>
             <span className="icon">💬</span> 和我聊天
@@ -294,7 +294,7 @@ const AIEncyclopedia: React.FC = () => {
             {expandedId === question.id && (
               <div className="answer-content">
                 <div className="answer-text">
-                  <span className="a-mark">小光说：</span> {question.answer}
+                  <span className="a-mark">启启说：</span> {question.answer}
                 </div>
                 
                 <div className="answer-actions">
@@ -326,7 +326,7 @@ const AIEncyclopedia: React.FC = () => {
         <div className="voice-assistant-modal">
           <div className="modal-content">
             <div className="modal-header">
-              <h3>和小光语音对话</h3>
+              <h3>和启启语音对话</h3>
               <button className="close-modal" onClick={() => setShowVoiceAssistant(false)}>
                 ✕
               </button>

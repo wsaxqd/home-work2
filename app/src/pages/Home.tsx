@@ -36,14 +36,14 @@ export default function Home() {
           <div className="welcome-decoration">✨</div>
         </div>
 
-        {/* AI助手小光卡片 */}
+        {/* AI助手启启卡片 */}
         <div className="ai-assistant-card" onClick={() => {
           const chatbot = document.querySelector('.chatbot-fab') as HTMLElement;
           if (chatbot) chatbot.click();
         }}>
           <div className="assistant-avatar">🤖</div>
           <div className="assistant-content">
-            <div className="assistant-name">AI助手小光</div>
+            <div className="assistant-name">AI助手启启</div>
             <div className="assistant-desc">有问题随时问我，我会帮你解答哦~</div>
           </div>
           <div className="assistant-action">
