@@ -1,0 +1,293 @@
+/* 心情日记页面样式 */
+
+.mood-diary-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+  padding-bottom: 100px;
+}
+
+/* 顶部导航 */
+.diary-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.back-btn, .write-btn {
+  background: transparent;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 8px 12px;
+  color: #666;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.back-btn:hover, .write-btn:hover {
+  background: #f7fafc;
+}
+
+.diary-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #2d3748;
+  margin: 0;
+}
+
+/* 列表视图 - 与主页面保持一致 */
+.diary-list {
+  padding: 16px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.empty-icon {
+  font-size: 64px;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.empty-text {
+  font-size: 16px;
+  color: #718096;
+  margin: 0 0 6px 0;
+  font-weight: 600;
+}
+
+.empty-hint {
+  font-size: 13px;
+  color: #a0aec0;
+  margin: 0;
+}
+
+.entries-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.diary-card {
+  background: white;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.mood-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  color: white;
+  font-weight: 600;
+}
+
+.mood-emoji {
+  font-size: 18px;
+}
+
+.mood-label {
+  font-size: 14px;
+}
+
+.card-date {
+  font-size: 12px;
+  color: #999;
+}
+
+.card-content {
+  font-size: 15px;
+  line-height: 1.6;
+  color: #333;
+  margin-bottom: 12px;
+  white-space: pre-wrap;
+}
+
+.ai-response {
+  display: flex;
+  gap: 8px;
+  padding: 12px;
+  background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+  border-radius: 12px;
+  align-items: flex-start;
+}
+
+.ai-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.ai-text {
+  font-size: 13px;
+  color: #8b4513;
+  line-height: 1.5;
+}
+
+/* 写日记视图 */
+.diary-write {
+  padding: 20px 16px;
+}
+
+.write-section {
+  margin-bottom: 24px;
+}
+
+.section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 16px 0;
+}
+
+.mood-selector {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.mood-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 8px;
+  border: 2px solid;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.mood-btn:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.mood-emoji-large {
+  font-size: 36px;
+}
+
+.mood-label-small {
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+}
+
+.diary-textarea {
+  width: 100%;
+  padding: 16px;
+  border: 2px solid #e2e8f0;
+  border-radius: 16px;
+  font-size: 15px;
+  line-height: 1.6;
+  resize: vertical;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.diary-textarea:focus {
+  outline: none;
+  border-color: #a8edea;
+  box-shadow: 0 0 0 3px rgba(168, 237, 234, 0.2);
+}
+
+.save-btn {
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+  color: #333;
+  border: none;
+  border-radius: 16px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.save-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(168, 237, 234, 0.4);
+}
+
+/* AI回复弹窗 */
+.ai-response-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 24px;
+  padding: 32px 24px;
+  max-width: 320px;
+  text-align: center;
+  animation: scaleIn 0.3s ease;
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.modal-icon {
+  font-size: 64px;
+  margin-bottom: 16px;
+}
+
+.modal-text {
+  font-size: 16px;
+  line-height: 1.6;
+  color: #333;
+  margin: 0;
+}
+
+/* 响应式设计 */
+@media (max-width: 480px) {
+  .mood-selector {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
