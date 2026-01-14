@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Layout, Header } from '../components/layout'
+import { UsageTracker } from '../services/usageTracking'
 import './Assessment.css'
 
 const questions = [
@@ -17,6 +18,7 @@ const abilities = [
 ]
 
 export default function Assessment() {
+  const usageTrackerRef = useRef<UsageTracker | null>(null);
   const [currentQuestion, setCurrentQuestion] = useState(0)
   const [answers, setAnswers] = useState<string[]>([])
   const [showResult, setShowResult] = useState(false)
@@ -28,7 +30,19 @@ export default function Assessment() {
     if (currentQuestion < questions.length - 1) {
       setCurrentQuestion(currentQuestion + 1)
     } else {
+      // 评估完成,记录结果
       setShowResult(true)
+
+      // 记录评估数据
+      if (usageTrackerRef.current) {
+        const avgAbility = abilities.reduce((sum, a) => sum + a.value, 0) / abilities.length;
+        usageTrackerRef.current.end(avgAbility, {
+          totalQuestions: questions.length,
+          completedQuestions: newAnswers.length,
+          abilities: abilities.map(a => ({ name: a.name, value: a.value })),
+        });
+        usageTrackerRef.current = null; // 清空引用
+      }
     }
   }
 
@@ -36,7 +50,36 @@ export default function Assessment() {
     setCurrentQuestion(0)
     setAnswers([])
     setShowResult(false)
+
+    // 重新开始评估,启动新的追踪
+    if (usageTrackerRef.current) {
+      usageTrackerRef.current.cancel();
+    }
+    usageTrackerRef.current = new UsageTracker('学习', '能力评估', {
+      totalQuestions: questions.length,
+    });
+    usageTrackerRef.current.start();
   }
+
+  // 启动使用追踪
+  useEffect(() => {
+    // 创建追踪器并开始记录
+    usageTrackerRef.current = new UsageTracker('学习', '能力评估', {
+      totalQuestions: questions.length,
+    });
+    usageTrackerRef.current.start();
+
+    // 组件卸载时记录数据(如果未完成评估)
+    return () => {
+      if (usageTrackerRef.current) {
+        usageTrackerRef.current.end(undefined, {
+          totalQuestions: questions.length,
+          completedQuestions: answers.length,
+          completed: showResult,
+        });
+      }
+    };
+  }, []);
 
   return (
     <Layout>

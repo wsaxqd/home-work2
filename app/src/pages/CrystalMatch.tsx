@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { Layout, Header } from '../components/layout'
+import { UsageTracker } from '../services/usageTracking'
 import './CrystalMatch.css'
 
 // 水晶类型定义（7种颜色的水晶）
@@ -56,6 +57,7 @@ export default function CrystalMatch() {
   const [gameOver, setGameOver] = useState(false)
   const [gameWon, setGameWon] = useState(false)
   const animationTimerRef = useRef<number | null>(null)
+  const usageTrackerRef = useRef<UsageTracker | null>(null)
 
   // 生成随机水晶
   const generateCrystal = (row: number, col: number): Crystal => {
@@ -119,6 +121,12 @@ export default function CrystalMatch() {
     setGameOver(false)
     setGameWon(false)
     setSelectedCrystal(null)
+    // 重新开始追踪
+    if (usageTrackerRef.current) {
+      usageTrackerRef.current.cancel()
+    }
+    usageTrackerRef.current = new UsageTracker('游戏', '宝石消消乐')
+    usageTrackerRef.current.start()
   }, [initializeGrid])
 
   // 检查两个水晶是否相邻
@@ -329,6 +337,19 @@ export default function CrystalMatch() {
     }
   }, [moves, score, targetScore, isProcessing])
 
+  // 检查游戏结束并记录数据
+  useEffect(() => {
+    if ((gameOver || gameWon) && usageTrackerRef.current) {
+      usageTrackerRef.current.end(score, {
+        level,
+        targetScore,
+        won: gameWon,
+        movesLeft: moves
+      })
+      usageTrackerRef.current = null
+    }
+  }, [gameOver, gameWon, score, level, targetScore, moves])
+
   // 下一关
   const nextLevel = () => {
     setLevel(prev => prev + 1)
@@ -336,6 +357,12 @@ export default function CrystalMatch() {
     setMoves(30)
     setGameWon(false)
     initializeGrid()
+    // 重新开始追踪
+    if (usageTrackerRef.current) {
+      usageTrackerRef.current.cancel()
+    }
+    usageTrackerRef.current = new UsageTracker('游戏', '宝石消消乐')
+    usageTrackerRef.current.start()
   }
 
   // 初始化
@@ -343,11 +370,14 @@ export default function CrystalMatch() {
     initGame()
   }, [initGame])
 
-  // 清理定时器
+  // 清理定时器和追踪器
   useEffect(() => {
     return () => {
       if (animationTimerRef.current !== null) {
         clearTimeout(animationTimerRef.current)
+      }
+      if (usageTrackerRef.current) {
+        usageTrackerRef.current.cancel()
       }
     }
   }, [])

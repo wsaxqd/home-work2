@@ -27,6 +27,8 @@ import { migration_019_create_moderation_system } from './019_create_moderation_
 import { migration_020_add_last_login } from './020_add_last_login';
 import { migration_021_add_email_to_users } from './021_add_email_to_users';
 import { migration_022_create_encyclopedia } from './022_create_encyclopedia';
+import { migration_023_create_parent_tables } from './023_create_parent_tables_export';
+import { migration_024_create_email_verify_codes } from './024_create_email_verify_codes_export';
 
 const migrations: Migration[] = [
   migration_001_create_users,
@@ -51,6 +53,8 @@ const migrations: Migration[] = [
   migration_020_add_last_login,
   migration_021_add_email_to_users,
   migration_022_create_encyclopedia,
+  migration_023_create_parent_tables,
+  migration_024_create_email_verify_codes,
 ];
 
 async function run() {

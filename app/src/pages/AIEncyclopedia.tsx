@@ -1,6 +1,7 @@
 // src/pages/AIEncyclopedia.tsx
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { UsageTracker } from '../services/usageTracking';
 import './AIEncyclopedia.css';
 
 interface Question {
@@ -15,6 +16,7 @@ interface Question {
 
 const AIEncyclopedia: React.FC = () => {
   const navigate = useNavigate();
+  const usageTrackerRef = useRef<UsageTracker | null>(null);
   const [questions, setQuestions] = useState<Question[]>([
     {
       id: 1,
@@ -147,6 +149,30 @@ const AIEncyclopedia: React.FC = () => {
     '未来': '#fd79a8',
     '趣味': '#feca57'
   };
+
+  // 启动使用追踪
+  useEffect(() => {
+    // 创建追踪器并开始记录
+    usageTrackerRef.current = new UsageTracker('学习', 'AI百科', {
+      category: selectedCategory,
+      difficulty: selectedDifficulty,
+      totalQuestions: questions.length,
+    });
+    usageTrackerRef.current.start();
+
+    // 组件卸载时记录数据
+    return () => {
+      if (usageTrackerRef.current) {
+        const viewedQuestions = questions.filter(q => q.liked).length;
+        usageTrackerRef.current.end(undefined, {
+          viewedQuestions,
+          totalQuestions: questions.length,
+          category: selectedCategory,
+          difficulty: selectedDifficulty,
+        });
+      }
+    };
+  }, []);
 
   return (
     <div className="encyclopedia-container">

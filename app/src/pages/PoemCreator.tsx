@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Layout, Header } from '../components/layout'
 import { classicPoems, getAllCategories, getRandomPoem, type Poem } from '../data/classicPoems'
+import { UsageTracker } from '../services/usageTracking'
 import './Creator.css'
 import './PoemCreator.css'
 
@@ -29,12 +30,27 @@ export default function PoemCreator() {
   const [keywordInput, setKeywordInput] = useState('')
   const [isGenerating, setIsGenerating] = useState(false)
   const [poem, setPoem] = useState({ title: '', content: '' })
+  const usageTrackerRef = useRef<UsageTracker | null>(null)
 
   // 诗词浏览模式状态
   const [selectedDynasty, setSelectedDynasty] = useState<'all' | '唐' | '宋'>('all')
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
   const [selectedPoem, setSelectedPoem] = useState<Poem | null>(null)
   const [displayPoems, setDisplayPoems] = useState<Poem[]>(classicPoems)
+
+  // 启动使用追踪（仅在创作模式）
+  useEffect(() => {
+    if (mode === 'create') {
+      usageTrackerRef.current = new UsageTracker('创作', '诗歌创作')
+      usageTrackerRef.current.start()
+
+      return () => {
+        if (usageTrackerRef.current) {
+          usageTrackerRef.current.cancel()
+        }
+      }
+    }
+  }, [mode])
 
   const addKeyword = () => {
     if (keywordInput && keywords.length < 5) {
@@ -236,7 +252,18 @@ export default function PoemCreator() {
                   <button className="btn btn-secondary" onClick={() => setStep(1)}>
                     重新创作
                   </button>
-                  <button className="btn btn-primary">保存诗词</button>
+                  <button className="btn btn-primary" onClick={async () => {
+                    if (usageTrackerRef.current) {
+                      await usageTrackerRef.current.end(undefined, {
+                        workName: poem.title,
+                        theme: selectedTheme,
+                        style: selectedStyle,
+                        keywords: keywords,
+                        saved: true
+                      })
+                    }
+                    alert('诗词已保存')
+                  }}>保存诗词</button>
                 </div>
               </div>
             )}

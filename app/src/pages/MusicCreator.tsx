@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Layout, Header } from '../components/layout'
+import { UsageTracker } from '../services/usageTracking'
 import './Creator.css'
 import './MusicCreator.css'
 
@@ -12,14 +13,51 @@ const genres = [
   { icon: '🌳', name: '自然之声', value: 'nature' },
 ]
 
+const childrenSongs = [
+  { id: 1, title: '小星星', icon: '⭐', duration: '2:15' },
+  { id: 2, title: '两只老虎', icon: '🐯', duration: '1:45' },
+  { id: 3, title: '小兔子乖乖', icon: '🐰', duration: '2:30' },
+  { id: 4, title: '找朋友', icon: '👫', duration: '1:50' },
+  { id: 5, title: '小燕子', icon: '🐦', duration: '2:20' },
+  { id: 6, title: '数鸭子', icon: '🦆', duration: '2:10' },
+  { id: 7, title: '蜗牛与黄鹂鸟', icon: '🐌', duration: '2:40' },
+  { id: 8, title: '春天在哪里', icon: '🌸', duration: '2:25' },
+  { id: 9, title: '小毛驴', icon: '🐴', duration: '1:55' },
+  { id: 10, title: '拔萝卜', icon: '🥕', duration: '2:05' },
+  { id: 11, title: '虫儿飞', icon: '🦋', duration: '2:35' },
+  { id: 12, title: '外婆的澎湖湾', icon: '🌊', duration: '3:00' },
+  { id: 13, title: '让我们荡起双桨', icon: '🚣', duration: '2:50' },
+  { id: 14, title: '采蘑菇的小姑娘', icon: '🍄', duration: '2:15' },
+  { id: 15, title: '卖报歌', icon: '📰', duration: '1:40' },
+  { id: 16, title: '丢手绢', icon: '🧣', duration: '1:35' },
+  { id: 17, title: '小螺号', icon: '🐚', duration: '2:20' },
+  { id: 18, title: '听妈妈讲那过去的事情', icon: '👩', duration: '3:10' },
+  { id: 19, title: '世上只有妈妈好', icon: '❤️', duration: '2:00' },
+  { id: 20, title: '读书郎', icon: '📚', duration: '2:10' },
+]
+
 export default function MusicCreator() {
   const [step, setStep] = useState(1)
   const [selectedGenre, setSelectedGenre] = useState('')
   const [tempo, setTempo] = useState(3)
   const [isGenerating, setIsGenerating] = useState(false)
   const [isPlaying, setIsPlaying] = useState(false)
+  const [playingSongId, setPlayingSongId] = useState<number | null>(null)
+  const usageTrackerRef = useRef<UsageTracker | null>(null)
 
   const tempoLabels = ['非常慢', '缓慢', '中等', '快速', '非常快']
+
+  // 启动使用追踪
+  useEffect(() => {
+    usageTrackerRef.current = new UsageTracker('创作', '音乐创作')
+    usageTrackerRef.current.start()
+
+    return () => {
+      if (usageTrackerRef.current) {
+        usageTrackerRef.current.cancel()
+      }
+    }
+  }, [])
 
   const handleGenerate = () => {
     setIsGenerating(true)
@@ -27,6 +65,14 @@ export default function MusicCreator() {
       setIsGenerating(false)
       setStep(3)
     }, 3000)
+  }
+
+  const handleSongPlay = (songId: number) => {
+    if (playingSongId === songId) {
+      setPlayingSongId(null)
+    } else {
+      setPlayingSongId(songId)
+    }
   }
 
   return (
@@ -157,12 +203,44 @@ export default function MusicCreator() {
                   <button className="btn btn-secondary" onClick={() => { setStep(1); }}>
                     重新创作
                   </button>
-                  <button className="btn btn-primary">保存音乐</button>
+                  <button className="btn btn-primary" onClick={async () => {
+                    if (usageTrackerRef.current) {
+                      await usageTrackerRef.current.end(undefined, {
+                        workName: '我的AI音乐',
+                        genre: selectedGenre,
+                        tempo: tempoLabels[tempo - 1],
+                        saved: true
+                      })
+                    }
+                    alert('音乐已保存')
+                  }}>保存音乐</button>
                 </div>
               </div>
             )}
           </div>
         )}
+
+        {/* 儿歌列表 */}
+        <div className="children-songs-section">
+          <div className="section-title">经典儿歌精选</div>
+          <div className="songs-grid">
+            {childrenSongs.map((song) => (
+              <div key={song.id} className="song-card">
+                <div className="song-icon">{song.icon}</div>
+                <div className="song-info">
+                  <div className="song-title">{song.title}</div>
+                  <div className="song-duration">{song.duration}</div>
+                </div>
+                <button
+                  className="song-play-btn"
+                  onClick={() => handleSongPlay(song.id)}
+                >
+                  {playingSongId === song.id ? '⏸️' : '▶️'}
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </Layout>
   )

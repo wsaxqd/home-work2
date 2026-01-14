@@ -3,14 +3,15 @@ import { Layout, Header } from '../components/layout'
 import './Games.css'
 
 const gameItems = [
-  { icon: '😊', title: '表情识别', desc: '识别不同的表情，学习情感管理', path: '/expression-game', color: '#feca57', bgColor: '#fff9e6', difficulty: '简单', tips: '认识6种基本表情' },
-  { icon: '🖼️', title: '图像认知', desc: '识别物品和场景，提升观察力', path: '/image-recognition-game', color: '#48dbfb', bgColor: '#e3f9ff', difficulty: '中等', tips: '挑战100+种物品' },
   { icon: '🍎', title: '水果连连看', desc: '萌萌哒水果配对，锻炼记忆力', path: '/fruit-match', color: '#ff6b6b', bgColor: '#ffe5e5', difficulty: '简单', tips: '8种可爱水果等你来配对' },
   { icon: '💎', title: '水晶消消乐', desc: '晶莹剔透的消除游戏', path: '/crystal-match', color: '#667eea', bgColor: '#e8e4ff', difficulty: '中等', tips: '连击消除，挑战高分' },
   { icon: '🚀', title: '坦克大战', desc: '经典坦克射击，挑战反应速度', path: '/tank-battle', color: '#5f27cd', bgColor: '#e8e3f3', difficulty: '中等', tips: '键盘操控，激情对战' },
   { icon: '♟️', title: '国际象棋', desc: '智力对弈，挑战策略思维', path: '/chess-game', color: '#2c3e50', bgColor: '#ecf0f1', difficulty: '困难', tips: '经典棋局，锻炼逻辑思维' },
   { icon: '🀄', title: '中国象棋', desc: '楚河汉界，传统棋艺对弈', path: '/chinese-chess', color: '#8b0000', bgColor: '#ffe4e1', difficulty: '困难', tips: '体验传统象棋魅力' },
-  { icon: '🎯', title: '更多游戏', desc: '更多有趣的AI游戏即将上线', path: '/games', color: '#ff6348', bgColor: '#ffe5e1', difficulty: '敬请期待', tips: '持续更新中...' },
+  { icon: '🎯', title: '打地鼠', desc: '快速反应，打击地鼠', path: '/whack-a-mole', color: '#f093fb', bgColor: '#fce4ff', difficulty: '简单', tips: '锻炼反应速度和手眼协调' },
+  { icon: '🔢', title: '数字华容道', desc: '移动数字方块，按顺序排列', path: '/number-puzzle', color: '#4facfe', bgColor: '#e3f5ff', difficulty: '中等', tips: '挑战逻辑思维能力' },
+  { icon: '🧩', title: '拼图游戏', desc: '拼接图案，完成挑战', path: '/jigsaw-puzzle', color: '#28c76f', bgColor: '#d4f4e2', difficulty: '简单', tips: '培养空间想象力' },
+  { icon: '🎮', title: '更多游戏', desc: '更多有趣的AI游戏即将上线', path: '/games', color: '#ff6348', bgColor: '#ffe5e1', difficulty: '敬请期待', tips: '持续更新中...' },
 ]
 
 export default function Games() {

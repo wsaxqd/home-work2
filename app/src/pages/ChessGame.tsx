@@ -1,5 +1,6 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { Layout, Header } from '../components/layout';
+import { UsageTracker } from '../services/usageTracking';
 import './ChessGame.css';
 
 // 棋子类型
@@ -80,6 +81,7 @@ export default function ChessGame() {
   const [isCheck, setIsCheck] = useState(false);
   const [isCheckmate, setIsCheckmate] = useState(false);
   const [gameOver, setGameOver] = useState(false);
+  const usageTrackerRef = useRef<UsageTracker | null>(null);
 
   // 检查位置是否在棋盘内
   const isValidPosition = (row: number, col: number): boolean => {
@@ -300,7 +302,41 @@ export default function ChessGame() {
     setIsCheck(false);
     setIsCheckmate(false);
     setGameOver(false);
+    // 重新开始追踪
+    if (usageTrackerRef.current) {
+      usageTrackerRef.current.cancel();
+    }
+    usageTrackerRef.current = new UsageTracker('游戏', '国际象棋');
+    usageTrackerRef.current.start();
   };
+
+  // 初始化游戏追踪
+  useEffect(() => {
+    usageTrackerRef.current = new UsageTracker('游戏', '国际象棋');
+    usageTrackerRef.current.start();
+
+    return () => {
+      if (usageTrackerRef.current) {
+        usageTrackerRef.current.cancel();
+      }
+    };
+  }, []);
+
+  // 检查游戏结束并记录数据
+  useEffect(() => {
+    if (isCheckmate && usageTrackerRef.current) {
+      const totalMoves = moveHistory.length;
+      const winner = currentPlayer === 'white' ? '黑方' : '白方';
+      usageTrackerRef.current.end(totalMoves, {
+        winner,
+        totalMoves,
+        rounds: Math.ceil(totalMoves / 2),
+        capturedWhite: capturedPieces.white.length,
+        capturedBlack: capturedPieces.black.length
+      });
+      usageTrackerRef.current = null;
+    }
+  }, [isCheckmate, moveHistory, currentPlayer, capturedPieces]);
 
   return (
     <Layout>

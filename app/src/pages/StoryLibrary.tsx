@@ -1,5 +1,6 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import { Layout, Header } from '../components/layout';
+import { UsageTracker } from '../services/usageTracking';
 import { classicStories, getAllStoryCategories } from '../data/classicStories';
 import type { Story } from '../data/classicStories';
 import './StoryLibrary.css';
@@ -9,6 +10,17 @@ export default function StoryLibrary() {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedStory, setSelectedStory] = useState<Story | null>(null);
   const [searchKeyword, setSearchKeyword] = useState('');
+  const usageTrackerRef = useRef<UsageTracker | null>(null);
+
+  // 清理追踪器
+  useEffect(() => {
+    return () => {
+      if (usageTrackerRef.current) {
+        usageTrackerRef.current.end();
+        usageTrackerRef.current = null;
+      }
+    };
+  }, []);
 
   // 获取所有分类
   const categories = useMemo(() => getAllStoryCategories(), []);
@@ -39,9 +51,27 @@ export default function StoryLibrary() {
 
   const handleStoryClick = (story: Story) => {
     setSelectedStory(story);
+    // 启动使用追踪
+    usageTrackerRef.current = new UsageTracker('阅读', `故事-${story.title}`, {
+      storyId: story.id,
+      origin: story.origin,
+      country: story.country,
+      category: story.category,
+      ageGroup: story.ageGroup,
+      length: story.length,
+      keywords: story.keywords
+    });
+    usageTrackerRef.current.start();
   };
 
   const handleCloseDetail = () => {
+    // 记录阅读数据
+    if (usageTrackerRef.current && selectedStory) {
+      usageTrackerRef.current.end(undefined, {
+        completed: true // 假设查看详情即为完成阅读
+      });
+      usageTrackerRef.current = null;
+    }
     setSelectedStory(null);
   };
 

@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Layout, Header } from '../components/layout'
+import { UsageTracker } from '../services/usageTracking'
 import './Creator.css'
 
 const styles = [
@@ -24,6 +25,19 @@ export default function ArtCreator() {
   const [prompt, setPrompt] = useState('')
   const [isGenerating, setIsGenerating] = useState(false)
   const [generatedArt, setGeneratedArt] = useState('')
+  const usageTrackerRef = useRef<UsageTracker | null>(null)
+
+  // 启动使用追踪
+  useEffect(() => {
+    usageTrackerRef.current = new UsageTracker('创作', '绘画创作')
+    usageTrackerRef.current.start()
+
+    return () => {
+      if (usageTrackerRef.current) {
+        usageTrackerRef.current.cancel()
+      }
+    }
+  }, [])
 
   const handleGenerate = () => {
     if (!prompt) return
@@ -139,7 +153,17 @@ export default function ArtCreator() {
                   <button className="btn btn-secondary" onClick={() => { setStep(1); setPrompt(''); }}>
                     重新创作
                   </button>
-                  <button className="btn btn-primary">保存作品</button>
+                  <button className="btn btn-primary" onClick={async () => {
+                    if (usageTrackerRef.current) {
+                      await usageTrackerRef.current.end(undefined, {
+                        workName: '我的AI画作',
+                        prompt: prompt,
+                        style: selectedStyle,
+                        saved: true
+                      })
+                    }
+                    alert('作品已保存')
+                  }}>保存作品</button>
                 </div>
               </div>
             )}
