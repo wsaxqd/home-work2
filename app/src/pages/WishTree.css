@@ -1,0 +1,257 @@
+/* 心愿树页面样式 */
+
+.wish-tree-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #fdcbf1 0%, #e6dee9 100%);
+  padding-bottom: 100px;
+}
+
+/* 顶部导航 */
+.wish-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.wish-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #333;
+  margin: 0;
+}
+
+.add-wish-btn {
+  background: linear-gradient(135deg, #fdcbf1 0%, #e6dee9 100%);
+  color: #333;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.add-wish-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(253, 203, 241, 0.4);
+}
+
+/* 心愿树插画 */
+.tree-illustration {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.tree-trunk {
+  font-size: 80px;
+  margin-bottom: 16px;
+}
+
+.tree-text {
+  font-size: 18px;
+  color: #666;
+  margin-bottom: 8px;
+}
+
+.wish-count {
+  font-size: 14px;
+  color: #999;
+}
+
+/* 心愿区域 */
+.wishes-section {
+  padding: 0 16px 24px 16px;
+}
+
+.section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 16px 0;
+}
+
+.wishes-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.wish-card {
+  background: white;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  animation: slideIn 0.3s ease;
+}
+
+.wish-card.fulfilled {
+  opacity: 0.7;
+}
+
+.wish-category {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 16px;
+  color: white;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.category-icon {
+  font-size: 16px;
+}
+
+.wish-content {
+  font-size: 15px;
+  line-height: 1.6;
+  color: #333;
+  margin-bottom: 12px;
+}
+
+.wish-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.wish-date {
+  font-size: 12px;
+  color: #999;
+}
+
+.fulfill-btn {
+  padding: 6px 16px;
+  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+  color: white;
+  border: none;
+  border-radius: 16px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.fulfill-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(67, 233, 123, 0.4);
+}
+
+/* 添加心愿弹窗 */
+.add-wish-modal {
+  background: white;
+  border-radius: 24px;
+  padding: 24px;
+  max-width: 400px;
+  width: 90%;
+  animation: scaleIn 0.3s ease;
+}
+
+.modal-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #333;
+  margin: 0 0 20px 0;
+  text-align: center;
+}
+
+.modal-section {
+  margin-bottom: 20px;
+}
+
+.modal-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 12px;
+}
+
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.category-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 12px;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.category-btn:hover {
+  transform: translateY(-2px);
+}
+
+.cat-icon {
+  font-size: 24px;
+}
+
+.cat-label {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.wish-textarea {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  font-size: 14px;
+  line-height: 1.6;
+  resize: vertical;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.wish-textarea:focus {
+  outline: none;
+  border-color: #fdcbf1;
+  box-shadow: 0 0 0 3px rgba(253, 203, 241, 0.2);
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.cancel-btn, .confirm-btn {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cancel-btn {
+  background: #f7fafc;
+  color: #666;
+}
+
+.confirm-btn {
+  background: linear-gradient(135deg, #fdcbf1 0%, #e6dee9 100%);
+  color: #333;
+}
+
+.cancel-btn:hover, .confirm-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
