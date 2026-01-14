@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Layout, Header } from '../components/layout';
+import { UsageTracker } from '../services/usageTracking';
 import './TankBattle.css';
 
 // 游戏配置
@@ -73,6 +74,7 @@ export default function TankBattle() {
   const bulletLoopRef = useRef<number | undefined>(undefined);
   const enemySpawnRef = useRef<number | undefined>(undefined);
   const keysPressed = useRef<Set<string>>(new Set());
+  const usageTrackerRef = useRef<UsageTracker | null>(null);
 
   // 初始化关卡
   const initLevel = useCallback(() => {
@@ -349,6 +351,9 @@ export default function TankBattle() {
   // 初始化游戏
   useEffect(() => {
     initLevel();
+    // 开始追踪使用情况
+    usageTrackerRef.current = new UsageTracker('游戏', '坦克大战');
+    usageTrackerRef.current.start();
   }, [initLevel]);
 
   // 检查胜利条件
@@ -357,6 +362,23 @@ export default function TankBattle() {
       setGameWon(true);
     }
   }, [enemiesDestroyed, level, gameOver]);
+
+  // 检查游戏结束并记录数据
+  useEffect(() => {
+    if (gameOver && usageTrackerRef.current) {
+      usageTrackerRef.current.end(score, { level, enemiesDestroyed });
+      usageTrackerRef.current = null;
+    }
+  }, [gameOver, score, level, enemiesDestroyed]);
+
+  // 清理函数
+  useEffect(() => {
+    return () => {
+      if (usageTrackerRef.current) {
+        usageTrackerRef.current.cancel();
+      }
+    };
+  }, []);
 
   // 重新开始
   const restartGame = () => {

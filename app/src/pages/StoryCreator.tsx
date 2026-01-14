@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Layout, Header } from '../components/layout'
 import { aiApi, worksApi } from '../services/api'
+import { UsageTracker } from '../services/usageTracking'
 import './Creator.css'
 import './StoryCreator.css'
 
@@ -33,6 +34,19 @@ export default function StoryCreator() {
   const [storyTitle, setStoryTitle] = useState('')
   const [error, setError] = useState('')
   const [isSaving, setIsSaving] = useState(false)
+  const usageTrackerRef = useRef<UsageTracker | null>(null)
+
+  // 启动使用追踪
+  useEffect(() => {
+    usageTrackerRef.current = new UsageTracker('创作', '故事创作')
+    usageTrackerRef.current.start()
+
+    return () => {
+      if (usageTrackerRef.current) {
+        usageTrackerRef.current.cancel()
+      }
+    }
+  }, [])
 
   const handleGenerate = async () => {
     setIsGenerating(true)
@@ -83,6 +97,16 @@ export default function StoryCreator() {
       })
 
       if (response.success) {
+        // 记录使用数据
+        if (usageTrackerRef.current) {
+          await usageTrackerRef.current.end(undefined, {
+            workName: storyTitle,
+            theme: selectedTheme,
+            character: character.name,
+            length: length,
+            saved: true
+          })
+        }
         alert('故事保存成功！')
       } else {
         setError(response.message || '保存失败，请重试')

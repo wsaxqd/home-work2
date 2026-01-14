@@ -287,3 +287,28 @@
     color: #cbd5e0;
   }
 }
+
+/* 锁定徽章样式 */
+.lock-badge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  font-size: 12px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 3;
+}
+
+.nav-item.restricted {
+  cursor: not-allowed;
+}
+
+.nav-item.restricted .nav-icon {
+  filter: grayscale(100%) brightness(0.8);
+}

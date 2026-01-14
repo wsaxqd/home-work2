@@ -1,5 +1,6 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useRef, useEffect } from 'react'
 import { Layout, Header } from '../components/layout'
+import { UsageTracker } from '../services/usageTracking'
 import './ChineseChess.css'
 
 type PieceType = '帅' | '将' | '仕' | '士' | '相' | '象' | '马' | '车' | '炮' | '兵' | '卒'
@@ -96,6 +97,7 @@ export default function ChineseChess() {
   const [capturedPieces, setCapturedPieces] = useState<{ red: Piece[], black: Piece[] }>({ red: [], black: [] })
   const [isCheck, setIsCheck] = useState(false)
   const [gameOver, setGameOver] = useState<{ winner: PieceColor | null, message: string } | null>(null)
+  const usageTrackerRef = useRef<UsageTracker | null>(null)
 
   // 判断位置是否在棋盘内
   const isInBoard = (row: number, col: number): boolean => {
@@ -472,7 +474,40 @@ export default function ChineseChess() {
     setCapturedPieces({ red: [], black: [] })
     setIsCheck(false)
     setGameOver(null)
+    // 重新开始追踪
+    if (usageTrackerRef.current) {
+      usageTrackerRef.current.cancel()
+    }
+    usageTrackerRef.current = new UsageTracker('游戏', '中国象棋')
+    usageTrackerRef.current.start()
   }, [])
+
+  // 初始化游戏追踪
+  useEffect(() => {
+    usageTrackerRef.current = new UsageTracker('游戏', '中国象棋')
+    usageTrackerRef.current.start()
+
+    return () => {
+      if (usageTrackerRef.current) {
+        usageTrackerRef.current.cancel()
+      }
+    }
+  }, [])
+
+  // 检查游戏结束并记录数据
+  useEffect(() => {
+    if (gameOver && usageTrackerRef.current) {
+      const totalMoves = moveHistory.length
+      usageTrackerRef.current.end(totalMoves, {
+        winner: gameOver.winner === 'red' ? '红方' : '黑方',
+        totalMoves,
+        rounds: Math.floor(totalMoves / 2) + 1,
+        redCaptured: capturedPieces.black.length,
+        blackCaptured: capturedPieces.red.length
+      })
+      usageTrackerRef.current = null
+    }
+  }, [gameOver, moveHistory, capturedPieces])
 
   // 获取移动记录的中文表示
   const getMoveNotation = (move: Move): string => {

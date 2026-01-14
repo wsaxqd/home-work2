@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Layout, Header } from '../components/layout';
+import { UsageTracker } from '../services/usageTracking';
 import './FruitMatch.css';
 
 // 可爱的水果emoji列表
@@ -40,6 +41,7 @@ export default function FruitMatch() {
   const [gameWon, setGameWon] = useState(false);
   const [isChecking, setIsChecking] = useState(false);
   const checkTimerRef = useRef<number | null>(null);
+  const usageTrackerRef = useRef<UsageTracker | null>(null);
 
   // 初始化游戏
   const initGame = useCallback(() => {
@@ -109,11 +111,15 @@ export default function FruitMatch() {
     initGame();
   }, [initGame]);
 
-  // 组件卸载时清理定时器
+  // 组件卸载时清理定时器和追踪器
   useEffect(() => {
     return () => {
       if (checkTimerRef.current !== null) {
         clearTimeout(checkTimerRef.current);
+      }
+      // 如果用户离开页面,取消追踪
+      if (usageTrackerRef.current) {
+        usageTrackerRef.current.cancel();
       }
     };
   }, []);
@@ -128,6 +134,9 @@ export default function FruitMatch() {
   const handleTileClick = (tile: Tile) => {
     if (!gameStarted) {
       setGameStarted(true);
+      // 开始追踪游戏时间
+      usageTrackerRef.current = new UsageTracker('游戏', '水果连连看', { difficulty });
+      usageTrackerRef.current.start();
     }
 
     if (isChecking || tile.matched || selectedTiles.some(t => t.id === tile.id)) {
@@ -179,8 +188,19 @@ export default function FruitMatch() {
     const totalPairs = Math.floor(tiles.length / 2);
     if (matchedPairs === totalPairs && matchedPairs > 0) {
       setGameWon(true);
+      // 记录游戏数据
+      if (usageTrackerRef.current) {
+        const score = Math.max(0, 100 - moves + matchedPairs * 10);
+        usageTrackerRef.current.end(score, {
+          moves,
+          timeElapsed,
+          difficulty,
+          matchedPairs,
+        });
+        usageTrackerRef.current = null;
+      }
     }
-  }, [matchedPairs, tiles.length]);
+  }, [matchedPairs, tiles.length, moves, timeElapsed, difficulty]);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);

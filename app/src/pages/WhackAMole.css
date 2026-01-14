@@ -1,0 +1,190 @@
+/* 打地鼠游戏样式 */
+
+.game-info {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.info-card {
+  flex: 1;
+  background: white;
+  border-radius: 16px;
+  padding: 16px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.info-label {
+  font-size: 12px;
+  color: #718096;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.info-value {
+  font-size: 28px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.info-value.score {
+  color: #f093fb;
+}
+
+.info-value.time {
+  color: #667eea;
+}
+
+.info-value.high-score {
+  color: #f5576c;
+}
+
+.game-board {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+  padding: 20px;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+.hole {
+  aspect-ratio: 1;
+  position: relative;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hole-bg {
+  position: absolute;
+  width: 80%;
+  height: 40%;
+  bottom: 10%;
+  background: linear-gradient(180deg, #8b4513 0%, #654321 100%);
+  border-radius: 50%;
+  box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.4);
+}
+
+.mole {
+  font-size: 48px;
+  position: absolute;
+  bottom: 20%;
+  animation: moleUp 0.3s ease-out;
+  cursor: pointer;
+  transition: transform 0.1s ease;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+}
+
+.mole:hover {
+  transform: scale(1.1);
+}
+
+@keyframes moleUp {
+  from {
+    bottom: -20%;
+    opacity: 0;
+  }
+  to {
+    bottom: 20%;
+    opacity: 1;
+  }
+}
+
+.hit-effect {
+  font-size: 40px;
+  position: absolute;
+  animation: hitAnimation 0.4s ease-out;
+}
+
+@keyframes hitAnimation {
+  0% {
+    transform: scale(0.5);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+.start-button {
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  color: white;
+  border: none;
+  border-radius: 16px;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(240, 147, 251, 0.4);
+  transition: all 0.3s ease;
+}
+
+.start-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(240, 147, 251, 0.5);
+}
+
+.start-button:active {
+  transform: translateY(0);
+}
+
+.game-over {
+  background: white;
+  border-radius: 20px;
+  padding: 32px;
+  text-align: center;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  margin-top: 24px;
+}
+
+.game-over-title {
+  font-size: 28px;
+  font-weight: 800;
+  color: #2d3748;
+  margin-bottom: 16px;
+}
+
+.game-over-score {
+  font-size: 20px;
+  color: #4a5568;
+  margin-bottom: 12px;
+}
+
+.new-record {
+  font-size: 24px;
+  font-weight: 700;
+  color: #f5576c;
+  animation: celebrate 0.6s ease-in-out infinite alternate;
+}
+
+@keyframes celebrate {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.1);
+  }
+}
+
+/* 响应式设计 */
+@media (max-width: 400px) {
+  .game-board {
+    gap: 12px;
+    padding: 16px;
+  }
+
+  .mole {
+    font-size: 36px;
+  }
+
+  .info-value {
+    font-size: 24px;
+  }
+}

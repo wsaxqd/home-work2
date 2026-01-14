@@ -1,107 +1,204 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Layout, Header } from '../components/layout'
 import AIChatbot from '../components/AIChatbot'
 import './Home.css'
 
-// AI创作工坊 - 4个创作工具
-const createTools = [
-  { icon: '🎨', title: 'AI绘画', desc: '输入描述，画出想象', path: '/art-creator', color: '#ff6b6b', bgColor: '#ffe5e5' },
-  { icon: '🎵', title: 'AI音乐', desc: '选择风格，创作旋律', path: '/music-creator', color: '#4ecdc4', bgColor: '#e0f7f6' },
-  { icon: '📖', title: 'AI故事', desc: '设定角色，编写故事', path: '/story-creator', color: '#a29bfe', bgColor: '#ededff' },
-  { icon: '✍️', title: 'AI诗词', desc: '学习古诗，创作诗词', path: '/poem-creator', color: '#fd79a8', bgColor: '#ffeef5' },
+// 学习功能区
+const learningFeatures = [
+  { icon: '💡', title: 'AI小百科', desc: '探索世界的奥秘', path: '/ai-encyclopedia', color: '#9b59b6', bgColor: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', emoji: '🌟' },
+  { icon: '📖', title: '绘本阅读', desc: '92本经典绘本', path: '/picture-book', color: '#3498db', bgColor: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)', emoji: '📚' },
+  { icon: '📜', title: '国学经典', desc: '唐诗宋词·论语三字经', path: '/chinese-classics', color: '#c0392b', bgColor: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)', emoji: '🏮' },
+  { icon: '📚', title: '四大名著', desc: '西游·三国·水浒·红楼', path: '/four-classics', color: '#d35400', bgColor: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', emoji: '🎭' },
+  { icon: '🌍', title: '英语绘本', desc: '快乐学英语', path: '/english-book', color: '#e74c3c', bgColor: 'linear-gradient(135deg, #ffd89b 0%, #19547b 100%)', emoji: '🎈' },
+  { icon: '❓', title: '十万个为什么', desc: '解答你的好奇心', path: '/why-questions', color: '#f39c12', bgColor: 'linear-gradient(135deg, #fddb92 0%, #d1fdff 100%)', emoji: '🤔' },
+  { icon: '🎵', title: '儿歌大全', desc: '经典儿歌欢乐唱', path: '/children-songs', color: '#1abc9c', bgColor: 'linear-gradient(135deg, #81fbb8 0%, #28c76f 100%)', emoji: '🎶' },
 ]
 
-// 其他功能模块
-const otherFeatures = [
-  { icon: '📚', title: '故事库', desc: '阅读经典故事', path: '/story-library', color: '#4facfe', bgColor: '#e0f7fa' },
-  { icon: '💭', title: 'AI百科', desc: 'AI十万个为什么', path: '/ai-encyclopedia', color: '#9b59b6', bgColor: '#f4e7ff' },
-  { icon: '💝', title: '心灵花园', desc: '记录心情日记', path: '/mind-garden', color: '#a29bfe', bgColor: '#f3e5f5' },
+// 快捷功能
+const quickActions = [
+  { icon: '📚', title: '我的作品', path: '/my-works', color: '#a29bfe' },
+  { icon: '🏆', title: '成就中心', path: '/achievements', color: '#fdcb6e' },
+  { icon: '💝', title: '心灵花园', path: '/mind-garden', color: '#fd79a8' },
+  { icon: '⚙️', title: '设置', path: '/settings', color: '#74b9ff' },
 ]
 
 export default function Home() {
   const navigate = useNavigate()
   const userProfile = JSON.parse(localStorage.getItem('userProfile') || '{}')
+  const [aiQuestion, setAiQuestion] = useState('')
+  const [aiMessages, setAiMessages] = useState<Array<{role: 'user' | 'assistant', content: string}>>([
+    { role: 'assistant', content: '你好！我是AI助手启启，有什么问题我可以帮你解答吗？' }
+  ])
+  const [isThinking, setIsThinking] = useState(false)
+
+  const handleAskQuestion = async () => {
+    if (!aiQuestion.trim()) return
+
+    const newMessages = [...aiMessages, { role: 'user' as const, content: aiQuestion }]
+    setAiMessages(newMessages)
+    setAiQuestion('')
+    setIsThinking(true)
+
+    try {
+      // 调用后端API
+      const response = await fetch('http://localhost:3000/api/ai/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: aiQuestion,
+          history: newMessages.slice(-10) // 保留最近10条对话
+        })
+      })
+
+      const data = await response.json()
+      setAiMessages([...newMessages, { role: 'assistant', content: data.reply || '抱歉，我现在无法回答，请稍后再试。' }])
+    } catch (error) {
+      setAiMessages([...newMessages, { role: 'assistant', content: '网络连接失败，请检查后重试。' }])
+    } finally {
+      setIsThinking(false)
+    }
+  }
 
   return (
     <Layout>
       <Header title="启蒙之光" showBack={false} />
       <div className="main-content">
-        {/* 欢迎横幅 */}
-        <div className="welcome-banner">
-          <div className="welcome-avatar-large">{userProfile.avatar || '🌟'}</div>
-          <div className="welcome-info">
-            <h1 className="welcome-greeting">你好，{userProfile.nickname || '小朋友'}！</h1>
-            <p className="welcome-subtitle">选择功能开始探索吧</p>
-          </div>
-          <div className="welcome-decoration">✨</div>
+        {/* 全局搜索入口 */}
+        <div className="search-entry" onClick={() => navigate('/search')}>
+          <span className="search-entry-icon">🔍</span>
+          <span className="search-entry-text">搜索游戏、故事、创作工具...</span>
         </div>
 
-        {/* AI助手启启卡片 */}
-        <div className="ai-assistant-card" onClick={() => {
-          const chatbot = document.querySelector('.chatbot-fab') as HTMLElement;
-          if (chatbot) chatbot.click();
-        }}>
-          <div className="assistant-avatar">🤖</div>
-          <div className="assistant-content">
-            <div className="assistant-name">AI助手启启</div>
-            <div className="assistant-desc">有问题随时问我，我会帮你解答哦~</div>
+        {/* 欢迎横幅 - 升级版 */}
+        <div className="welcome-banner-v2">
+          <div className="welcome-bg-particles">
+            <span className="particle">✨</span>
+            <span className="particle">⭐</span>
+            <span className="particle">💫</span>
+            <span className="particle">🌟</span>
+            <span className="particle">✨</span>
           </div>
-          <div className="assistant-action">
-            <span className="chat-icon">💬</span>
-            <span className="chat-text">开始聊天</span>
+          <div className="welcome-content-wrapper">
+            <div className="welcome-avatar-wrapper">
+              <div className="avatar-ring"></div>
+              <div className="avatar-ring-2"></div>
+              <div className="welcome-avatar-large">{userProfile.avatar || '🌟'}</div>
+            </div>
+            <div className="welcome-info-v2">
+              <div className="welcome-time-badge">
+                {new Date().getHours() < 12 ? '🌅 早上好' :
+                 new Date().getHours() < 18 ? '☀️ 下午好' : '🌙 晚上好'}
+              </div>
+              <h1 className="welcome-greeting-v2">
+                {userProfile.nickname || '小朋友'}
+              </h1>
+              <p className="welcome-subtitle-v2">开始今天的学习之旅吧！</p>
+            </div>
+          </div>
+          <div className="welcome-stats-mini">
+            <div className="mini-stat">
+              <span className="mini-stat-icon">🔥</span>
+              <span className="mini-stat-value">0天</span>
+            </div>
+            <div className="mini-stat">
+              <span className="mini-stat-icon">⭐</span>
+              <span className="mini-stat-value">0分</span>
+            </div>
           </div>
         </div>
 
-        {/* AI创作工坊区域 */}
+        {/* AI对话窗口 - DeepSeek风格 */}
+        <div className="ai-chat-window">
+          <div className="chat-header">
+            <div className="chat-title">
+              <span className="chat-icon">🤖</span>
+              <span>AI智能助手</span>
+            </div>
+            <div className="chat-status">在线</div>
+          </div>
+
+          <div className="chat-messages">
+            {aiMessages.map((msg, idx) => (
+              <div key={idx} className={`chat-message ${msg.role}`}>
+                <div className="message-avatar">
+                  {msg.role === 'user' ? (userProfile.avatar || '👤') : '🤖'}
+                </div>
+                <div className="message-content">{msg.content}</div>
+              </div>
+            ))}
+            {isThinking && (
+              <div className="chat-message assistant">
+                <div className="message-avatar">🤖</div>
+                <div className="message-content typing">正在思考...</div>
+              </div>
+            )}
+          </div>
+
+          <div className="chat-input-area">
+            <input
+              type="text"
+              className="chat-input"
+              placeholder="问我任何问题..."
+              value={aiQuestion}
+              onChange={(e) => setAiQuestion(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && handleAskQuestion()}
+            />
+            <button className="chat-send-btn" onClick={handleAskQuestion} disabled={isThinking}>
+              {isThinking ? '⏳' : '📤'}
+            </button>
+          </div>
+        </div>
+
+        {/* 学习功能区 */}
         <div className="section-header">
           <div className="section-title">
-            <span className="section-icon">🎨</span>
-            AI创作工坊
+            <span className="section-icon">📚</span>
+            趣味学习
           </div>
-          <div className="section-subtitle">4个创作工具，释放你的创造力</div>
+          <div className="section-subtitle">在玩中学，在学中玩</div>
         </div>
 
-        <div className="function-grid">
-          {createTools.map((tool) => (
+        <div className="learning-grid">
+          {learningFeatures.map((feature) => (
             <div
-              key={tool.path}
-              className="function-card"
-              style={{ backgroundColor: tool.bgColor, borderColor: tool.color }}
-              onClick={() => navigate(tool.path)}
+              key={feature.path}
+              className="learning-card-v2"
+              style={{ background: feature.bgColor }}
+              onClick={() => navigate(feature.path)}
             >
-              <div className="function-icon" style={{ color: tool.color }}>{tool.icon}</div>
-              <div className="function-title">{tool.title}</div>
-              <div className="function-desc">{tool.desc}</div>
-              <div className="function-action" style={{ backgroundColor: tool.color }}>
-                立即使用 →
+              <div className="learning-card-emoji">{feature.emoji}</div>
+              <div className="learning-card-icon">{feature.icon}</div>
+              <div className="learning-card-content">
+                <div className="learning-card-title">{feature.title}</div>
+                <div className="learning-card-desc">{feature.desc}</div>
+              </div>
+              <div className="learning-card-action">
+                <span className="action-text">开始学习</span>
+                <span className="action-arrow">→</span>
               </div>
             </div>
           ))}
         </div>
 
-        {/* 其他功能区域 */}
+        {/* 快捷功能 */}
         <div className="section-header">
           <div className="section-title">
-            <span className="section-icon">⭐</span>
-            更多功能
+            <span className="section-icon">⚡</span>
+            快捷入口
           </div>
-          <div className="section-subtitle">查看作品和记录心情</div>
+          <div className="section-subtitle">快速访问常用功能</div>
         </div>
 
-        <div className="function-grid">
-          {otherFeatures.map((feature) => (
+        <div className="quick-actions-grid">
+          {quickActions.map((action) => (
             <div
-              key={feature.path}
-              className="function-card"
-              style={{ backgroundColor: feature.bgColor, borderColor: feature.color }}
-              onClick={() => navigate(feature.path)}
+              key={action.path}
+              className="quick-action-card"
+              onClick={() => navigate(action.path)}
             >
-              <div className="function-icon" style={{ color: feature.color }}>{feature.icon}</div>
-              <div className="function-title">{feature.title}</div>
-              <div className="function-desc">{feature.desc}</div>
-              <div className="function-action" style={{ backgroundColor: feature.color }}>
-                进入 →
-              </div>
+              <div className="quick-action-icon" style={{ color: action.color }}>{action.icon}</div>
+              <div className="quick-action-title">{action.title}</div>
             </div>
           ))}
         </div>
