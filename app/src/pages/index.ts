@@ -21,10 +21,18 @@ export { default as CrystalMatch } from './CrystalMatch'
 export { default as AIEncyclopedia } from './AIEncyclopedia'
 export { default as PictureBook } from './PictureBook'
 export { default as FourClassics } from './FourClassics'
+export { default as ChineseClassics } from './ChineseClassics'
 export { default as WhackAMole } from './WhackAMole'
 export { default as NumberPuzzle } from './NumberPuzzle'
 export { default as JigsawPuzzle } from './JigsawPuzzle'
 export { default as Search } from './Search'
+
+// 温暖小屋组件
+export { default as WarmHouse } from './WarmHouse'
+export { default as AICompanion } from './AICompanion'
+export { default as MoodDiary } from './MoodDiary'
+export { default as WarmRadio } from './WarmRadio'
+export { default as WishTree } from './WishTree'
 
 // 家长端组件
 export { default as ParentLogin } from './ParentLogin'

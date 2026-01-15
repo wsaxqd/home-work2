@@ -193,24 +193,36 @@
   75% { transform: translateX(8px) rotate(5deg); }
 }
 
-/* 匹配成功状态 */
+/* 匹配成功状态 - 破裂消失动画 */
 .fruit-tile.matched {
-  background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
   cursor: default;
-  animation: matchSuccess 0.6s ease-out;
-  opacity: 0.6;
+  animation: explodeAndFade 0.8s ease-out forwards;
   pointer-events: none;
 }
 
-@keyframes matchSuccess {
+@keyframes explodeAndFade {
   0% {
-    transform: scale(1);
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+  30% {
+    transform: scale(1.4) rotate(15deg);
+    opacity: 1;
   }
   50% {
-    transform: scale(1.3) rotate(360deg);
+    transform: scale(1.5) rotate(-10deg);
+    opacity: 0.8;
+    filter: brightness(1.5) blur(2px);
+  }
+  70% {
+    transform: scale(0.8) rotate(20deg);
+    opacity: 0.4;
+    filter: brightness(2) blur(4px);
   }
   100% {
-    transform: scale(1);
+    transform: scale(0) rotate(180deg);
+    opacity: 0;
+    filter: brightness(3) blur(8px);
   }
 }
 
@@ -219,20 +231,108 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-size: 48px;
+  font-size: 64px;
   color: #4caf50;
-  animation: checkmark 0.6s ease-out;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  animation: explosionCheck 0.8s ease-out;
+  text-shadow: 0 0 20px rgba(76, 175, 80, 0.8), 0 0 40px rgba(76, 175, 80, 0.5);
+  z-index: 10;
 }
 
-@keyframes checkmark {
+@keyframes explosionCheck {
   0% {
     transform: translate(-50%, -50%) scale(0) rotate(-180deg);
     opacity: 0;
   }
-  100% {
-    transform: translate(-50%, -50%) scale(1) rotate(0deg);
+  40% {
+    transform: translate(-50%, -50%) scale(2) rotate(0deg);
     opacity: 1;
+  }
+  60% {
+    transform: translate(-50%, -50%) scale(1.8) rotate(10deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(3) rotate(0deg);
+    opacity: 0;
+  }
+}
+
+/* 爆炸粒子效果 */
+.explosion-particles {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.explosion-particles span {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  font-size: 24px;
+  animation: explodeParticle 0.8s ease-out forwards;
+  filter: drop-shadow(0 0 10px currentColor);
+}
+
+.explosion-particles span:nth-child(1) {
+  animation-name: explodeUp;
+}
+
+.explosion-particles span:nth-child(2) {
+  animation-name: explodeRight;
+}
+
+.explosion-particles span:nth-child(3) {
+  animation-name: explodeDown;
+}
+
+.explosion-particles span:nth-child(4) {
+  animation-name: explodeLeft;
+}
+
+@keyframes explodeUp {
+  0% {
+    transform: translate(-50%, -50%) translateY(0) scale(1) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) translateY(-80px) scale(0.3) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+@keyframes explodeRight {
+  0% {
+    transform: translate(-50%, -50%) translateX(0) scale(1) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) translateX(80px) scale(0.3) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+@keyframes explodeDown {
+  0% {
+    transform: translate(-50%, -50%) translateY(0) scale(1) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) translateY(80px) scale(0.3) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+@keyframes explodeLeft {
+  0% {
+    transform: translate(-50%, -50%) translateX(0) scale(1) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) translateX(-80px) scale(0.3) rotate(360deg);
+    opacity: 0;
   }
 }
 

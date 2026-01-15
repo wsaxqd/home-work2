@@ -106,4 +106,47 @@ router.get('/search/query', asyncHandler(async (req, res) => {
   });
 }));
 
+// 获取每日一句
+router.get('/daily-quote', asyncHandler(async (req, res) => {
+  // 这里应该从数据库或配置中获取
+  const quotes = [
+    { text: '你是独一无二的，世界因你而美好', author: '温暖电台' },
+    { text: '每一天都是新的开始，加油！', author: '温暖电台' },
+    { text: '相信自己，你比想象中更强大', author: '温暖电台' },
+  ];
+  const dailyQuote = quotes[new Date().getDate() % quotes.length];
+  sendSuccess(res, { id: Date.now().toString(), ...dailyQuote, date: new Date().toISOString() });
+}));
+
+// 获取睡前故事
+router.get('/bedtime', asyncHandler(async (req, res) => {
+  // 这里应该从数据库获取
+  sendSuccess(res, { items: [], total: 0, message: '请使用前端本地数据' });
+}));
+
+// 获取励志故事
+router.get('/inspirational', asyncHandler(async (req, res) => {
+  // 这里应该从数据库获取
+  sendSuccess(res, { items: [], total: 0, message: '请使用前端本地数据' });
+}));
+
+// 记录播放
+router.post('/play', asyncHandler(async (req, res) => {
+  const { storyId, duration } = req.body;
+  // 这里应该记录到数据库
+  sendSuccess(res, { message: '播放记录已保存', storyId, duration });
+}));
+
+// 获取推荐故事
+router.get('/recommended', asyncHandler(async (req, res) => {
+  // 这里应该从数据库获取推荐
+  sendSuccess(res, { items: [], message: '请使用前端本地数据' });
+}));
+
+// 获取播放历史
+router.get('/history', asyncHandler(async (req, res) => {
+  // 这里应该从数据库获取
+  sendSuccess(res, { items: [], message: '播放历史' });
+}));
+
 export default router;

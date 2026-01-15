@@ -24,10 +24,16 @@ import {
   AIEncyclopedia,
   PictureBook,
   FourClassics,
+  ChineseClassics,
   WhackAMole,
   NumberPuzzle,
   JigsawPuzzle,
   Search,
+  WarmHouse,
+  AICompanion,
+  MoodDiary,
+  WarmRadio,
+  WishTree,
   ParentLogin,
   ParentLayout,
   ParentDashboard,
@@ -182,9 +188,17 @@ function App() {
         <Route path="/story-library" element={<ProtectedRoute><ContentProtectedRoute contentType="reading"><StoryLibrary /></ContentProtectedRoute></ProtectedRoute>} />
         <Route path="/picture-book" element={<ProtectedRoute><ContentProtectedRoute contentType="reading"><PictureBook /></ContentProtectedRoute></ProtectedRoute>} />
         <Route path="/four-classics" element={<ProtectedRoute><ContentProtectedRoute contentType="reading"><FourClassics /></ContentProtectedRoute></ProtectedRoute>} />
+        <Route path="/chinese-classics" element={<ProtectedRoute><ContentProtectedRoute contentType="reading"><ChineseClassics /></ContentProtectedRoute></ProtectedRoute>} />
 
         {/* AI百科页面 - 受内容访问控制 */}
         <Route path="/ai-encyclopedia" element={<ProtectedRoute><ContentProtectedRoute contentType="aiEncyclopedia"><AIEncyclopedia /></ContentProtectedRoute></ProtectedRoute>} />
+
+        {/* 温暖小屋 - 公益情感陪伴功能 */}
+        <Route path="/warm-house" element={<ProtectedRoute><WarmHouse /></ProtectedRoute>} />
+        <Route path="/warm-house/companion" element={<ProtectedRoute><AICompanion /></ProtectedRoute>} />
+        <Route path="/warm-house/diary" element={<ProtectedRoute><MoodDiary /></ProtectedRoute>} />
+        <Route path="/warm-house/radio" element={<ProtectedRoute><WarmRadio /></ProtectedRoute>} />
+        <Route path="/warm-house/wish" element={<ProtectedRoute><WishTree /></ProtectedRoute>} />
 
         {/* 家长端路由 */}
         <Route path="/parent/login" element={<ParentLogin />} />

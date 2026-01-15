@@ -94,4 +94,50 @@ router.post('/init', asyncHandler(async (req, res) => {
   sendSuccess(res, result);
 }));
 
+/**
+ * 获取国学经典列表
+ */
+router.get('/classics', optionalAuth, asyncHandler(async (req: AuthRequest, res) => {
+  const classics = await encyclopediaService.getClassics();
+  sendSuccess(res, { items: classics, total: classics.length });
+}));
+
+/**
+ * 获取国学经典详情
+ */
+router.get('/classics/:classicId', optionalAuth, asyncHandler(async (req: AuthRequest, res) => {
+  const { classicId } = req.params;
+  const classic = await encyclopediaService.getClassic(classicId);
+  sendSuccess(res, classic);
+}));
+
+/**
+ * 记录阅读进度
+ */
+router.post('/classics/reading', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+  const userId = req.userId!;
+  const { classicId, chapterId } = req.body;
+
+  await encyclopediaService.recordReading(userId, classicId, chapterId);
+  sendSuccess(res, null, '阅读进度已记录');
+}));
+
+/**
+ * 获取阅读进度
+ */
+router.get('/classics/reading', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+  const userId = req.userId!;
+
+  const progress = await encyclopediaService.getReadingProgress(userId);
+  sendSuccess(res, { items: progress });
+}));
+
+/**
+ * 获取推荐经典
+ */
+router.get('/classics/recommended', optionalAuth, asyncHandler(async (req: AuthRequest, res) => {
+  const classics = await encyclopediaService.getRecommended();
+  sendSuccess(res, { items: classics });
+}));
+
 export default router;
