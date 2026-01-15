@@ -29,6 +29,14 @@ const navItems = [
     contentType: 'games' as const
   },
   {
+    path: '/warm-house',
+    icon: '💝',
+    text: '温暖',
+    gradient: 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
+    activeColor: '#ff9a76',
+    contentType: null // 温暖小屋不受限制，公益功能
+  },
+  {
     path: '/profile',
     icon: '👤',
     text: '我的',

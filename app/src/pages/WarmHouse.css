@@ -1,0 +1,208 @@
+/* 温暖小屋页面样式 - 与主页面保持一致 */
+
+.warm-house-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #fff5f7 0%, #ffe8ec 100%);
+  padding: 16px 16px 100px 16px;
+}
+
+/* 顶部标题 - 缩小尺寸 */
+.warm-house-header {
+  text-align: center;
+  margin-bottom: 20px;
+  padding: 16px 0;
+}
+
+.header-content {
+  animation: fadeInDown 0.6s ease;
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.main-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #ff6b9d;
+  margin: 0 0 6px 0;
+  text-shadow: 2px 2px 4px rgba(255, 107, 157, 0.2);
+}
+
+.subtitle {
+  font-size: 14px;
+  color: #ff8fab;
+  margin: 0;
+  font-weight: 500;
+}
+
+/* 每日一句 - 与主页面卡片保持一致 */
+.daily-quote {
+  background: white;
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 12px rgba(255, 107, 157, 0.12);
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  animation: fadeIn 0.8s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.quote-icon {
+  font-size: 32px;
+  flex-shrink: 0;
+}
+
+.quote-content {
+  flex: 1;
+}
+
+.quote-text {
+  font-size: 14px;
+  color: #333;
+  line-height: 1.5;
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+
+.quote-date {
+  font-size: 11px;
+  color: #999;
+}
+
+/* 功能卡片网格 - 与主页面保持一致 */
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.feature-card {
+  padding: 16px 14px;
+  border-radius: 16px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  animation: scaleIn 0.5s ease;
+  min-height: 140px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.feature-card:nth-child(1) { animation-delay: 0.1s; }
+.feature-card:nth-child(2) { animation-delay: 0.2s; }
+.feature-card:nth-child(3) { animation-delay: 0.3s; }
+.feature-card:nth-child(4) { animation-delay: 0.4s; }
+
+.feature-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.feature-card:active {
+  transform: translateY(-3px);
+}
+
+.feature-icon {
+  font-size: 44px;
+  margin-bottom: 8px;
+  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.1));
+}
+
+.feature-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #2d3748;
+  margin-bottom: 6px;
+}
+
+.feature-desc {
+  font-size: 12px;
+  color: #718096;
+  line-height: 1.4;
+}
+
+/* 温馨提示 - 与主页面保持一致 */
+.warm-tips {
+  background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+  border-radius: 16px;
+  padding: 14px 16px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  box-shadow: 0 2px 8px rgba(252, 182, 159, 0.25);
+}
+
+.tips-icon {
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.tips-text {
+  font-size: 13px;
+  color: #8b4513;
+  line-height: 1.4;
+  font-weight: 500;
+}
+
+/* 响应式设计 - 与主页面保持一致 */
+@media (max-width: 400px) {
+  .main-title {
+    font-size: 22px;
+  }
+
+  .subtitle {
+    font-size: 13px;
+  }
+
+  .feature-card {
+    padding: 14px 12px;
+    min-height: 130px;
+  }
+
+  .feature-icon {
+    font-size: 40px;
+  }
+
+  .feature-title {
+    font-size: 14px;
+  }
+
+  .feature-desc {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 360px) {
+  .feature-card {
+    min-height: 120px;
+  }
+}

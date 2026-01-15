@@ -71,11 +71,6 @@ export default function ParentLogin() {
       return
     }
 
-    if (!formData.email) {
-      alert('请输入邮箱')
-      return
-    }
-
     setIsLoading(true)
 
     try {
@@ -193,17 +188,19 @@ export default function ParentLogin() {
             />
           </div>
 
-          {/* 邮箱 */}
-          <div className="form-group">
-            <label>邮箱</label>
-            <input
-              type="email"
-              name="email"
-              placeholder="请输入邮箱"
-              value={formData.email}
-              onChange={handleInputChange}
-            />
-          </div>
+          {/* 注册模式显示邮箱 */}
+          {loginMode === 'register' && (
+            <div className="form-group">
+              <label>邮箱</label>
+              <input
+                type="email"
+                name="email"
+                placeholder="请输入邮箱"
+                value={formData.email}
+                onChange={handleInputChange}
+              />
+            </div>
+          )}
 
           {/* 注册模式显示邮箱验证码 */}
           {loginMode === 'register' && (

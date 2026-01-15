@@ -124,10 +124,40 @@ export default function FruitMatch() {
     };
   }, []);
 
-  // 检查是否可以连接
-  const canConnect = (tile1: Tile, tile2: Tile): boolean => {
-    // 简化版连连看规则：只检查是否是同类型且未匹配
-    return tile1.fruitId === tile2.fruitId && !tile1.matched && !tile2.matched;
+  // 检查选中的方块是否连续相邻(消消乐规则)
+  const areSelectedTilesAdjacent = (selected: Tile[]): boolean => {
+    if (selected.length < 3) return false;
+
+    // 获取所有选中方块的位置
+    const positions = selected.map(t => ({ row: t.position.row, col: t.position.col }));
+
+    // 检查是否在同一行
+    const rows = positions.map(p => p.row);
+    const cols = positions.map(p => p.col);
+    const uniqueRows = [...new Set(rows)];
+    const uniqueCols = [...new Set(cols)];
+
+    if (uniqueRows.length === 1) {
+      // 同一行,检查列是否连续
+      const sortedCols = [...cols].sort((a, b) => a - b);
+      for (let i = 0; i < sortedCols.length - 1; i++) {
+        if (sortedCols[i + 1] - sortedCols[i] !== 1) {
+          return false;
+        }
+      }
+      return true;
+    } else if (uniqueCols.length === 1) {
+      // 同一列,检查行是否连续
+      const sortedRows = [...rows].sort((a, b) => a - b);
+      for (let i = 0; i < sortedRows.length - 1; i++) {
+        if (sortedRows[i + 1] - sortedRows[i] !== 1) {
+          return false;
+        }
+      }
+      return true;
+    }
+
+    return false;
   };
 
   // 处理方块点击
@@ -135,50 +165,62 @@ export default function FruitMatch() {
     if (!gameStarted) {
       setGameStarted(true);
       // 开始追踪游戏时间
-      usageTrackerRef.current = new UsageTracker('游戏', '水果连连看', { difficulty });
+      usageTrackerRef.current = new UsageTracker('游戏', '水果消消乐', { difficulty });
       usageTrackerRef.current.start();
     }
 
-    if (isChecking || tile.matched || selectedTiles.some(t => t.id === tile.id)) {
+    if (isChecking || tile.matched) {
+      return;
+    }
+
+    // 点击已选中的方块,取消选择
+    if (selectedTiles.some(t => t.id === tile.id)) {
+      setSelectedTiles(selectedTiles.filter(t => t.id !== tile.id));
       return;
     }
 
     const newSelected = [...selectedTiles, tile];
+
+    // 检查新选择的方块是否与已选方块类型相同
+    const allSameType = newSelected.every(t => t.fruitId === newSelected[0].fruitId);
+
+    if (!allSameType) {
+      // 如果类型不同,清空之前的选择,重新开始
+      setSelectedTiles([tile]);
+      return;
+    }
+
     setSelectedTiles(newSelected);
 
-    if (newSelected.length === 2) {
-      setIsChecking(true);
-      setMoves(prev => prev + 1);
+    // 检查是否有3个或更多相同的方块
+    if (newSelected.length >= 3) {
+      // 检查这些方块是否连在一起
+      const isAdjacent = areSelectedTilesAdjacent(newSelected);
 
-      const [first, second] = newSelected;
+      if (isAdjacent) {
+        setIsChecking(true);
+        setMoves(prev => prev + 1);
 
-      // 清除之前的定时器
-      if (checkTimerRef.current !== null) {
-        clearTimeout(checkTimerRef.current);
-      }
+        // 清除之前的定时器
+        if (checkTimerRef.current !== null) {
+          clearTimeout(checkTimerRef.current);
+        }
 
-      if (canConnect(first, second)) {
-        // 匹配成功
+        // 匹配成功,消除方块
+        const selectedIds = new Set(newSelected.map(t => t.id));
         checkTimerRef.current = window.setTimeout(() => {
           setTiles(prevTiles =>
             prevTiles.map(t =>
-              t.id === first.id || t.id === second.id
+              selectedIds.has(t.id)
                 ? { ...t, matched: true }
                 : t
             )
           );
-          setMatchedPairs(prev => prev + 1);
+          setMatchedPairs(prev => prev + Math.floor(newSelected.length / 2));
           setSelectedTiles([]);
           setIsChecking(false);
           checkTimerRef.current = null;
         }, 600);
-      } else {
-        // 匹配失败
-        checkTimerRef.current = window.setTimeout(() => {
-          setSelectedTiles([]);
-          setIsChecking(false);
-          checkTimerRef.current = null;
-        }, 800);
       }
     }
   };
@@ -212,7 +254,7 @@ export default function FruitMatch() {
 
   return (
     <Layout>
-      <Header title="🍎 水果连连看" gradient="linear-gradient(135deg, #f093fb 0%, #f5576c 100%)" />
+      <Header title="🍎 水果消消乐" gradient="linear-gradient(135deg, #f093fb 0%, #f5576c 100%)" />
 
       <div className="main-content fruit-match-container">
         {/* 游戏统计面板 */}
@@ -285,7 +327,17 @@ export default function FruitMatch() {
                 onClick={() => handleTileClick(tile)}
               >
                 <div className="fruit-emoji">{tile.emoji}</div>
-                {tile.matched && <div className="match-overlay">✓</div>}
+                {tile.matched && (
+                  <>
+                    <div className="match-overlay">💥</div>
+                    <div className="explosion-particles">
+                      <span>✨</span>
+                      <span>⭐</span>
+                      <span>✨</span>
+                      <span>⭐</span>
+                    </div>
+                  </>
+                )}
               </div>
             );
           })}
