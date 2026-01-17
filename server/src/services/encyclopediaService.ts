@@ -278,6 +278,80 @@ export class EncyclopediaService {
       aiAnswer: '让我来帮你解答这个问题...'
     };
   }
+
+  /**
+   * 获取经典列表
+   */
+  async getClassics(): Promise<any[]> {
+    // 返回四大名著等经典数据
+    const classics = [
+      {
+        id: 'journey-to-the-west',
+        title: '西游记',
+        author: '吴承恩',
+        period: '明代',
+        cover: '/images/classics/journey.jpg',
+        color: '#FF6B6B',
+        bgColor: '#FFE5E5',
+        intro: '讲述唐僧师徒四人西天取经的故事',
+        chapters: []
+      },
+      {
+        id: 'dream-of-red-mansions',
+        title: '红楼梦',
+        author: '曹雪芹',
+        period: '清代',
+        cover: '/images/classics/dream.jpg',
+        color: '#E91E63',
+        bgColor: '#FCE4EC',
+        intro: '描写贾宝玉、林黛玉等人的爱情悲剧',
+        chapters: []
+      }
+    ];
+    return classics;
+  }
+
+  /**
+   * 获取单个经典详情
+   */
+  async getClassic(classicId: string): Promise<any> {
+    const classics = await this.getClassics();
+    return classics.find(c => c.id === classicId);
+  }
+
+  /**
+   * 记录阅读进度
+   */
+  async recordReading(userId: string, classicId: string, chapterId: number): Promise<void> {
+    const sql = `
+      INSERT INTO reading_progress (user_id, classic_id, chapter_id, last_read_at)
+      VALUES ($1, $2, $3, CURRENT_TIMESTAMP)
+      ON CONFLICT (user_id, classic_id)
+      DO UPDATE SET
+        chapter_id = EXCLUDED.chapter_id,
+        last_read_at = CURRENT_TIMESTAMP,
+        updated_at = CURRENT_TIMESTAMP
+    `;
+    await query(sql, [userId, classicId, chapterId]);
+  }
+
+  /**
+   * 获取阅读进度
+   */
+  async getReadingProgress(userId: string): Promise<any[]> {
+    const sql = `
+      SELECT classic_id, chapter_id, last_read_at
+      FROM reading_progress
+      WHERE user_id = $1
+      ORDER BY last_read_at DESC
+    `;
+    const result = await query(sql, [userId]);
+    return result.rows.map(row => ({
+      classicId: row.classic_id,
+      chapterId: row.chapter_id,
+      lastReadAt: row.last_read_at
+    }));
+  }
 }
 
 export const encyclopediaService = new EncyclopediaService();
