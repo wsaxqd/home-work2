@@ -1,6 +1,8 @@
 import { Router } from 'express';
+import { authMiddleware, optionalAuth, AuthRequest } from '../middlewares/auth';
 import { asyncHandler } from '../utils/errorHandler';
 import { sendSuccess } from '../utils/response';
+import { storiesService } from '../services/storiesService';
 
 const router = Router();
 
@@ -89,10 +91,8 @@ router.get('/recommend/list', asyncHandler(async (req, res) => {
 router.get('/hot/list', asyncHandler(async (req, res) => {
   const { limit = 10 } = req.query;
 
-  sendSuccess(res, {
-    message: '获取热门故事列表',
-    limit
-  });
+  const hotStories = await storiesService.getHotStories(parseInt(limit as string));
+  sendSuccess(res, { items: hotStories, total: hotStories.length });
 }));
 
 // 搜索故事
@@ -131,22 +131,30 @@ router.get('/inspirational', asyncHandler(async (req, res) => {
 }));
 
 // 记录播放
-router.post('/play', asyncHandler(async (req, res) => {
+router.post('/play', optionalAuth, asyncHandler(async (req: AuthRequest, res) => {
+  const userId = req.userId;
   const { storyId, duration } = req.body;
-  // 这里应该记录到数据库
-  sendSuccess(res, { message: '播放记录已保存', storyId, duration });
+
+  const record = await storiesService.recordPlay(userId, storyId, duration);
+  sendSuccess(res, record, '播放记录已保存', 201);
 }));
 
 // 获取推荐故事
-router.get('/recommended', asyncHandler(async (req, res) => {
-  // 这里应该从数据库获取推荐
-  sendSuccess(res, { items: [], message: '请使用前端本地数据' });
+router.get('/recommended', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+  const userId = req.userId!;
+  const { limit = 10 } = req.query;
+
+  const recommendedStories = await storiesService.getRecommendedStories(userId, parseInt(limit as string));
+  sendSuccess(res, { items: recommendedStories, total: recommendedStories.length });
 }));
 
 // 获取播放历史
-router.get('/history', asyncHandler(async (req, res) => {
-  // 这里应该从数据库获取
-  sendSuccess(res, { items: [], message: '播放历史' });
+router.get('/history', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+  const userId = req.userId!;
+  const { limit = 50 } = req.query;
+
+  const history = await storiesService.getPlayHistory(userId, parseInt(limit as string));
+  sendSuccess(res, { items: history, total: history.length });
 }));
 
 export default router;

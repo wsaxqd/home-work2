@@ -27,6 +27,8 @@ import analyticsRoutes from './routes/analytics';
 import storiesRoutes from './routes/stories';
 import encyclopediaRoutes from './routes/encyclopedia';
 import usageRoutes from './routes/usage';
+import wishesRoutes from './routes/wishes';
+import conversationRoutes from './routes/conversation';
 
 const app = express();
 
@@ -80,6 +82,8 @@ app.use('/api/analytics', analyticsRoutes);
 app.use('/api/stories', storiesRoutes);
 app.use('/api/encyclopedia', encyclopediaRoutes);
 app.use('/api/usage', usageRoutes);
+app.use('/api/wishes', wishesRoutes);
+app.use('/api/conversation', conversationRoutes);
 app.use('/api', homeRoutes);
 
 // 404处理

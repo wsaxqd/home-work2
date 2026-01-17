@@ -252,6 +252,24 @@ export class DiaryService {
     return calendar;
   }
 
+  /**
+   * 获取情绪统计
+   */
+  async getEmotionStats(userId: string, days: number = 30) {
+    const sql = `
+      SELECT mood, COUNT(*) as count
+      FROM diaries
+      WHERE user_id = $1 AND created_at > NOW() - INTERVAL '${days} days'
+      GROUP BY mood
+      ORDER BY count DESC
+    `;
+    const result = await query(sql, [userId]);
+    return result.rows.map(row => ({
+      mood: row.mood,
+      count: parseInt(row.count)
+    }));
+  }
+
   // 格式化日记数据
   private formatDiary(row: any) {
     return {

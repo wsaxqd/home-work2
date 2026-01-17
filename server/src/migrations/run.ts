@@ -29,6 +29,9 @@ import { migration_021_add_email_to_users } from './021_add_email_to_users';
 import { migration_022_create_encyclopedia } from './022_create_encyclopedia';
 import { migration_023_create_parent_tables } from './023_create_parent_tables_export';
 import { migration_024_create_email_verify_codes } from './024_create_email_verify_codes_export';
+import { migration_025_create_reading_progress } from './025_create_reading_progress';
+import { migration_026_create_story_play_records } from './026_create_story_play_records';
+import { migration_027_create_conversation_history } from './027_create_conversation_history';
 
 const migrations: Migration[] = [
   migration_001_create_users,
@@ -55,6 +58,9 @@ const migrations: Migration[] = [
   migration_022_create_encyclopedia,
   migration_023_create_parent_tables,
   migration_024_create_email_verify_codes,
+  migration_025_create_reading_progress,
+  migration_026_create_story_play_records,
+  migration_027_create_conversation_history,
 ];
 
 async function run() {
