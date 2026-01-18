@@ -1,7 +1,7 @@
 // 内容访问控制服务
 // 用于检查和执行家长设置的内容访问权限
 
-const API_BASE_URL = 'http://localhost:3000/api';
+const API_BASE_URL = '/api';
 
 // 从localStorage获取用户ID
 const getUserId = () => {
