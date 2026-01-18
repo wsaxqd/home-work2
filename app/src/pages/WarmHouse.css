@@ -1,9 +1,8 @@
 /* 温暖小屋页面样式 - 与主页面保持一致 */
 
-.warm-house-container {
-  min-height: 100vh;
+.warm-house-content {
   background: linear-gradient(135deg, #fff5f7 0%, #ffe8ec 100%);
-  padding: 16px 16px 100px 16px;
+  min-height: 100vh;
 }
 
 /* 顶部标题 - 缩小尺寸 */

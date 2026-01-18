@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { aiApi, ChatMessage } from '../services/api/ai'
+import { aiApi, type ChatMessage } from '../services/api/ai'
 import './AICompanion.css'
 
 interface Message {

@@ -49,47 +49,49 @@ export default function WarmHouse() {
   const navigate = useNavigate()
 
   return (
-    <div className="warm-house-container">
-      {/* 顶部标题 */}
-      <div className="warm-house-header">
-        <div className="header-content">
-          <h1 className="main-title">💝 温暖小屋</h1>
-          <p className="subtitle">这里永远有人陪伴你</p>
-        </div>
-      </div>
-
-      {/* 每日一句 */}
-      <div className="daily-quote">
-        <div className="quote-icon">✨</div>
-        <div className="quote-content">
-          <div className="quote-text">
-            "你是独一无二的，世界因你而美好"
+    <div className="container">
+      <div className="main-content warm-house-content">
+        {/* 顶部标题 */}
+        <div className="warm-house-header">
+          <div className="header-content">
+            <h1 className="main-title">💝 温暖小屋</h1>
+            <p className="subtitle">这里永远有人陪伴你</p>
           </div>
-          <div className="quote-date">今天 · {new Date().toLocaleDateString('zh-CN')}</div>
         </div>
-      </div>
 
-      {/* 功能卡片 */}
-      <div className="features-grid">
-        {FEATURES.map((feature) => (
-          <div
-            key={feature.id}
-            className="feature-card"
-            style={{ background: feature.color }}
-            onClick={() => navigate(feature.path)}
-          >
-            <div className="feature-icon">{feature.icon}</div>
-            <div className="feature-title">{feature.title}</div>
-            <div className="feature-desc">{feature.desc}</div>
+        {/* 每日一句 */}
+        <div className="daily-quote">
+          <div className="quote-icon">✨</div>
+          <div className="quote-content">
+            <div className="quote-text">
+              "你是独一无二的，世界因你而美好"
+            </div>
+            <div className="quote-date">今天 · {new Date().toLocaleDateString('zh-CN')}</div>
           </div>
-        ))}
-      </div>
+        </div>
 
-      {/* 温馨提示 */}
-      <div className="warm-tips">
-        <div className="tips-icon">💡</div>
-        <div className="tips-text">
-          无论何时，只要你需要，我们都在这里陪伴你
+        {/* 功能卡片 */}
+        <div className="features-grid">
+          {FEATURES.map((feature) => (
+            <div
+              key={feature.id}
+              className="feature-card"
+              style={{ background: feature.color }}
+              onClick={() => navigate(feature.path)}
+            >
+              <div className="feature-icon">{feature.icon}</div>
+              <div className="feature-title">{feature.title}</div>
+              <div className="feature-desc">{feature.desc}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* 温馨提示 */}
+        <div className="warm-tips">
+          <div className="tips-icon">💡</div>
+          <div className="tips-text">
+            无论何时，只要你需要，我们都在这里陪伴你
+          </div>
         </div>
       </div>
     </div>
