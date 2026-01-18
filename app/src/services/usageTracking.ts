@@ -1,7 +1,7 @@
 // 儿童端使用数据记录服务
 // 用于记录孩子的学习、游戏、创作等活动数据
 
-const API_BASE_URL = 'http://localhost:3000/api';
+const API_BASE_URL = '/api';
 
 // 从localStorage获取token
 const getToken = () => {

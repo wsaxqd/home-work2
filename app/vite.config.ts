@@ -11,9 +11,7 @@ export default defineConfig({
       // 代理所有 /api 请求到后端服务器
       // 在 Docker 容器内，使用服务名 'server' 而不是 localhost
       '/api': {
-        target: process.env.NODE_ENV === 'development'
-          ? 'http://server:3001'
-          : 'http://localhost:3001',
+        target: 'http://localhost:3000',
         changeOrigin: true,
         secure: false,
         rewrite: (path) => path,

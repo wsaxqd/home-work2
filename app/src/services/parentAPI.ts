@@ -1,7 +1,7 @@
 // 家长端API调用工具
 // 使用方法：在前端页面中import这个文件，调用相应的函数
 
-const API_BASE_URL = 'http://localhost:3000/api';
+const API_BASE_URL = '/api';
 
 // 从localStorage获取token
 const getToken = () => {
