@@ -41,7 +41,10 @@ import {
   LearningData,
   UsageControl,
   GrowthReport,
-  ParentSettings
+  ParentSettings,
+  ChildrenSongs,
+  EnglishBook,
+  WhyQuestions
 } from './pages'
 import TimeLockModal from './components/TimeLockModal'
 import ContentProtectedRoute from './components/ContentProtectedRoute'
@@ -189,6 +192,9 @@ function App() {
         <Route path="/picture-book" element={<ProtectedRoute><ContentProtectedRoute contentType="reading"><PictureBook /></ContentProtectedRoute></ProtectedRoute>} />
         <Route path="/four-classics" element={<ProtectedRoute><ContentProtectedRoute contentType="reading"><FourClassics /></ContentProtectedRoute></ProtectedRoute>} />
         <Route path="/chinese-classics" element={<ProtectedRoute><ContentProtectedRoute contentType="reading"><ChineseClassics /></ContentProtectedRoute></ProtectedRoute>} />
+        <Route path="/children-songs" element={<ProtectedRoute><ContentProtectedRoute contentType="reading"><ChildrenSongs /></ContentProtectedRoute></ProtectedRoute>} />
+        <Route path="/english-book" element={<ProtectedRoute><ContentProtectedRoute contentType="reading"><EnglishBook /></ContentProtectedRoute></ProtectedRoute>} />
+        <Route path="/why-questions" element={<ProtectedRoute><ContentProtectedRoute contentType="reading"><WhyQuestions /></ContentProtectedRoute></ProtectedRoute>} />
 
         {/* AI百科页面 - 受内容访问控制 */}
         <Route path="/ai-encyclopedia" element={<ProtectedRoute><ContentProtectedRoute contentType="aiEncyclopedia"><AIEncyclopedia /></ContentProtectedRoute></ProtectedRoute>} />

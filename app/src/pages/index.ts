@@ -26,6 +26,9 @@ export { default as WhackAMole } from './WhackAMole'
 export { default as NumberPuzzle } from './NumberPuzzle'
 export { default as JigsawPuzzle } from './JigsawPuzzle'
 export { default as Search } from './Search'
+export { default as ChildrenSongs } from './ChildrenSongs'
+export { default as EnglishBook } from './EnglishBook'
+export { default as WhyQuestions } from './WhyQuestions'
 
 // 温暖小屋组件
 export { default as WarmHouse } from './WarmHouse'
