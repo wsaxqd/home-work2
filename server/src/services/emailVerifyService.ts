@@ -1,4 +1,6 @@
 import { query } from '../config/database';
+import { emailService } from './emailService';
+import { AppError } from '../utils/errorHandler';
 
 // 生成6位随机验证码
 function generateVerifyCode(): string {
@@ -7,6 +9,21 @@ function generateVerifyCode(): string {
 
 // 发送邮箱验证码
 export async function sendVerifyCode(email: string): Promise<void> {
+  // 检查发送频率限制 (60秒内只能发送一次)
+  const recentResult = await query(
+    `SELECT * FROM email_verify_codes
+     WHERE email = $1 AND created_at > NOW() - INTERVAL '60 seconds'
+     ORDER BY created_at DESC
+     LIMIT 1`,
+    [email]
+  );
+
+  if (recentResult.rows.length > 0) {
+    const lastSentAt = new Date(recentResult.rows[0].created_at);
+    const waitSeconds = Math.ceil((60 - (Date.now() - lastSentAt.getTime()) / 1000));
+    throw new AppError(`发送过于频繁,请${waitSeconds}秒后再试`, 429);
+  }
+
   // 生成验证码
   const code = generateVerifyCode();
 
@@ -20,10 +37,15 @@ export async function sendVerifyCode(email: string): Promise<void> {
     [email, code, expiresAt]
   );
 
-  // TODO: 实际发送邮件
-  // 这里暂时只是打印到控制台，后续可以集成邮件服务（如 nodemailer）
-  console.log(`📧 验证码已生成: ${email} -> ${code} (有效期10分钟)`);
-  console.log(`⚠️  注意: 当前为开发模式，验证码已打印到控制台`);
+  // 发送邮件
+  try {
+    await emailService.sendVerificationCode(email, code);
+    console.log(`✅ 验证码邮件已发送: ${email}`);
+  } catch (error) {
+    console.error(`❌ 验证码邮件发送失败: ${email}`, error);
+    // 即使邮件发送失败,也打印验证码以便开发调试
+    console.log(`📧 验证码(调试用): ${email} -> ${code} (有效期10分钟)`);
+  }
 }
 
 // 验证邮箱验证码

@@ -29,6 +29,7 @@ import encyclopediaRoutes from './routes/encyclopedia';
 import usageRoutes from './routes/usage';
 import wishesRoutes from './routes/wishes';
 import conversationRoutes from './routes/conversation';
+import favoritesRoutes from './routes/favorites';
 
 const app = express();
 
@@ -84,6 +85,7 @@ app.use('/api/encyclopedia', encyclopediaRoutes);
 app.use('/api/usage', usageRoutes);
 app.use('/api/wishes', wishesRoutes);
 app.use('/api/conversation', conversationRoutes);
+app.use('/api/favorites', favoritesRoutes);
 app.use('/api', homeRoutes);
 
 // 404处理

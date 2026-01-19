@@ -137,3 +137,12 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+.story-btn.favorited {
+  background: #ffebee;
+  color: #e91e63;
+}
+
+.story-btn.favorited:hover:not(:disabled) {
+  background: #ffcdd2;
+}

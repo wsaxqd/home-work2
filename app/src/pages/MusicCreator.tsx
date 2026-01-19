@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { Layout, Header } from '../components/layout'
+import { favoritesApi } from '../services/api/favorites'
 import { UsageTracker } from '../services/usageTracking'
 import './Creator.css'
 import './MusicCreator.css'
@@ -43,6 +44,8 @@ export default function MusicCreator() {
   const [isGenerating, setIsGenerating] = useState(false)
   const [isPlaying, setIsPlaying] = useState(false)
   const [playingSongId, setPlayingSongId] = useState<number | null>(null)
+  const [isFavorited, setIsFavorited] = useState(false)
+  const [isFavoriting, setIsFavoriting] = useState(false)
   const usageTrackerRef = useRef<UsageTracker | null>(null)
 
   const tempoLabels = ['非常慢', '缓慢', '中等', '快速', '非常快']
@@ -72,6 +75,33 @@ export default function MusicCreator() {
       setPlayingSongId(null)
     } else {
       setPlayingSongId(songId)
+    }
+  }
+
+  const handleFavorite = async () => {
+    if (isFavoriting) return
+
+    setIsFavoriting(true)
+
+    try {
+      if (isFavorited) {
+        setIsFavorited(false)
+        alert('已取消收藏')
+      } else {
+        await favoritesApi.addFavorite({
+          itemType: 'music',
+          itemId: `music_${Date.now()}`,
+          itemTitle: '我的AI音乐',
+          itemContent: `${genres.find(g => g.value === selectedGenre)?.name || ''} - ${tempoLabels[tempo]}`,
+        })
+        setIsFavorited(true)
+        alert('收藏成功!')
+      }
+    } catch (err: any) {
+      console.error('Favorite error:', err)
+      alert(err.message || '操作失败，请重试')
+    } finally {
+      setIsFavoriting(false)
     }
   }
 
@@ -200,8 +230,16 @@ export default function MusicCreator() {
                 </div>
 
                 <div className="action-buttons">
-                  <button className="btn btn-secondary" onClick={() => { setStep(1); }}>
+                  <button className="btn btn-secondary" onClick={() => { setStep(1); setIsFavorited(false); }}>
                     重新创作
+                  </button>
+                  <button
+                    className={`btn ${isFavorited ? 'btn-secondary' : 'btn-primary'}`}
+                    onClick={handleFavorite}
+                    disabled={isFavoriting}
+                    style={{ marginRight: '10px' }}
+                  >
+                    {isFavorited ? '❤️ 已收藏' : '🤍 收藏音乐'}
                   </button>
                   <button className="btn btn-primary" onClick={async () => {
                     if (usageTrackerRef.current) {

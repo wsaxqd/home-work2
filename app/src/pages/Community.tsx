@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Layout, Header } from '../components/layout'
 import { communityApi } from '../services/api'
+import { favoritesApi } from '../services/api/favorites'
 import type { Post, Topic } from '../types'
 import './Community.css'
 
@@ -46,6 +47,21 @@ export default function Community() {
       }
     } catch (err) {
       console.error('点赞失败', err)
+    }
+  }
+
+  const handleFavorite = async (post: Post) => {
+    try {
+      await favoritesApi.addFavorite({
+        itemType: 'story',
+        itemId: post.id,
+        itemTitle: post.title || '社区帖子',
+        itemContent: post.content.substring(0, 200),
+      })
+      alert('收藏成功!')
+    } catch (err: any) {
+      console.error('收藏失败', err)
+      alert(err.message || '收藏失败，请重试')
     }
   }
   if (loading) {
@@ -121,6 +137,13 @@ export default function Community() {
                   </span>
                   <span className="action-item">💬 {post.commentCount}</span>
                   <span className="action-item">🔗 分享</span>
+                  <span
+                    className="action-item"
+                    onClick={() => handleFavorite(post)}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    ⭐ 收藏
+                  </span>
                 </div>
               </div>
             ))}

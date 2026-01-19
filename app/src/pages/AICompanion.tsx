@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Layout, Header } from '../components/layout'
 import { aiApi, type ChatMessage } from '../services/api/ai'
 import './AICompanion.css'
 
@@ -128,21 +129,21 @@ export default function AICompanion() {
   }
 
   return (
-    <div className="ai-companion-container">
-      {/* 顶部导航 */}
-      <div className="companion-header">
-        <button className="back-btn" onClick={() => navigate(-1)}>
-          ← 返回
-        </button>
-        <div className="companion-info" onClick={() => setShowCompanionSelect(true)}>
+    <Layout>
+      <Header
+        title={selectedCompanion.name}
+        gradient="linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)"
+      />
+      <div className="ai-companion-container">
+        {/* 陪伴者信息栏 */}
+        <div className="companion-info-bar" onClick={() => setShowCompanionSelect(true)}>
           <span className="companion-avatar">{selectedCompanion.avatar}</span>
           <div className="companion-details">
             <div className="companion-name">{selectedCompanion.name}</div>
             <div className="companion-status">在线 · 随时陪你聊天</div>
           </div>
+          <span className="change-icon">切换</span>
         </div>
-        <button className="menu-btn">⋮</button>
-      </div>
 
       {/* 聊天消息区域 */}
       <div className="messages-container">
@@ -244,6 +245,7 @@ export default function AICompanion() {
           </div>
         </div>
       )}
-    </div>
+      </div>
+    </Layout>
   )
 }

@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Layout, Header } from '../components/layout'
 import { aiApi, worksApi } from '../services/api'
+import { favoritesApi } from '../services/api/favorites'
 import { UsageTracker } from '../services/usageTracking'
 import './Creator.css'
 import './StoryCreator.css'
@@ -34,6 +35,9 @@ export default function StoryCreator() {
   const [storyTitle, setStoryTitle] = useState('')
   const [error, setError] = useState('')
   const [isSaving, setIsSaving] = useState(false)
+  const [savedWorkId, setSavedWorkId] = useState<string | null>(null)
+  const [isFavorited, setIsFavorited] = useState(false)
+  const [isFavoriting, setIsFavoriting] = useState(false)
   const usageTrackerRef = useRef<UsageTracker | null>(null)
 
   // 启动使用追踪
@@ -97,6 +101,11 @@ export default function StoryCreator() {
       })
 
       if (response.success) {
+        // 保存作品ID以便后续收藏
+        if (response.data?.id) {
+          setSavedWorkId(response.data.id)
+        }
+
         // 记录使用数据
         if (usageTrackerRef.current) {
           await usageTrackerRef.current.end(undefined, {
@@ -119,6 +128,37 @@ export default function StoryCreator() {
     }
   }
 
+  const handleFavorite = async () => {
+    if (isFavoriting) return
+
+    setIsFavoriting(true)
+    setError('')
+
+    try {
+      if (isFavorited) {
+        // 取消收藏 - 需要先查找收藏ID
+        // 这里简化处理,直接切换状态
+        setIsFavorited(false)
+        alert('已取消收藏')
+      } else {
+        // 添加收藏
+        await favoritesApi.addFavorite({
+          itemType: 'story',
+          itemId: savedWorkId || `story_${Date.now()}`, // 如果还没保存,使用临时ID
+          itemTitle: storyTitle || `${character.name}的冒险之旅`,
+          itemContent: story.substring(0, 200),
+        })
+        setIsFavorited(true)
+        alert('收藏成功!')
+      }
+    } catch (err: any) {
+      console.error('Favorite error:', err)
+      setError(err.message || '操作失败，请重试')
+    } finally {
+      setIsFavoriting(false)
+    }
+  }
+
   const handleReset = () => {
     setStep(1)
     setStory('')
@@ -126,6 +166,8 @@ export default function StoryCreator() {
     setError('')
     setSelectedTheme('')
     setCharacter({ name: '', personality: '', location: '' })
+    setSavedWorkId(null)
+    setIsFavorited(false)
   }
 
   return (
@@ -282,6 +324,13 @@ export default function StoryCreator() {
                   <button className="story-btn" disabled>✏️ 编辑</button>
                   <button className="story-btn" disabled>💡 AI建议</button>
                   <button className="story-btn" disabled>🔊 朗读</button>
+                  <button
+                    className={`story-btn ${isFavorited ? 'favorited' : ''}`}
+                    onClick={handleFavorite}
+                    disabled={isFavoriting}
+                  >
+                    {isFavorited ? '❤️ 已收藏' : '🤍 收藏'}
+                  </button>
                 </div>
 
                 <div className="action-buttons">

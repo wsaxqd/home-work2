@@ -14,6 +14,7 @@ export interface RegisterInput {
 export interface LoginInput {
   phone?: string;
   email?: string;
+  username?: string;
   password: string;
 }
 
@@ -130,16 +131,21 @@ export class AuthService {
 
   // 用户登录
   async login(input: LoginInput) {
-    const { phone, email, password } = input;
+    const { phone, email, username, password } = input;
 
-    // 必须提供手机号或邮箱
-    if (!phone && !email) {
-      throw new AppError('请提供手机号或邮箱', 400);
+    // 必须提供手机号、邮箱或用户名之一
+    if (!phone && !email && !username) {
+      throw new AppError('请提供手机号、邮箱或用户名', 400);
     }
 
     // 查找用户
     let result;
-    if (phone) {
+    if (username) {
+      result = await query(
+        'SELECT * FROM users WHERE username = $1',
+        [username]
+      );
+    } else if (phone) {
       result = await query(
         'SELECT * FROM users WHERE phone = $1',
         [phone]
@@ -157,8 +163,9 @@ export class AuthService {
 
     const user = result.rows[0];
 
-    // 验证密码
-    const isValidPassword = await bcrypt.compare(password, user.password);
+    // 验证密码 (检查两种可能的密码字段)
+    const passwordHash = user.password_hash || user.password;
+    const isValidPassword = await bcrypt.compare(password, passwordHash);
 
     if (!isValidPassword) {
       throw new AppError('账号或密码错误', 401);
@@ -166,7 +173,7 @@ export class AuthService {
 
     // 更新最后登录时间
     await query(
-      'UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE id = $1',
+      'UPDATE users SET last_login_at = CURRENT_TIMESTAMP WHERE id = $1',
       [user.id]
     );
 
@@ -251,6 +258,62 @@ export class AuthService {
     );
 
     return { message: '密码修改成功' };
+  }
+
+  // 邮箱验证码登录(如果邮箱不存在则自动注册)
+  async loginByEmail(email: string) {
+    // 验证邮箱格式
+    if (!this.validateEmail(email)) {
+      throw new AppError('邮箱格式不正确', 400);
+    }
+
+    // 查找用户
+    let result = await query(
+      'SELECT * FROM users WHERE email = $1',
+      [email]
+    );
+
+    let user;
+
+    // 如果用户不存在,自动注册
+    if (result.rows.length === 0) {
+      const username = `user_${email.slice(0, email.indexOf('@'))}`;
+      const nickname = `用户${email.slice(0, email.indexOf('@'))}`;
+      // 邮箱登录用户使用随机密码(不会被使用)
+      const randomPassword = Math.random().toString(36).substring(2, 15);
+      const passwordHash = await bcrypt.hash(randomPassword, 10);
+
+      const registerResult = await query(
+        `INSERT INTO users (username, email, nickname, password_hash)
+         VALUES ($1, $2, $3, $4)
+         RETURNING id, username, phone, email, nickname, avatar, bio, created_at`,
+        [username, email, nickname, passwordHash]
+      );
+      user = registerResult.rows[0];
+    } else {
+      user = result.rows[0];
+
+      // 更新最后登录时间
+      await query(
+        'UPDATE users SET last_login_at = CURRENT_TIMESTAMP WHERE id = $1',
+        [user.id]
+      );
+    }
+
+    const tokens = this.generateTokens(user.id);
+
+    return {
+      user: {
+        id: user.id,
+        phone: user.phone,
+        email: user.email,
+        nickname: user.nickname,
+        avatar: user.avatar,
+        bio: user.bio,
+        createdAt: user.created_at,
+      },
+      ...tokens,
+    };
   }
 }
 

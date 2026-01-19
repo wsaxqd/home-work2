@@ -6,6 +6,89 @@ import { sendSuccess, sendPaginated } from '../utils/response';
 
 const router = Router();
 
+// ============ 社区帖子 ============
+
+// 获取帖子列表
+router.get('/posts', optionalAuth, asyncHandler(async (req: AuthRequest, res) => {
+  const page = parseInt(req.query.page as string) || 1;
+  const limit = parseInt(req.query.limit as string) || 10;
+  const userId = req.userId;
+
+  const result = await communityService.getPosts(page, limit, userId);
+  sendSuccess(res, result);
+}));
+
+// 获取单个帖子
+router.get('/posts/:id', optionalAuth, asyncHandler(async (req: AuthRequest, res) => {
+  const postId = req.params.id;
+  const userId = req.userId;
+
+  const post = await communityService.getPost(postId, userId);
+  sendSuccess(res, post);
+}));
+
+// 发布帖子
+router.post('/posts', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+  const userId = req.userId!;
+  const { content, images, title } = req.body;
+
+  const post = await communityService.createPost(userId, content, images, title);
+  sendSuccess(res, post, '发布成功', 201);
+}));
+
+// 删除帖子
+router.delete('/posts/:id', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+  const postId = req.params.id;
+  const userId = req.userId!;
+
+  const result = await communityService.deletePost(postId, userId);
+  sendSuccess(res, null, result.message);
+}));
+
+// 点赞帖子
+router.post('/posts/:id/like', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+  const postId = req.params.id;
+  const userId = req.userId!;
+
+  const result = await communityService.likePost(postId, userId);
+  sendSuccess(res, null, result.message);
+}));
+
+// 取消点赞帖子
+router.delete('/posts/:id/like', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+  const postId = req.params.id;
+  const userId = req.userId!;
+
+  const result = await communityService.unlikePost(postId, userId);
+  sendSuccess(res, null, result.message);
+}));
+
+// ============ 话题 ============
+
+// 获取话题列表
+router.get('/topics', asyncHandler(async (req, res) => {
+  const topics = await communityService.getTopics();
+  sendSuccess(res, topics);
+}));
+
+// 获取话题详情
+router.get('/topics/:id', asyncHandler(async (req, res) => {
+  const topicId = req.params.id;
+  const topic = await communityService.getTopic(topicId);
+  sendSuccess(res, topic);
+}));
+
+// 获取话题下的帖子
+router.get('/topics/:id/posts', optionalAuth, asyncHandler(async (req: AuthRequest, res) => {
+  const topicId = req.params.id;
+  const page = parseInt(req.query.page as string) || 1;
+  const limit = parseInt(req.query.limit as string) || 10;
+  const userId = req.userId;
+
+  const result = await communityService.getTopicPosts(topicId, page, limit, userId);
+  sendSuccess(res, result);
+}));
+
 // ============ 点赞 ============
 
 // 点赞作品

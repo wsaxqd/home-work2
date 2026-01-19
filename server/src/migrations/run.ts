@@ -32,6 +32,7 @@ import { migration_024_create_email_verify_codes } from './024_create_email_veri
 import { migration_025_create_reading_progress } from './025_create_reading_progress';
 import { migration_026_create_story_play_records } from './026_create_story_play_records';
 import { migration_027_create_conversation_history } from './027_create_conversation_history';
+import { migration_028_create_community_topics } from './028_create_community_topics';
 
 const migrations: Migration[] = [
   migration_001_create_users,
@@ -61,6 +62,7 @@ const migrations: Migration[] = [
   migration_025_create_reading_progress,
   migration_026_create_story_play_records,
   migration_027_create_conversation_history,
+  migration_028_create_community_topics,
 ];
 
 async function run() {

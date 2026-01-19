@@ -68,6 +68,8 @@ export class ContentControlManager {
     const userId = getUserId();
     if (!userId) {
       console.warn('未登录,无法加载内容访问控制设置');
+      // 未登录时默认允许所有访问
+      this.settings = null;
       return null;
     }
 
@@ -78,7 +80,9 @@ export class ContentControlManager {
         return this.settings;
       }
     } catch (error) {
-      console.error('加载内容访问控制设置失败:', error);
+      console.warn('加载内容访问控制设置失败,默认允许所有访问:', error);
+      // 加载失败时默认允许所有访问
+      this.settings = null;
     }
 
     return null;

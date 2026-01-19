@@ -1,11 +1,13 @@
-/* 温暖小屋页面样式 - 与主页面保持一致 */
+/* 温暖小屋页面样式 */
 
-.warm-house-content {
-  background: linear-gradient(135deg, #fff5f7 0%, #ffe8ec 100%);
+/* 确保底部导航可见 */
+.warm-house-container {
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
-/* 顶部标题 - 缩小尺寸 */
+/* 顶部标题 */
 .warm-house-header {
   text-align: center;
   margin-bottom: 20px;
@@ -42,17 +44,18 @@
   font-weight: 500;
 }
 
-/* 每日一句 - 与主页面卡片保持一致 */
+/* 每日一句 - 优化设计 */
 .daily-quote {
-  background: white;
-  border-radius: 16px;
-  padding: 16px;
-  margin-bottom: 20px;
-  box-shadow: 0 4px 12px rgba(255, 107, 157, 0.12);
+  background: linear-gradient(135deg, #fff 0%, #fef5f5 100%);
+  border-radius: 20px;
+  padding: 20px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 16px rgba(255, 107, 157, 0.15);
   display: flex;
-  gap: 12px;
+  gap: 16px;
   align-items: center;
   animation: fadeIn 0.8s ease;
+  border: 2px solid rgba(255, 107, 157, 0.1);
 }
 
 @keyframes fadeIn {
@@ -61,8 +64,18 @@
 }
 
 .quote-icon {
-  font-size: 32px;
+  font-size: 40px;
   flex-shrink: 0;
+  animation: sparkle 2s ease-in-out infinite;
+}
+
+@keyframes sparkle {
+  0%, 100% {
+    transform: scale(1) rotate(0deg);
+  }
+  50% {
+    transform: scale(1.1) rotate(5deg);
+  }
 }
 
 .quote-content {
@@ -70,39 +83,53 @@
 }
 
 .quote-text {
-  font-size: 14px;
-  color: #333;
-  line-height: 1.5;
-  margin-bottom: 6px;
-  font-weight: 500;
+  font-size: 15px;
+  color: #2d3748;
+  line-height: 1.6;
+  margin-bottom: 8px;
+  font-weight: 600;
 }
 
 .quote-date {
-  font-size: 11px;
-  color: #999;
+  font-size: 12px;
+  color: #a0aec0;
+  font-weight: 500;
 }
 
-/* 功能卡片网格 - 与主页面保持一致 */
+/* 功能卡片网格 - 优化布局 */
 .features-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-  margin-bottom: 20px;
+  gap: 16px;
+  margin-bottom: 24px;
 }
 
 .feature-card {
-  padding: 16px 14px;
-  border-radius: 16px;
+  padding: 20px 16px;
+  border-radius: 20px;
   text-align: center;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   animation: scaleIn 0.5s ease;
-  min-height: 140px;
+  min-height: 160px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.feature-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 100%);
+  pointer-events: none;
 }
 
 @keyframes scaleIn {
@@ -122,57 +149,77 @@
 .feature-card:nth-child(4) { animation-delay: 0.4s; }
 
 .feature-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.15);
 }
 
 .feature-card:active {
-  transform: translateY(-3px);
+  transform: translateY(-4px) scale(0.98);
 }
 
 .feature-icon {
-  font-size: 44px;
-  margin-bottom: 8px;
-  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.1));
+  font-size: 52px;
+  margin-bottom: 12px;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.15));
+  position: relative;
+  z-index: 1;
 }
 
 .feature-title {
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 700;
   color: #2d3748;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
+  position: relative;
+  z-index: 1;
 }
 
 .feature-desc {
-  font-size: 12px;
+  font-size: 13px;
   color: #718096;
-  line-height: 1.4;
+  line-height: 1.5;
+  position: relative;
+  z-index: 1;
 }
 
-/* 温馨提示 - 与主页面保持一致 */
+/* 温馨提示 - 优化设计 */
 .warm-tips {
-  background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+  background: linear-gradient(135deg, #fff4e6 0%, #ffe4cc 100%);
   border-radius: 16px;
-  padding: 14px 16px;
+  padding: 16px 20px;
   display: flex;
-  gap: 10px;
+  gap: 12px;
   align-items: center;
-  box-shadow: 0 2px 8px rgba(252, 182, 159, 0.25);
+  box-shadow: 0 2px 12px rgba(252, 182, 159, 0.2);
+  border: 2px solid rgba(252, 182, 159, 0.3);
+  margin-bottom: 20px;
 }
 
 .tips-icon {
-  font-size: 24px;
+  font-size: 28px;
   flex-shrink: 0;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
 }
 
 .tips-text {
-  font-size: 13px;
+  font-size: 14px;
   color: #8b4513;
-  line-height: 1.4;
-  font-weight: 500;
+  line-height: 1.5;
+  font-weight: 600;
 }
 
-/* 响应式设计 - 与主页面保持一致 */
+/* 响应式设计 - 优化移动端显示 */
 @media (max-width: 400px) {
   .main-title {
     font-size: 22px;
@@ -182,26 +229,44 @@
     font-size: 13px;
   }
 
+  .daily-quote {
+    padding: 16px;
+    gap: 12px;
+  }
+
+  .quote-icon {
+    font-size: 36px;
+  }
+
   .feature-card {
-    padding: 14px 12px;
-    min-height: 130px;
+    padding: 18px 14px;
+    min-height: 150px;
   }
 
   .feature-icon {
-    font-size: 40px;
+    font-size: 48px;
   }
 
   .feature-title {
-    font-size: 14px;
+    font-size: 15px;
   }
 
   .feature-desc {
-    font-size: 11px;
+    font-size: 12px;
   }
 }
 
 @media (max-width: 360px) {
+  .features-grid {
+    gap: 12px;
+  }
+
   .feature-card {
-    min-height: 120px;
+    min-height: 140px;
+    padding: 16px 12px;
+  }
+
+  .feature-icon {
+    font-size: 44px;
   }
 }

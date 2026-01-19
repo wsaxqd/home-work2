@@ -30,4 +30,12 @@ export const authApi = {
   // 修改密码
   changePassword: (oldPassword: string, newPassword: string) =>
     api.post('/auth/change-password', { oldPassword, newPassword }),
+
+  // 发送邮箱验证码
+  sendEmailVerifyCode: (data: { email: string }) =>
+    api.post('/auth/send-email-code', data),
+
+  // 邮箱验证码登录
+  emailLogin: (data: { email: string; code: string }) =>
+    api.post<AuthResponse>('/auth/email-login', data),
 }

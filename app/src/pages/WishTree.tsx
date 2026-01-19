@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Layout, Header } from '../components/layout'
 import { wishesApi } from '../services/api/wishes'
 import './WishTree.css'
 
@@ -116,20 +117,22 @@ export default function WishTree() {
   const fulfilledWishes = wishes.filter(w => w.status === 'fulfilled')
 
   return (
-    <div className="wish-tree-container">
-      {/* 顶部导航 */}
-      <div className="wish-header">
-        <button className="back-btn" onClick={() => navigate(-1)}>
-          ← 返回
-        </button>
-        <h1 className="wish-title">🌳 心愿树</h1>
-        <button className="add-wish-btn" onClick={() => setShowAddModal(true)}>
-          + 许愿
-        </button>
-      </div>
-
-      {/* 心愿树插画 */}
-      <div className="tree-illustration">
+    <Layout>
+      <Header
+        title="心愿树"
+        gradient="linear-gradient(135deg, #fdcbf1 0%, #e6dee9 100%)"
+        rightButton={
+          <button
+            className="header-action-btn"
+            onClick={() => setShowAddModal(true)}
+          >
+            + 许愿
+          </button>
+        }
+      />
+      <div className="wish-tree-container">
+        {/* 心愿树插画 */}
+        <div className="tree-illustration">
         <div className="tree-trunk">🌳</div>
         <div className="tree-text">在这里许下你的心愿吧</div>
         <div className="wish-count">
@@ -252,6 +255,7 @@ export default function WishTree() {
           </div>
         </div>
       )}
-    </div>
+      </div>
+    </Layout>
   )
 }
