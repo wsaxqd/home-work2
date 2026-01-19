@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { Layout, Header } from '../components/layout'
 import { UsageTracker } from '../services/usageTracking'
+import { favoritesApi } from '../services/api/favorites'
 import './PictureBook.css'
 
 interface Book {
@@ -124,6 +125,8 @@ const books6to12: Book[] = [
 export default function PictureBook() {
   const [selectedAge, setSelectedAge] = useState<'0-3' | '3-6' | '6-12'>('0-3')
   const [selectedBook, setSelectedBook] = useState<Book | null>(null)
+  const [isFavorited, setIsFavorited] = useState(false)
+  const [isFavoriting, setIsFavoriting] = useState(false)
   const usageTrackerRef = useRef<UsageTracker | null>(null)
 
   const getCurrentBooks = () => {
@@ -184,6 +187,36 @@ export default function PictureBook() {
     // 这里可以添加实际的阅读功能
     alert(`开始阅读《${selectedBook?.title}》`)
     setSelectedBook(null)
+  }
+
+  // 收藏绘本
+  const handleFavorite = async () => {
+    if (!selectedBook || isFavoriting) return
+
+    setIsFavoriting(true)
+
+    try {
+      if (isFavorited) {
+        // 取消收藏
+        setIsFavorited(false)
+        alert('已取消收藏')
+      } else {
+        // 添加收藏
+        await favoritesApi.addFavorite({
+          itemType: 'picture_book',
+          itemId: `book_${selectedBook.id}`,
+          itemTitle: selectedBook.title,
+          itemContent: `${selectedBook.author} | ${selectedBook.summary.substring(0, 100)}`,
+        })
+        setIsFavorited(true)
+        alert('收藏成功!')
+      }
+    } catch (err: any) {
+      console.error('Favorite error:', err)
+      alert(err.message || '操作失败，请重试')
+    } finally {
+      setIsFavoriting(false)
+    }
   }
 
   return (
@@ -275,7 +308,13 @@ export default function PictureBook() {
 
                 <div className="action-buttons">
                   <button className="btn-primary" onClick={handleStartReading}>开始阅读</button>
-                  <button className="btn-secondary">收藏</button>
+                  <button
+                    className={`btn-secondary ${isFavorited ? 'favorited' : ''}`}
+                    onClick={handleFavorite}
+                    disabled={isFavoriting}
+                  >
+                    {isFavorited ? '❤️ 已收藏' : '🤍 收藏'}
+                  </button>
                 </div>
               </div>
             </div>

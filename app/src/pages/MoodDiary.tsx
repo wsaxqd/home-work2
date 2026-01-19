@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Layout, Header } from '../components/layout'
 import { diaryApi } from '../services/api/diary'
 import { aiApi } from '../services/api/ai'
 import './MoodDiary.css'
@@ -173,20 +174,20 @@ export default function MoodDiary() {
   }
 
   return (
-    <div className="mood-diary-container">
-      {/* 顶部导航 */}
-      <div className="diary-header">
-        <button className="back-btn" onClick={() => navigate(-1)}>
-          ← 返回
-        </button>
-        <h1 className="diary-title">📔 心情日记</h1>
-        <button
-          className="write-btn"
-          onClick={() => setView(view === 'list' ? 'write' : 'list')}
-        >
-          {view === 'list' ? '✏️ 写日记' : '📋 查看'}
-        </button>
-      </div>
+    <Layout>
+      <Header
+        title="心情日记"
+        gradient="linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)"
+        rightButton={
+          <button
+            className="header-action-btn"
+            onClick={() => setView(view === 'list' ? 'write' : 'list')}
+          >
+            {view === 'list' ? '✏️ 写日记' : '📋 查看'}
+          </button>
+        }
+      />
+      <div className="mood-diary-container">
 
       {/* 列表视图 */}
       {view === 'list' && (
@@ -279,6 +280,7 @@ export default function MoodDiary() {
           </div>
         </div>
       )}
-    </div>
+      </div>
+    </Layout>
   )
 }

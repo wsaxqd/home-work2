@@ -5,11 +5,13 @@ import './Login.css'
 
 const avatars = ['🦁', '🐰', '🐼', '🦊', '🐯', '🐨']
 
-type LoginMode = 'password' | 'sms' | 'register'
+type LoginMode = 'password' | 'code' | 'register'
+type CodeType = 'sms' | 'email'
 
 export default function Login() {
   const navigate = useNavigate()
   const [mode, setMode] = useState<LoginMode>('password')
+  const [codeType, setCodeType] = useState<CodeType>('email') // 验证码类型
 
   // 通用字段
   const [loginType, setLoginType] = useState<'phone' | 'email'>('phone') // 新增:登录类型
@@ -21,6 +23,7 @@ export default function Login() {
 
   // 验证码登录
   const [smsCode, setSmsCode] = useState('')
+  const [emailCode, setEmailCode] = useState('') // 新增:邮箱验证码
   const [countdown, setCountdown] = useState(0)
 
   // 注册字段
@@ -45,6 +48,7 @@ export default function Login() {
     setPassword('')
     setConfirmPassword('')
     setSmsCode('')
+    setEmailCode('')
     setPasswordStrength(0)
   }
 
@@ -70,7 +74,7 @@ export default function Login() {
     return Math.min(strength, 3)
   }
 
-  // 发送验证码
+  // 发送手机验证码
   const handleSendSms = async () => {
     if (!validatePhone(phone)) {
       setError('⚠️ 请输入正确的手机号')
@@ -81,6 +85,33 @@ export default function Login() {
     // 模拟发送验证码（实际应调用API）
     console.log('发送验证码到:', phone)
     // TODO: 实际项目中调用 await authApi.sendSms({ phone })
+  }
+
+  // 发送邮箱验证码
+  const handleSendEmailCode = async () => {
+    if (!validateEmail(email)) {
+      setError('⚠️ 请输入正确的邮箱地址')
+      return
+    }
+
+    setLoading(true)
+    setError('')
+
+    try {
+      const response = await authApi.sendEmailVerifyCode({ email })
+
+      if (response.success) {
+        setCountdown(60)
+        setError('')
+        console.log('✅ 验证码已发送到:', email)
+      } else {
+        setError('❌ ' + (response.error || '发送验证码失败'))
+      }
+    } catch (err: any) {
+      setError('❌ ' + (err.message || '发送验证码失败'))
+    } finally {
+      setLoading(false)
+    }
   }
 
   // 密码登录
@@ -160,6 +191,39 @@ export default function Login() {
     }, 500)
   }
 
+  // 邮箱验证码登录
+  const handleEmailLogin = async () => {
+    if (!validateEmail(email)) {
+      setError('⚠️ 请输入正确的邮箱地址')
+      return
+    }
+
+    if (!emailCode || emailCode.length !== 6) {
+      setError('⚠️ 请输入6位验证码')
+      return
+    }
+
+    setLoading(true)
+    setError('')
+
+    try {
+      const response = await authApi.emailLogin({ email, code: emailCode })
+
+      if (response.success && response.data) {
+        localStorage.setItem('token', response.data.accessToken)
+        localStorage.setItem('refreshToken', response.data.refreshToken)
+        localStorage.setItem('userProfile', JSON.stringify(response.data.user))
+        navigate('/create')
+      } else {
+        setError('❌ ' + (response.error || '验证码错误或已过期'))
+      }
+    } catch (err: any) {
+      setError('❌ ' + (err.message || '登录失败，请重试'))
+    } finally {
+      setLoading(false)
+    }
+  }
+
   // 注册
   const handleRegister = async () => {
     // 验证输入
@@ -236,7 +300,10 @@ export default function Login() {
 
   const handleSubmit = () => {
     if (mode === 'password') handlePasswordLogin()
-    else if (mode === 'sms') handleSmsLogin()
+    else if (mode === 'code') {
+      if (codeType === 'sms') handleSmsLogin()
+      else handleEmailLogin()
+    }
     else handleRegister()
   }
 
@@ -255,7 +322,7 @@ export default function Login() {
           <p className="login-subtitle-new">儿童AI创作平台</p>
         </div>
 
-        {/* 模式切换标签 */}
+        {/* 模式切换标签 - 简化为2个主要标签 */}
         <div className="mode-tabs">
           <button
             className={`mode-tab ${mode === 'password' ? 'active' : ''}`}
@@ -265,18 +332,11 @@ export default function Login() {
             密码登录
           </button>
           <button
-            className={`mode-tab ${mode === 'sms' ? 'active' : ''}`}
-            onClick={() => handleModeSwitch('sms')}
+            className={`mode-tab ${mode === 'code' ? 'active' : ''}`}
+            onClick={() => handleModeSwitch('code')}
           >
-            <span className="tab-icon">📱</span>
+            <span className="tab-icon">💬</span>
             验证码登录
-          </button>
-          <button
-            className={`mode-tab ${mode === 'register' ? 'active' : ''}`}
-            onClick={() => handleModeSwitch('register')}
-          >
-            <span className="tab-icon">✨</span>
-            新用户注册
           </button>
         </div>
 
@@ -367,32 +427,125 @@ export default function Login() {
           )}
 
           {/* 验证码登录模式 */}
-          {mode === 'sms' && (
-            <div className="input-wrapper">
-              <label className="input-label">
-                <span className="label-icon">💬</span>
-                验证码
-              </label>
-              <div className="sms-input-group">
-                <input
-                  type="text"
-                  className="input-field sms-input"
-                  placeholder="请输入6位验证码"
-                  value={smsCode}
-                  maxLength={6}
-                  onChange={(e) => setSmsCode(e.target.value.replace(/\D/g, ''))}
-                  onKeyPress={(e) => e.key === 'Enter' && handleSubmit()}
-                />
+          {mode === 'code' && (
+            <>
+              {/* 验证码类型切换 */}
+              <div className="login-type-switch">
                 <button
-                  className="sms-button"
-                  onClick={handleSendSms}
-                  disabled={countdown > 0 || !validatePhone(phone)}
+                  className={`type-btn ${codeType === 'email' ? 'active' : ''}`}
+                  onClick={() => setCodeType('email')}
+                  type="button"
                 >
-                  {countdown > 0 ? `${countdown}秒后重试` : '获取验证码'}
+                  📧 邮箱验证码
+                </button>
+                <button
+                  className={`type-btn ${codeType === 'sms' ? 'active' : ''}`}
+                  onClick={() => setCodeType('sms')}
+                  type="button"
+                >
+                  📱 短信验证码
                 </button>
               </div>
-              <div className="input-hint">验证码已发送至您的手机，请注意查收</div>
-            </div>
+
+              {/* 邮箱验证码 */}
+              {codeType === 'email' && (
+                <>
+                  <div className="input-wrapper">
+                    <label className="input-label">
+                      <span className="label-icon">📧</span>
+                      邮箱地址
+                    </label>
+                    <input
+                      type="email"
+                      className="input-field"
+                      placeholder="请输入邮箱地址"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                    />
+                    {email && !validateEmail(email) && (
+                      <div className="input-hint error">请输入正确的邮箱格式</div>
+                    )}
+                  </div>
+                  <div className="input-wrapper">
+                    <label className="input-label">
+                      <span className="label-icon">💬</span>
+                      验证码
+                    </label>
+                    <div className="sms-input-group">
+                      <input
+                        type="text"
+                        className="input-field sms-input"
+                        placeholder="请输入6位验证码"
+                        value={emailCode}
+                        maxLength={6}
+                        onChange={(e) => setEmailCode(e.target.value.replace(/\D/g, ''))}
+                        onKeyPress={(e) => e.key === 'Enter' && handleSubmit()}
+                      />
+                      <button
+                        className="sms-button"
+                        onClick={handleSendEmailCode}
+                        disabled={countdown > 0 || !validateEmail(email)}
+                      >
+                        {countdown > 0 ? `${countdown}秒后重试` : '获取验证码'}
+                      </button>
+                    </div>
+                    {countdown > 0 && (
+                      <div className="input-hint">验证码已发送至您的邮箱，请注意查收</div>
+                    )}
+                  </div>
+                </>
+              )}
+
+              {/* 短信验证码 */}
+              {codeType === 'sms' && (
+                <>
+                  <div className="input-wrapper">
+                    <label className="input-label">
+                      <span className="label-icon">📱</span>
+                      手机号
+                    </label>
+                    <input
+                      type="tel"
+                      className="input-field"
+                      placeholder="请输入11位手机号"
+                      value={phone}
+                      maxLength={11}
+                      onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
+                    />
+                    {phone && !validatePhone(phone) && (
+                      <div className="input-hint error">请输入正确的手机号格式</div>
+                    )}
+                  </div>
+                  <div className="input-wrapper">
+                    <label className="input-label">
+                      <span className="label-icon">💬</span>
+                      验证码
+                    </label>
+                    <div className="sms-input-group">
+                      <input
+                        type="text"
+                        className="input-field sms-input"
+                        placeholder="请输入6位验证码"
+                        value={smsCode}
+                        maxLength={6}
+                        onChange={(e) => setSmsCode(e.target.value.replace(/\D/g, ''))}
+                        onKeyPress={(e) => e.key === 'Enter' && handleSubmit()}
+                      />
+                      <button
+                        className="sms-button"
+                        onClick={handleSendSms}
+                        disabled={countdown > 0 || !validatePhone(phone)}
+                      >
+                        {countdown > 0 ? `${countdown}秒后重试` : '获取验证码'}
+                      </button>
+                    </div>
+                    {countdown > 0 && (
+                      <div className="input-hint">验证码已发送至您的手机，请注意查收</div>
+                    )}
+                  </div>
+                </>
+              )}
+            </>
           )}
 
           {/* 注册模式 */}
@@ -528,7 +681,7 @@ export default function Login() {
             ) : (
               <>
                 {mode === 'password' && '立即登录 🚀'}
-                {mode === 'sms' && '验证登录 🚀'}
+                {mode === 'code' && '验证登录 🚀'}
                 {mode === 'register' && '开始探索 🚀'}
               </>
             )}

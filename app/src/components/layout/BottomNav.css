@@ -1,27 +1,27 @@
 /* ==========================================
-   底部导航栏 - 优化版本 v2.1
-   5个标签，现代化设计
+   底部导航栏 - 儿童教育平台优化版 v3.0
+   清晰明快的配色 + 强烈的视觉反馈
    ========================================== */
 
 .bottom-nav {
   display: flex;
   justify-content: space-around;
   align-items: center;
-  background: rgba(255, 255, 255, 0.98);
-  backdrop-filter: blur(20px);
-  padding: 4px 0 12px;
+  background: #ffffff;
+  padding: 8px 0 16px;
   border-radius: 0;
   box-shadow:
-    0 -4px 16px rgba(0, 0, 0, 0.08),
-    0 -2px 8px rgba(0, 0, 0, 0.04);
+    0 -4px 20px rgba(0, 0, 0, 0.08),
+    0 -2px 10px rgba(0, 0, 0, 0.04);
   position: fixed;
   bottom: 0;
   left: 50%;
   transform: translateX(-50%);
   width: 100%;
   max-width: 480px;
-  z-index: 100;
+  z-index: 9999;
   overflow: visible;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
 }
 
 .nav-background {
@@ -29,11 +29,9 @@
   inset: 0;
   background: linear-gradient(
     180deg,
-    rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 0.4) 50%,
-    rgba(255, 255, 255, 0.95) 100%
+    rgba(255, 255, 255, 0.5) 0%,
+    rgba(255, 255, 255, 1) 100%
   );
-  border-radius: 24px 24px 0 0;
   pointer-events: none;
   z-index: -1;
 }
@@ -44,27 +42,25 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-  padding: 6px 4px;
-  border-radius: 14px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 8px 6px;
+  border-radius: 16px;
   position: relative;
   flex: 1;
-  max-width: 70px;
-  min-width: 48px;
-  gap: 2px;
+  max-width: 80px;
+  min-width: 50px;
+  gap: 4px;
 }
 
 .nav-item:active {
-  transform: scale(0.92);
+  transform: scale(0.95);
 }
 
+/* 激活状态 - 使用彩色圆角背景卡片 */
 .nav-item.active {
-  background: linear-gradient(
-    135deg,
-    rgba(var(--item-color, 102, 126, 234), 0.08) 0%,
-    rgba(var(--item-color, 102, 126, 234), 0.04) 100%
-  );
-  transform: translateY(-2px);
+  background: var(--item-gradient);
+  transform: translateY(-4px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
 }
 
 /* 图标容器 */
@@ -73,194 +69,139 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
 }
 
+/* 图标样式 - 未激活时灰色,激活时白色 */
 .nav-icon {
-  font-size: 28px;
-  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-  filter: grayscale(70%) brightness(0.9);
+  font-size: 26px;
+  transition: all 0.3s ease;
+  filter: grayscale(100%);
   opacity: 0.5;
   position: relative;
   z-index: 2;
 }
 
 .nav-item:hover .nav-icon {
-  filter: grayscale(40%) brightness(1);
   opacity: 0.7;
   transform: scale(1.05);
 }
 
+/* 激活状态 - 图标变白色放大 */
 .nav-item.active .nav-icon {
-  filter: grayscale(0%) brightness(1.1);
+  filter: grayscale(0%) brightness(10);
   opacity: 1;
-  transform: scale(1.1);
-  animation: iconBounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transform: scale(1.15);
+  animation: iconPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-@keyframes iconBounce {
+@keyframes iconPop {
   0% {
-    transform: scale(1) translateY(0);
-  }
-  40% {
-    transform: scale(1.2) translateY(-8px);
-  }
-  65% {
-    transform: scale(1.05) translateY(-2px);
-  }
-  100% {
-    transform: scale(1.1) translateY(0);
-  }
-}
-
-/* 图标发光效果 */
-.icon-glow {
-  position: absolute;
-  inset: -4px;
-  background: var(--item-gradient);
-  opacity: 0.15;
-  border-radius: 50%;
-  filter: blur(12px);
-  z-index: 0;
-  animation: glowPulse 2s ease-in-out infinite;
-}
-
-@keyframes glowPulse {
-  0%, 100% {
-    opacity: 0.15;
     transform: scale(1);
   }
   50% {
-    opacity: 0.25;
-    transform: scale(1.1);
+    transform: scale(1.3);
+  }
+  100% {
+    transform: scale(1.15);
   }
 }
 
-/* 文字样式 */
+/* 移除图标发光效果,改用背景色 */
+.icon-glow {
+  display: none;
+}
+
+/* 文字样式 - 未激活时深灰色,激活时白色 */
 .nav-text {
-  font-size: 12px;
-  color: #94a3b8;
+  font-size: 11px;
+  color: #9ca3af;
   font-weight: 600;
   transition: all 0.3s ease;
   text-align: center;
   white-space: nowrap;
-  letter-spacing: 0.2px;
-}
-
-.nav-item.active .nav-text {
-  background: var(--item-gradient);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  font-weight: 700;
-  font-size: 12.5px;
   letter-spacing: 0.3px;
 }
 
-/* 激活状态的小圆点 */
+/* 激活状态文字变白色加粗 */
+.nav-item.active .nav-text {
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 12px;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* 移除顶部小圆点,改用底部指示条 */
 .active-dot {
-  position: absolute;
-  top: 2px;
-  width: 3px;
-  height: 3px;
-  background: var(--item-gradient);
-  border-radius: 50%;
-  animation: dotFadeIn 0.4s ease;
-  box-shadow: 0 0 6px currentColor;
+  display: none;
 }
 
-@keyframes dotFadeIn {
-  from {
-    opacity: 0;
-    transform: scale(0);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-/* 底部指示条 */
+/* 底部指示条 - 更明显的白色底部条 */
 .nav-item.active::after {
   content: '';
   position: absolute;
-  bottom: -1px;
+  bottom: 2px;
   left: 50%;
   transform: translateX(-50%);
-  width: 24px;
-  height: 2px;
-  background: var(--item-gradient);
-  border-radius: 2px 2px 0 0;
-  animation: indicatorSlide 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  width: 32px;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 2px;
+  animation: indicatorExpand 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
 }
 
-@keyframes indicatorSlide {
+@keyframes indicatorExpand {
   from {
     width: 0;
     opacity: 0;
   }
   to {
-    width: 24px;
+    width: 32px;
     opacity: 1;
   }
 }
 
-/* 每个导航项的独特发光效果 */
-.nav-item:nth-child(2).active .nav-icon {
-  filter: drop-shadow(0 4px 12px rgba(102, 126, 234, 0.5));
-}
-
-.nav-item:nth-child(3).active .nav-icon {
-  filter: drop-shadow(0 4px 12px rgba(240, 147, 251, 0.5));
-}
-
-.nav-item:nth-child(4).active .nav-icon {
-  filter: drop-shadow(0 4px 12px rgba(250, 112, 154, 0.5));
-}
-
-.nav-item:nth-child(5).active .nav-icon {
-  filter: drop-shadow(0 4px 12px rgba(79, 172, 254, 0.5));
-}
-
-.nav-item:nth-child(6).active .nav-icon {
-  filter: drop-shadow(0 4px 12px rgba(67, 233, 123, 0.5));
+/* 移除单独的图标发光效果,统一使用白色 */
+.nav-item.active .nav-icon {
+  filter: brightness(10);
 }
 
 /* 响应式调整 */
 @media (max-width: 360px) {
   .bottom-nav {
-    padding: 3px 6px 10px;
+    padding: 6px 4px 12px;
   }
 
   .nav-item {
-    padding: 4px 3px;
-    max-width: 65px;
-    min-width: 45px;
+    padding: 6px 4px;
+    max-width: 70px;
+    min-width: 46px;
   }
 
   .nav-icon-wrapper {
-    width: 36px;
-    height: 36px;
+    width: 40px;
+    height: 40px;
   }
 
   .nav-icon {
-    font-size: 20px;
+    font-size: 24px;
   }
 
   .nav-text {
-    font-size: 9px;
+    font-size: 10px;
   }
 
   .nav-item.active .nav-text {
-    font-size: 9.5px;
+    font-size: 11px;
   }
 }
 
 @media (min-width: 480px) {
   .bottom-nav {
     max-width: 480px;
-    padding: 6px 0 16px;
+    padding: 10px 0 18px;
   }
 
   .nav-item {

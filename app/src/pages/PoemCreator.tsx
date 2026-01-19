@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { Layout, Header } from '../components/layout'
 import { classicPoems, getAllCategories, getRandomPoem, type Poem } from '../data/classicPoems'
+import { favoritesApi } from '../services/api/favorites'
 import { UsageTracker } from '../services/usageTracking'
 import './Creator.css'
 import './PoemCreator.css'
@@ -30,6 +31,8 @@ export default function PoemCreator() {
   const [keywordInput, setKeywordInput] = useState('')
   const [isGenerating, setIsGenerating] = useState(false)
   const [poem, setPoem] = useState({ title: '', content: '' })
+  const [isFavorited, setIsFavorited] = useState(false)
+  const [isFavoriting, setIsFavoriting] = useState(false)
   const usageTrackerRef = useRef<UsageTracker | null>(null)
 
   // 诗词浏览模式状态
@@ -106,6 +109,34 @@ export default function PoemCreator() {
   const handleRandomPoem = () => {
     const randomPoem = getRandomPoem()
     setSelectedPoem(randomPoem)
+  }
+
+  // 收藏诗词
+  const handleFavorite = async () => {
+    if (isFavoriting) return
+
+    setIsFavoriting(true)
+
+    try {
+      if (isFavorited) {
+        setIsFavorited(false)
+        alert('已取消收藏')
+      } else {
+        await favoritesApi.addFavorite({
+          itemType: 'poem',
+          itemId: `poem_${Date.now()}`,
+          itemTitle: poem.title,
+          itemContent: poem.content.substring(0, 200),
+        })
+        setIsFavorited(true)
+        alert('收藏成功!')
+      }
+    } catch (err: any) {
+      console.error('Favorite error:', err)
+      alert(err.message || '操作失败，请重试')
+    } finally {
+      setIsFavoriting(false)
+    }
   }
 
   return (
@@ -246,6 +277,13 @@ export default function PoemCreator() {
                   <button className="poem-btn">🎵 押韵建议</button>
                   <button className="poem-btn">💡 词汇建议</button>
                   <button className="poem-btn">📐 结构优化</button>
+                  <button
+                    className={`poem-btn ${isFavorited ? 'favorited' : ''}`}
+                    onClick={handleFavorite}
+                    disabled={isFavoriting}
+                  >
+                    {isFavorited ? '❤️ 已收藏' : '🤍 收藏'}
+                  </button>
                 </div>
 
                 <div className="action-buttons">

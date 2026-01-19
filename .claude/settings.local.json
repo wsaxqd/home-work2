@@ -57,7 +57,12 @@
       "Bash(bash:*)",
       "Bash(if exist \"app\\src\\pages\\nul\" del \"app\\src\\pages\\nul\")",
       "Bash(if exist \"nul\" del \"nul\")",
-      "Bash(rm:*)"
+      "Bash(rm:*)",
+      "Bash(powershell -Command \"Stop-Process -Id 5096 -Force\")",
+      "Bash(git config:*)",
+      "Bash(ls:*)",
+      "Bash(tasklist:*)",
+      "Bash(if exist \"node_modules\\.vite\" rmdir /s /q \"node_modules\\.vite\")"
     ],
     "deny": [],
     "ask": []

@@ -7,6 +7,7 @@ import {
   Create,
   Games,
   Profile,
+  Community,
   MindGarden,
   Assessment,
   ArtCreator,
@@ -161,6 +162,9 @@ function App() {
         <Route path="/create" element={<ProtectedRoute><Create /></ProtectedRoute>} />
         <Route path="/games" element={<ProtectedRoute><Games /></ProtectedRoute>} />
         <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+
+        {/* 社区页面 */}
+        <Route path="/community" element={<ProtectedRoute><Community /></ProtectedRoute>} />
 
         {/* 全局搜索页面 */}
         <Route path="/search" element={<ProtectedRoute><Search /></ProtectedRoute>} />

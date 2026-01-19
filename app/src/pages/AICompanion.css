@@ -3,38 +3,31 @@
 .ai-companion-container {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  height: calc(100vh - 60px);
   background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
-  padding-bottom: 100px;
 }
 
-/* 顶部导航 */
-.companion-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 16px;
-  background: white;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  z-index: 10;
-}
-
-.back-btn, .menu-btn {
-  background: transparent;
-  border: none;
-  font-size: 18px;
-  cursor: pointer;
-  padding: 8px;
-  color: #666;
-}
-
-.companion-info {
+/* 陪伴者信息栏 */
+.companion-info-bar {
   display: flex;
   align-items: center;
   gap: 12px;
+  padding: 12px 16px;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   cursor: pointer;
-  flex: 1;
-  margin: 0 12px;
+  transition: background 0.3s ease;
+}
+
+.companion-info-bar:hover {
+  background: #f7fafc;
+}
+
+.change-icon {
+  margin-left: auto;
+  font-size: 13px;
+  color: #667eea;
+  font-weight: 600;
 }
 
 .companion-avatar {
@@ -236,6 +229,9 @@
   padding: 12px 16px;
   background: white;
   border-top: 1px solid #e2e8f0;
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
 }
 
 .message-input {

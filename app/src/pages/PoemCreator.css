@@ -109,6 +109,20 @@
   background: #e1bee7;
 }
 
+.poem-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.poem-btn.favorited {
+  background: #ffebee;
+  color: #e91e63;
+}
+
+.poem-btn.favorited:hover:not(:disabled) {
+  background: #ffcdd2;
+}
+
 /* 模式切换器 */
 .mode-switcher {
   display: flex;

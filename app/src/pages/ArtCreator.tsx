@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { Layout, Header } from '../components/layout'
+import { favoritesApi } from '../services/api/favorites'
 import { UsageTracker } from '../services/usageTracking'
 import './Creator.css'
 
@@ -25,6 +26,8 @@ export default function ArtCreator() {
   const [prompt, setPrompt] = useState('')
   const [isGenerating, setIsGenerating] = useState(false)
   const [generatedArt, setGeneratedArt] = useState('')
+  const [isFavorited, setIsFavorited] = useState(false)
+  const [isFavoriting, setIsFavoriting] = useState(false)
   const usageTrackerRef = useRef<UsageTracker | null>(null)
 
   // 启动使用追踪
@@ -47,6 +50,33 @@ export default function ArtCreator() {
       setGeneratedArt('🖼️')
       setStep(3)
     }, 3000)
+  }
+
+  const handleFavorite = async () => {
+    if (isFavoriting) return
+
+    setIsFavoriting(true)
+
+    try {
+      if (isFavorited) {
+        setIsFavorited(false)
+        alert('已取消收藏')
+      } else {
+        await favoritesApi.addFavorite({
+          itemType: 'art',
+          itemId: `art_${Date.now()}`,
+          itemTitle: '我的AI画作',
+          itemContent: prompt,
+        })
+        setIsFavorited(true)
+        alert('收藏成功!')
+      }
+    } catch (err: any) {
+      console.error('Favorite error:', err)
+      alert(err.message || '操作失败，请重试')
+    } finally {
+      setIsFavoriting(false)
+    }
   }
 
   return (
@@ -150,8 +180,16 @@ export default function ArtCreator() {
                   <div className="artwork-desc">"{prompt}"</div>
                 </div>
                 <div className="action-buttons">
-                  <button className="btn btn-secondary" onClick={() => { setStep(1); setPrompt(''); }}>
+                  <button className="btn btn-secondary" onClick={() => { setStep(1); setPrompt(''); setIsFavorited(false); }}>
                     重新创作
+                  </button>
+                  <button
+                    className={`btn ${isFavorited ? 'btn-secondary' : 'btn-primary'}`}
+                    onClick={handleFavorite}
+                    disabled={isFavoriting}
+                    style={{ marginRight: '10px' }}
+                  >
+                    {isFavorited ? '❤️ 已收藏' : '🤍 收藏作品'}
                   </button>
                   <button className="btn btn-primary" onClick={async () => {
                     if (usageTrackerRef.current) {

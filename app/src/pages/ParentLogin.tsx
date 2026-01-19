@@ -1,295 +1,517 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import parentAPI from '../services/parentAPI'
 import './ParentLogin.css'
 
+type LoginMode = 'password' | 'code'
+type CodeType = 'email' | 'sms'
+
 export default function ParentLogin() {
   const navigate = useNavigate()
-  const [loginMode, setLoginMode] = useState<'login' | 'register'>('login')
-  const [formData, setFormData] = useState({
-    phone: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    verifyCode: '',
-    childAccount: ''
-  })
-  const [showPassword, setShowPassword] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
+  const [mode, setMode] = useState<LoginMode>('password')
+  const [codeType, setCodeType] = useState<CodeType>('email')
+  const [isRegister, setIsRegister] = useState(false)
+
+  const [phone, setPhone] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [verifyCode, setVerifyCode] = useState('')
+  const [childAccount, setChildAccount] = useState('')
+
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
   const [countdown, setCountdown] = useState(0)
-  const [isSendingCode, setIsSendingCode] = useState(false)
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    })
-  }
+  useEffect(() => {
+    if (countdown > 0) {
+      const timer = setTimeout(() => setCountdown(countdown - 1), 1000)
+      return () => clearTimeout(timer)
+    }
+  }, [countdown])
 
-  // 发送邮箱验证码
-  const handleSendVerifyCode = async () => {
-    if (!formData.email) {
-      alert('请先输入邮箱')
-      return
+  const validatePhone = (phoneNum: string) => /^1[3-9]\d{9}$/.test(phoneNum)
+  const validateEmail = (emailStr: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailStr)
+
+  const handleSendCode = async () => {
+    if (codeType === 'email') {
+      if (!validateEmail(email)) {
+        setError('请输入正确的邮箱地址')
+        return
+      }
+    } else {
+      if (!validatePhone(phone)) {
+        setError('请输入正确的手机号')
+        return
+      }
     }
 
-    // 验证邮箱格式
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailRegex.test(formData.email)) {
-      alert('请输入正确的邮箱格式')
-      return
-    }
-
-    setIsSendingCode(true)
+    setLoading(true)
+    setError('')
 
     try {
-      // 调用发送验证码API
-      await parentAPI.sendVerifyCode(formData.email)
-      alert('验证码已发送到您的邮箱，请查收')
-
-      // 开始60秒倒计时
+      if (codeType === 'email') {
+        await parentAPI.sendVerifyCode(email)
+      }
       setCountdown(60)
-      const timer = setInterval(() => {
-        setCountdown((prev) => {
-          if (prev <= 1) {
-            clearInterval(timer)
-            return 0
-          }
-          return prev - 1
-        })
-      }, 1000)
-    } catch (error: any) {
-      alert(error.message || '发送验证码失败，请重试')
+      setError('')
+    } catch (err: any) {
+      setError(err.message || '发送验证码失败')
     } finally {
-      setIsSendingCode(false)
+      setLoading(false)
     }
   }
 
-  const handleLogin = async () => {
-    if (!formData.phone || !formData.password) {
-      alert('请输入手机号和密码')
+  const handlePasswordLogin = async () => {
+    if (!phone || !password) {
+      setError('请输入手机号和密码')
       return
     }
 
-    setIsLoading(true)
+    if (!validatePhone(phone)) {
+      setError('请输入正确的手机号')
+      return
+    }
+
+    setLoading(true)
+    setError('')
 
     try {
-      // 调用真实的登录API
-      await parentAPI.login({
-        phone: formData.phone,
-        password: formData.password
-      })
-
-      // Token已自动保存到localStorage
-      alert('登录成功！')
+      await parentAPI.login({ phone, password })
       navigate('/parent/dashboard')
-    } catch (error: any) {
-      alert(error.message || '登录失败，请重试')
+    } catch (err: any) {
+      setError(err.message || '登录失败')
     } finally {
-      setIsLoading(false)
+      setLoading(false)
+    }
+  }
+
+  const handleCodeLogin = async () => {
+    if (codeType === 'email') {
+      if (!validateEmail(email)) {
+        setError('请输入正确的邮箱地址')
+        return
+      }
+    } else {
+      if (!validatePhone(phone)) {
+        setError('请输入正确的手机号')
+        return
+      }
+    }
+
+    if (!verifyCode || verifyCode.length !== 6) {
+      setError('请输入6位验证码')
+      return
+    }
+
+    setLoading(true)
+    setError('')
+
+    try {
+      // TODO: 调用验证码登录API
+      navigate('/parent/dashboard')
+    } catch (err: any) {
+      setError(err.message || '登录失败')
+    } finally {
+      setLoading(false)
     }
   }
 
   const handleRegister = async () => {
-    if (!formData.phone || !formData.email || !formData.password || !formData.confirmPassword) {
-      alert('请填写完整信息')
+    if (!phone || !email || !password || !confirmPassword) {
+      setError('请填写完整信息')
       return
     }
 
-    // 验证邮箱格式
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailRegex.test(formData.email)) {
-      alert('请输入正确的邮箱格式')
+    if (!validatePhone(phone)) {
+      setError('请输入正确的手机号')
       return
     }
 
-    if (formData.password !== formData.confirmPassword) {
-      alert('两次密码不一致')
+    if (!validateEmail(email)) {
+      setError('请输入正确的邮箱地址')
       return
     }
 
-    if (!formData.verifyCode) {
-      alert('请输入邮箱验证码')
+    if (password.length < 6) {
+      setError('密码至少需要6个字符')
       return
     }
 
-    if (!formData.childAccount) {
-      alert('请输入孩子账号进行绑定')
+    if (password !== confirmPassword) {
+      setError('两次密码不一致')
       return
     }
 
-    setIsLoading(true)
+    if (!verifyCode) {
+      setError('请输入邮箱验证码')
+      return
+    }
+
+    if (!childAccount) {
+      setError('请输入孩子账号进行绑定')
+      return
+    }
+
+    setLoading(true)
+    setError('')
 
     try {
-      // 调用真实的注册API
       await parentAPI.register({
-        phone: formData.phone,
-        email: formData.email,
-        password: formData.password,
-        verifyCode: formData.verifyCode,
-        childAccount: formData.childAccount
+        phone,
+        email,
+        password,
+        verifyCode,
+        childAccount
       })
-
-      alert('注册成功！请登录')
-      setLoginMode('login')
-      setFormData({
-        phone: formData.phone,
-        email: formData.email,
-        password: '',
-        confirmPassword: '',
-        verifyCode: '',
-        childAccount: ''
-      })
-    } catch (error: any) {
-      alert(error.message || '注册失败，请重试')
+      setError('')
+      setIsRegister(false)
+      setPassword('')
+      setConfirmPassword('')
+      setVerifyCode('')
+      setChildAccount('')
+    } catch (err: any) {
+      setError(err.message || '注册失败')
     } finally {
-      setIsLoading(false)
+      setLoading(false)
     }
+  }
+
+  const handleSubmit = () => {
+    if (isRegister) {
+      handleRegister()
+    } else if (mode === 'password') {
+      handlePasswordLogin()
+    } else {
+      handleCodeLogin()
+    }
+  }
+
+  const handleModeSwitch = (newMode: LoginMode) => {
+    setMode(newMode)
+    setError('')
+    setVerifyCode('')
   }
 
   return (
     <div className="parent-login-container">
+      <div className="parent-login-background">
+        <div className="gradient-orb orb-1"></div>
+        <div className="gradient-orb orb-2"></div>
+        <div className="gradient-orb orb-3"></div>
+      </div>
+
       <div className="parent-login-card">
-        {/* Logo 和标题 */}
         <div className="login-header">
           <div className="logo">👨‍👩‍👧‍👦</div>
           <h1>家长端</h1>
           <p>守护孩子成长每一步</p>
         </div>
 
-        {/* 切换登录/注册 */}
-        <div className="mode-switch">
-          <button
-            className={`mode-btn ${loginMode === 'login' ? 'active' : ''}`}
-            onClick={() => setLoginMode('login')}
-          >
-            登录
-          </button>
-          <button
-            className={`mode-btn ${loginMode === 'register' ? 'active' : ''}`}
-            onClick={() => setLoginMode('register')}
-          >
-            注册
-          </button>
-        </div>
-
-        {/* 表单区域 */}
-        <div className="login-form">
-          {/* 手机号 */}
-          <div className="form-group">
-            <label>手机号</label>
-            <input
-              type="tel"
-              name="phone"
-              placeholder="请输入手机号"
-              value={formData.phone}
-              onChange={handleInputChange}
-              maxLength={11}
-            />
+        {!isRegister && (
+          <div className="mode-tabs">
+            <button
+              className={`mode-tab ${mode === 'password' ? 'active' : ''}`}
+              onClick={() => handleModeSwitch('password')}
+            >
+              <span className="tab-icon">🔐</span>
+              密码登录
+            </button>
+            <button
+              className={`mode-tab ${mode === 'code' ? 'active' : ''}`}
+              onClick={() => handleModeSwitch('code')}
+            >
+              <span className="tab-icon">💬</span>
+              验证码登录
+            </button>
           </div>
+        )}
 
-          {/* 注册模式显示邮箱 */}
-          {loginMode === 'register' && (
-            <div className="form-group">
-              <label>邮箱</label>
-              <input
-                type="email"
-                name="email"
-                placeholder="请输入邮箱"
-                value={formData.email}
-                onChange={handleInputChange}
-              />
-            </div>
-          )}
-
-          {/* 注册模式显示邮箱验证码 */}
-          {loginMode === 'register' && (
-            <div className="form-group">
-              <label>邮箱验证码</label>
-              <div className="verify-code-input">
-                <input
-                  type="text"
-                  name="verifyCode"
-                  placeholder="请输入验证码"
-                  value={formData.verifyCode}
-                  onChange={handleInputChange}
-                  maxLength={6}
-                />
-                <button
-                  type="button"
-                  className="send-code-btn"
-                  onClick={handleSendVerifyCode}
-                  disabled={countdown > 0 || isSendingCode}
-                >
-                  {countdown > 0 ? `${countdown}秒后重试` : isSendingCode ? '发送中...' : '发送验证码'}
-                </button>
-              </div>
-            </div>
-          )}
-
-          {/* 密码 */}
-          <div className="form-group">
-            <label>密码</label>
-            <div className="password-input">
-              <input
-                type={showPassword ? 'text' : 'password'}
-                name="password"
-                placeholder="请输入密码"
-                value={formData.password}
-                onChange={handleInputChange}
-              />
-              <button
-                type="button"
-                className="toggle-password"
-                onClick={() => setShowPassword(!showPassword)}
-              >
-                {showPassword ? '👁️' : '👁️‍🗨️'}
-              </button>
-            </div>
+        {error && (
+          <div className="error-alert">
+            <span className="error-icon">⚠️</span>
+            <span className="error-text">{error}</span>
           </div>
+        )}
 
-          {/* 注册模式的额外字段 */}
-          {loginMode === 'register' && (
+        <div className="form-content">
+          {/* 密码登录 */}
+          {!isRegister && mode === 'password' && (
             <>
-              <div className="form-group">
-                <label>确认密码</label>
+              <div className="input-wrapper">
+                <label className="input-label">
+                  <span className="label-icon">📱</span>
+                  手机号
+                </label>
+                <input
+                  type="tel"
+                  className="input-field"
+                  placeholder="请输入11位手机号"
+                  value={phone}
+                  maxLength={11}
+                  onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
+                />
+              </div>
+
+              <div className="input-wrapper">
+                <label className="input-label">
+                  <span className="label-icon">🔒</span>
+                  密码
+                </label>
                 <input
                   type="password"
-                  name="confirmPassword"
-                  placeholder="请再次输入密码"
-                  value={formData.confirmPassword}
-                  onChange={handleInputChange}
-                />
-              </div>
-
-              <div className="form-group">
-                <label>孩子账号</label>
-                <input
-                  type="text"
-                  name="childAccount"
-                  placeholder="输入孩子账号进行绑定"
-                  value={formData.childAccount}
-                  onChange={handleInputChange}
+                  className="input-field"
+                  placeholder="请输入密码"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && handleSubmit()}
                 />
               </div>
             </>
           )}
 
-          {/* 提交按钮 */}
-          <button
-            className="submit-btn"
-            onClick={loginMode === 'login' ? handleLogin : handleRegister}
-            disabled={isLoading}
-          >
-            {isLoading ? '处理中...' : loginMode === 'login' ? '登录' : '注册'}
-          </button>
-        </div>
+          {/* 验证码登录 */}
+          {!isRegister && mode === 'code' && (
+            <>
+              <div className="login-type-switch">
+                <button
+                  className={`type-btn ${codeType === 'email' ? 'active' : ''}`}
+                  onClick={() => setCodeType('email')}
+                  type="button"
+                >
+                  📧 邮箱验证码
+                </button>
+                <button
+                  className={`type-btn ${codeType === 'sms' ? 'active' : ''}`}
+                  onClick={() => setCodeType('sms')}
+                  type="button"
+                >
+                  📱 短信验证码
+                </button>
+              </div>
 
-        {/* 底部链接 */}
-        <div className="login-footer">
-          <button className="link-btn" onClick={() => navigate('/home')}>
-            返回儿童端
+              {codeType === 'email' ? (
+                <>
+                  <div className="input-wrapper">
+                    <label className="input-label">
+                      <span className="label-icon">📧</span>
+                      邮箱地址
+                    </label>
+                    <input
+                      type="email"
+                      className="input-field"
+                      placeholder="请输入邮箱地址"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                    />
+                  </div>
+                  <div className="input-wrapper">
+                    <label className="input-label">
+                      <span className="label-icon">💬</span>
+                      验证码
+                    </label>
+                    <div className="sms-input-group">
+                      <input
+                        type="text"
+                        className="input-field sms-input"
+                        placeholder="请输入6位验证码"
+                        value={verifyCode}
+                        maxLength={6}
+                        onChange={(e) => setVerifyCode(e.target.value.replace(/\D/g, ''))}
+                        onKeyPress={(e) => e.key === 'Enter' && handleSubmit()}
+                      />
+                      <button
+                        className="sms-button"
+                        onClick={handleSendCode}
+                        disabled={countdown > 0 || !validateEmail(email)}
+                      >
+                        {countdown > 0 ? `${countdown}秒后重试` : '获取验证码'}
+                      </button>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="input-wrapper">
+                    <label className="input-label">
+                      <span className="label-icon">📱</span>
+                      手机号
+                    </label>
+                    <input
+                      type="tel"
+                      className="input-field"
+                      placeholder="请输入11位手机号"
+                      value={phone}
+                      maxLength={11}
+                      onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
+                    />
+                  </div>
+                  <div className="input-wrapper">
+                    <label className="input-label">
+                      <span className="label-icon">💬</span>
+                      验证码
+                    </label>
+                    <div className="sms-input-group">
+                      <input
+                        type="text"
+                        className="input-field sms-input"
+                        placeholder="请输入6位验证码"
+                        value={verifyCode}
+                        maxLength={6}
+                        onChange={(e) => setVerifyCode(e.target.value.replace(/\D/g, ''))}
+                        onKeyPress={(e) => e.key === 'Enter' && handleSubmit()}
+                      />
+                      <button
+                        className="sms-button"
+                        onClick={handleSendCode}
+                        disabled={countdown > 0 || !validatePhone(phone)}
+                      >
+                        {countdown > 0 ? `${countdown}秒后重试` : '获取验证码'}
+                      </button>
+                    </div>
+                  </div>
+                </>
+              )}
+            </>
+          )}
+
+          {/* 注册表单 */}
+          {isRegister && (
+            <>
+              <div className="input-wrapper">
+                <label className="input-label">
+                  <span className="label-icon">📱</span>
+                  手机号
+                </label>
+                <input
+                  type="tel"
+                  className="input-field"
+                  placeholder="请输入11位手机号"
+                  value={phone}
+                  maxLength={11}
+                  onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
+                />
+              </div>
+
+              <div className="input-wrapper">
+                <label className="input-label">
+                  <span className="label-icon">📧</span>
+                  邮箱
+                </label>
+                <input
+                  type="email"
+                  className="input-field"
+                  placeholder="请输入邮箱地址"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </div>
+
+              <div className="input-wrapper">
+                <label className="input-label">
+                  <span className="label-icon">💬</span>
+                  邮箱验证码
+                </label>
+                <div className="sms-input-group">
+                  <input
+                    type="text"
+                    className="input-field sms-input"
+                    placeholder="请输入6位验证码"
+                    value={verifyCode}
+                    maxLength={6}
+                    onChange={(e) => setVerifyCode(e.target.value.replace(/\D/g, ''))}
+                  />
+                  <button
+                    className="sms-button"
+                    onClick={handleSendCode}
+                    disabled={countdown > 0 || !validateEmail(email)}
+                  >
+                    {countdown > 0 ? `${countdown}秒后重试` : '获取验证码'}
+                  </button>
+                </div>
+              </div>
+
+              <div className="input-wrapper">
+                <label className="input-label">
+                  <span className="label-icon">🔒</span>
+                  设置密码
+                </label>
+                <input
+                  type="password"
+                  className="input-field"
+                  placeholder="至少6位"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </div>
+
+              <div className="input-wrapper">
+                <label className="input-label">
+                  <span className="label-icon">✅</span>
+                  确认密码
+                </label>
+                <input
+                  type="password"
+                  className="input-field"
+                  placeholder="请再次输入密码"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                />
+              </div>
+
+              <div className="input-wrapper">
+                <label className="input-label">
+                  <span className="label-icon">👶</span>
+                  孩子账号
+                </label>
+                <input
+                  type="text"
+                  className="input-field"
+                  placeholder="输入孩子账号进行绑定"
+                  value={childAccount}
+                  onChange={(e) => setChildAccount(e.target.value)}
+                />
+              </div>
+            </>
+          )}
+
+          <button
+            className="submit-button"
+            onClick={handleSubmit}
+            disabled={loading}
+          >
+            {loading ? (
+              <>
+                <span className="spinner"></span>
+                处理中...
+              </>
+            ) : (
+              <>
+                {isRegister ? '立即注册 🚀' : mode === 'password' ? '立即登录 🚀' : '验证登录 🚀'}
+              </>
+            )}
           </button>
+
+          <div className="form-footer">
+            {!isRegister ? (
+              <p className="footer-text">
+                还没有账号？
+                <a className="footer-link" onClick={() => setIsRegister(true)}>
+                  立即注册
+                </a>
+              </p>
+            ) : (
+              <p className="footer-text">
+                已有账号？
+                <a className="footer-link" onClick={() => setIsRegister(false)}>
+                  立即登录
+                </a>
+              </p>
+            )}
+            <button className="link-btn" onClick={() => navigate('/home')}>
+              返回儿童端
+            </button>
+          </div>
         </div>
       </div>
     </div>

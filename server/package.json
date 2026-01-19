@@ -8,7 +8,8 @@
     "build": "tsc",
     "start": "node dist/index.js",
     "migrate": "ts-node src/migrations/run.ts",
-    "migrate:rollback": "ts-node src/migrations/rollback.ts"
+    "migrate:rollback": "ts-node src/migrations/rollback.ts",
+    "check-env": "node scripts/check-env.js"
   },
   "dependencies": {
     "axios": "^1.13.2",
@@ -18,6 +19,7 @@
     "express": "^4.18.2",
     "jsonwebtoken": "^9.0.2",
     "multer": "^1.4.5-lts.1",
+    "nodemailer": "^7.0.12",
     "pg": "^8.11.3",
     "uuid": "^9.0.1"
   },
@@ -28,6 +30,7 @@
     "@types/jsonwebtoken": "^9.0.5",
     "@types/multer": "^1.4.11",
     "@types/node": "^20.10.0",
+    "@types/nodemailer": "^7.0.5",
     "@types/pg": "^8.10.9",
     "@types/uuid": "^9.0.7",
     "ts-node": "^10.9.2",

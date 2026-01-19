@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Layout, Header } from '../components/layout'
 import './WarmRadio.css'
 
 interface RadioContent {
@@ -81,18 +82,14 @@ export default function WarmRadio() {
   }
 
   return (
-    <div className="warm-radio-container">
-      {/* 顶部导航 */}
-      <div className="radio-header">
-        <button className="back-btn" onClick={() => navigate(-1)}>
-          ← 返回
-        </button>
-        <h1 className="radio-title">📻 温暖电台</h1>
-        <div className="header-spacer"></div>
-      </div>
-
-      {/* 标签切换 */}
-      <div className="radio-tabs">
+    <Layout>
+      <Header
+        title="温暖电台"
+        gradient="linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%)"
+      />
+      <div className="warm-radio-container">
+        {/* 标签切换 */}
+        <div className="radio-tabs">
         <button
           className={`tab-btn ${activeTab === 'daily' ? 'active' : ''}`}
           onClick={() => setActiveTab('daily')}
@@ -198,6 +195,7 @@ export default function WarmRadio() {
           正在播放：{currentStory.title} 🎵
         </div>
       )}
-    </div>
+      </div>
+    </Layout>
   )
 }

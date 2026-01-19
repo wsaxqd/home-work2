@@ -1,6 +1,7 @@
 import { query } from '../config/database';
 import { AppError } from '../utils/errorHandler';
 import { difyAdapter } from './difyAdapter';
+import { zhipuAdapter } from './zhipuAdapter';
 
 export type AITaskType = 'story' | 'chat' | 'voice' | 'image_recognition' | 'emotion_analysis';
 
@@ -20,6 +21,14 @@ export interface AIRequestInput {
 
 export class AIService {
   /**
+   * 获取 AI 适配器（优先使用智谱 AI）
+   */
+  private getAdapter() {
+    const useZhipu = process.env.ZHIPU_API_KEY && !process.env.ZHIPU_API_KEY.includes('your-');
+    return useZhipu ? zhipuAdapter : difyAdapter;
+  }
+
+  /**
    * AI对话
    * @param userId 用户ID
    * @param messages 对话消息列表
@@ -36,8 +45,9 @@ export class AIService {
     const conversationId = context?.conversationId;
 
     try {
-      // 调用Dify对话API
-      const response = await difyAdapter.chat(
+      // 使用适配器调用 AI API
+      const adapter = this.getAdapter();
+      const response = await adapter.chat(
         userId,
         lastUserMessage.content,
         conversationId,
@@ -63,8 +73,16 @@ export class AIService {
     } catch (error: any) {
       console.error('AI chat error:', error);
 
-      // 如果是 Dify 未配置的错误，使用模拟回复
-      if (error.message?.includes('未配置') || error.statusCode === 500) {
+      // 如果是 Dify 相关错误（未配置、认证失败、服务不可用等），使用模拟回复
+      const shouldUseMock =
+        error.message?.includes('未配置') ||
+        error.message?.includes('invalid') ||
+        error.statusCode === 401 ||
+        error.statusCode === 500 ||
+        error.statusCode === 503;
+
+      if (shouldUseMock) {
+        console.log('使用模拟回复功能');
         const mockReply = this.getMockChatReply(lastUserMessage.content);
         return {
           reply: mockReply,
@@ -144,8 +162,9 @@ export class AIService {
     style?: string;
   }) {
     try {
-      // 调用Dify故事生成API
-      const result = await difyAdapter.generateStory(userId, prompt, options);
+      // 使用适配器调用 AI API
+      const adapter = this.getAdapter();
+      const result = await adapter.generateStory(userId, prompt, options);
 
       // 保存生成记录
       await query(
@@ -203,8 +222,9 @@ export class AIService {
    */
   async analyzeEmotion(userId: string, text: string) {
     try {
-      // 调用Dify情感分析API
-      const result = await difyAdapter.analyzeEmotion(userId, text);
+      // 使用适配器调用 AI API
+      const adapter = this.getAdapter();
+      const result = await adapter.analyzeEmotion(userId, text);
 
       // 保存分析记录
       await query(
@@ -402,7 +422,8 @@ export class AIService {
    * 健康检查
    */
   async healthCheck(): Promise<boolean> {
-    return await difyAdapter.healthCheck();
+    const adapter = this.getAdapter();
+    return await adapter.healthCheck();
   }
 }
 

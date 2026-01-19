@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom'
+import { Layout, Header } from '../components/layout'
 import './WarmHouse.css'
 
 interface FeatureCard {
@@ -49,8 +50,14 @@ export default function WarmHouse() {
   const navigate = useNavigate()
 
   return (
-    <div className="container">
-      <div className="main-content warm-house-content">
+    <Layout showNav={true}>
+      <Header
+        title="温暖小屋"
+        gradient="linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)"
+        showBack={false}
+        showLogout={true}
+      />
+      <div className="main-content warm-house-container">
         {/* 顶部标题 */}
         <div className="warm-house-header">
           <div className="header-content">
@@ -94,6 +101,6 @@ export default function WarmHouse() {
           </div>
         </div>
       </div>
-    </div>
+    </Layout>
   )
 }

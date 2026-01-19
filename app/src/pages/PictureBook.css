@@ -334,9 +334,25 @@
   border: 2px solid #3498db;
 }
 
-.btn-secondary:hover {
+.btn-secondary:hover:not(:disabled) {
   background: #f8f9fa;
   transform: translateY(-2px);
+}
+
+.btn-secondary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-secondary.favorited {
+  background: #ffebee;
+  color: #e91e63;
+  border-color: #e91e63;
+}
+
+.btn-secondary.favorited:hover:not(:disabled) {
+  background: #ffcdd2;
+  border-color: #d81b60;
 }
 
 /* 响应式设计 */

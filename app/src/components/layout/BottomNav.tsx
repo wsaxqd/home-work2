@@ -54,8 +54,14 @@ export default function BottomNav() {
   useEffect(() => {
     // 加载内容访问控制设置
     const loadSettings = async () => {
-      const settings = await contentControlManager.loadSettings()
-      setContentSettings(settings)
+      try {
+        const settings = await contentControlManager.loadSettings()
+        setContentSettings(settings)
+      } catch (error) {
+        console.error('加载内容控制设置失败:', error)
+        // 即使加载失败,也设置为null,允许继续使用
+        setContentSettings(null)
+      }
     }
     loadSettings()
   }, [])
@@ -63,10 +69,15 @@ export default function BottomNav() {
   const handleNavClick = async (item: typeof navItems[0]) => {
     // 如果有内容类型限制，检查是否允许访问
     if (item.contentType) {
-      const canAccess = await contentControlManager.canAccess(item.contentType)
-      if (!canAccess) {
-        alert(`家长已限制访问${item.text}功能`)
-        return
+      try {
+        const canAccess = await contentControlManager.canAccess(item.contentType)
+        if (!canAccess) {
+          alert(`家长已限制访问${item.text}功能`)
+          return
+        }
+      } catch (error) {
+        console.error('检查访问权限失败:', error)
+        // 出错时默认允许访问
       }
     }
     navigate(item.path)
