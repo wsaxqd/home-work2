@@ -32,6 +32,7 @@ import conversationRoutes from './routes/conversation';
 import favoritesRoutes from './routes/favorites';
 import homeworkRoutes from './routes/homework';
 import petsRoutes from './routes/pets';
+import wrongQuestionsRoutes from './routes/wrongQuestions';
 
 const app = express();
 
@@ -90,6 +91,7 @@ app.use('/api/conversation', conversationRoutes);
 app.use('/api/favorites', favoritesRoutes);
 app.use('/api/homework', homeworkRoutes);
 app.use('/api/pets', petsRoutes);
+app.use('/api/wrong-questions', wrongQuestionsRoutes);
 app.use('/api', homeRoutes);
 
 // 404处理
