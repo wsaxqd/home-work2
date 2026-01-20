@@ -94,7 +94,7 @@ export default function AICompanion() {
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
         type: 'ai',
-        content: response.response,
+        content: response.data?.response || '抱歉，我现在无法回复',
         timestamp: new Date()
       }
 
@@ -103,7 +103,7 @@ export default function AICompanion() {
       // 更新对话历史
       setConversationHistory([
         ...newHistory,
-        { role: 'assistant', content: response.response }
+        { role: 'assistant', content: response.data?.response || '' }
       ])
     } catch (err: any) {
       console.error('AI对话失败:', err)

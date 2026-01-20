@@ -45,7 +45,10 @@ import {
   ParentSettings,
   ChildrenSongs,
   EnglishBook,
-  WhyQuestions
+  WhyQuestions,
+  HomeworkHelper,
+  HomeworkAnswer,
+  HomeworkHistory
 } from './pages'
 import TimeLockModal from './components/TimeLockModal'
 import ContentProtectedRoute from './components/ContentProtectedRoute'
@@ -209,6 +212,11 @@ function App() {
         <Route path="/warm-house/diary" element={<ProtectedRoute><MoodDiary /></ProtectedRoute>} />
         <Route path="/warm-house/radio" element={<ProtectedRoute><WarmRadio /></ProtectedRoute>} />
         <Route path="/warm-house/wish" element={<ProtectedRoute><WishTree /></ProtectedRoute>} />
+
+        {/* AI作业助手 - 小学初中作业辅导 */}
+        <Route path="/homework" element={<ProtectedRoute><HomeworkHelper /></ProtectedRoute>} />
+        <Route path="/homework/answer/:questionId" element={<ProtectedRoute><HomeworkAnswer /></ProtectedRoute>} />
+        <Route path="/homework/history" element={<ProtectedRoute><HomeworkHistory /></ProtectedRoute>} />
 
         {/* 家长端路由 */}
         <Route path="/parent/login" element={<ParentLogin />} />

@@ -46,7 +46,7 @@ export default function MoodDiary() {
     setError('')
     try {
       const response = await diaryApi.getDiaries({ page: 1, limit: 50 })
-      const diaryEntries: DiaryEntry[] = response.items.map((diary: any) => ({
+      const diaryEntries: DiaryEntry[] = (response.data?.data || []).map((diary: any) => ({
         id: diary.id,
         date: new Date(diary.createdAt),
         mood: diary.mood,
@@ -92,7 +92,7 @@ export default function MoodDiary() {
             content: content
           }]
         })
-        aiResponse = chatResponse.response
+        aiResponse = chatResponse.data?.response || generateAIResponse(selectedMood, content)
       } catch (aiErr) {
         console.error('AI回复生成失败:', aiErr)
         aiResponse = generateAIResponse(selectedMood, content)
@@ -100,7 +100,7 @@ export default function MoodDiary() {
 
       // 创建日记
       const diaryData = {
-        mood: selectedMood,
+        mood: selectedMood as "happy" | "sad" | "excited" | "calm" | "angry" | "anxious",
         content: content.trim(),
         aiResponse: aiResponse
       }
@@ -108,11 +108,11 @@ export default function MoodDiary() {
       const newDiary = await diaryApi.createDiary(diaryData)
 
       const newEntry: DiaryEntry = {
-        id: newDiary.id,
-        date: new Date(newDiary.createdAt),
-        mood: newDiary.mood as any,
-        content: newDiary.content,
-        aiResponse: newDiary.aiResponse
+        id: newDiary.data?.id || '',
+        date: new Date(newDiary.data?.createdAt || new Date()),
+        mood: newDiary.data?.mood as any,
+        content: newDiary.data?.content || '',
+        aiResponse: newDiary.data?.aiResponse || aiResponse
       }
 
       setEntries([newEntry, ...entries])
@@ -178,7 +178,7 @@ export default function MoodDiary() {
       <Header
         title="心情日记"
         gradient="linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)"
-        rightButton={
+        rightContent={
           <button
             className="header-action-btn"
             onClick={() => setView(view === 'list' ? 'write' : 'list')}

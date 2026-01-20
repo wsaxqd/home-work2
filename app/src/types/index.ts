@@ -131,6 +131,7 @@ export interface Diary {
   userId: string
   mood: 'happy' | 'sad' | 'excited' | 'calm' | 'angry' | 'anxious'
   content: string
+  aiResponse?: string
   drawings?: string[]
   weather?: string
   createdAt: string
@@ -139,6 +140,7 @@ export interface Diary {
 export interface CreateDiaryRequest {
   mood: 'happy' | 'sad' | 'excited' | 'calm' | 'angry' | 'anxious'
   content: string
+  aiResponse?: string
   drawings?: string[]
   weather?: string
 }

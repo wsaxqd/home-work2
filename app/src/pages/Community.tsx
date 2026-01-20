@@ -55,7 +55,7 @@ export default function Community() {
       await favoritesApi.addFavorite({
         itemType: 'story',
         itemId: post.id,
-        itemTitle: post.title || '社区帖子',
+        itemTitle: (post as any).title || '社区帖子',
         itemContent: post.content.substring(0, 200),
       })
       alert('收藏成功!')
