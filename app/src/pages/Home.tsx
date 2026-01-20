@@ -8,6 +8,7 @@ import './Home.css'
 // 学习功能区
 const learningFeatures = [
   { icon: '📝', title: 'AI作业助手', desc: '拍照搜题·智能解答', path: '/homework', color: '#ff6b6b', bgColor: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', emoji: '🎓' },
+  { icon: '📕', title: '我的错题本', desc: '错题整理·薄弱分析', path: '/wrong-questions', color: '#ea5455', bgColor: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', emoji: '📖' },
   { icon: '💡', title: 'AI小百科', desc: '探索世界的奥秘', path: '/ai-encyclopedia', color: '#9b59b6', bgColor: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', emoji: '🌟' },
   { icon: '📖', title: '绘本阅读', desc: '92本经典绘本', path: '/picture-book', color: '#3498db', bgColor: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)', emoji: '📚' },
   { icon: '📜', title: '国学经典', desc: '唐诗宋词·论语三字经', path: '/chinese-classics', color: '#c0392b', bgColor: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)', emoji: '🏮' },

@@ -50,4 +50,19 @@ router.post('/favorite/:questionId', homeworkHelperController.favoriteQuestion.b
  */
 router.get('/favorites', homeworkHelperController.getFavorites.bind(homeworkHelperController));
 
+/**
+ * 苏格拉底式AI讲解
+ * POST /api/homework/socratic-explain/:questionId
+ * Body:
+ *   - userQuestion: 用户的问题或困惑
+ *   - conversationHistory: 对话历史（可选）
+ */
+router.post('/socratic-explain/:questionId', homeworkHelperController.socraticExplain.bind(homeworkHelperController));
+
+/**
+ * 一步一步讲解
+ * POST /api/homework/step-by-step/:questionId
+ */
+router.post('/step-by-step/:questionId', homeworkHelperController.stepByStepExplain.bind(homeworkHelperController));
+
 export default router;
