@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Layout, Header } from '../components/layout'
 import AIChatbot from '../components/AIChatbot'
+import PetCompanion from '../components/PetCompanion'
 import './Home.css'
 
 // 学习功能区
@@ -108,6 +109,20 @@ export default function Home() {
             </div>
           </div>
         </div>
+
+        {/* AI学习伙伴 - 虚拟宠物 */}
+        <div className="section-header">
+          <div className="section-title">
+            <span className="section-icon">🐾</span>
+            我的学习伙伴
+          </div>
+          <div className="section-subtitle">陪伴你成长的小伙伴</div>
+        </div>
+
+        <PetCompanion onInteraction={(type) => {
+          console.log('宠物互动:', type)
+          // 可以在这里触发积分增加等逻辑
+        }} />
 
         {/* AI对话窗口 - DeepSeek风格 */}
         <div className="ai-chat-window">
