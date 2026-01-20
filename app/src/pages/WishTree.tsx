@@ -41,7 +41,7 @@ export default function WishTree() {
     setError('')
     try {
       const response = await wishesApi.getWishes()
-      const wishList: Wish[] = response.items.map((wish: any) => ({
+      const wishList: Wish[] = (response.data?.items || []).map((wish: any) => ({
         id: wish.id,
         content: wish.content,
         category: wish.category,
@@ -75,12 +75,12 @@ export default function WishTree() {
       })
 
       const wish: Wish = {
-        id: createdWish.id,
-        content: createdWish.content,
-        category: createdWish.category as any,
-        date: new Date(createdWish.createdAt),
-        status: createdWish.status as any,
-        fulfilledDate: createdWish.fulfilledAt ? new Date(createdWish.fulfilledAt) : undefined
+        id: createdWish.data?.id || '',
+        content: createdWish.data?.content || newWish.trim(),
+        category: createdWish.data?.category as any,
+        date: new Date(createdWish.data?.createdAt || new Date()),
+        status: createdWish.data?.status as any,
+        fulfilledDate: createdWish.data?.fulfilledAt ? new Date(createdWish.data.fulfilledAt) : undefined
       }
 
       setWishes([wish, ...wishes])
@@ -121,7 +121,7 @@ export default function WishTree() {
       <Header
         title="心愿树"
         gradient="linear-gradient(135deg, #fdcbf1 0%, #e6dee9 100%)"
-        rightButton={
+        rightContent={
           <button
             className="header-action-btn"
             onClick={() => setShowAddModal(true)}

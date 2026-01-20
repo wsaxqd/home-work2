@@ -37,7 +37,7 @@ export default function Favorites() {
     try {
       const params = selectedType !== 'all' ? { itemType: selectedType } : {}
       const response = await favoritesApi.getFavorites(params)
-      setFavorites(response.items)
+      setFavorites(response.data?.items || [])
     } catch (error) {
       console.error('加载收藏失败:', error)
     } finally {

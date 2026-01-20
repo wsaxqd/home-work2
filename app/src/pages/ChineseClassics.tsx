@@ -185,7 +185,7 @@ export default function ChineseClassics() {
       <Header
         title={selectedChapter ? selectedChapter.title : selectedClassic ? selectedClassic.title : '国学经典'}
         gradient="linear-gradient(135deg, #fa709a 0%, #fee140 100%)"
-        onBack={selectedClassic || selectedChapter ? handleBack : undefined}
+        showBack={!!(selectedClassic || selectedChapter)}
       />
 
       <div className="main-content chinese-classics-container">

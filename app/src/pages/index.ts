@@ -47,3 +47,8 @@ export { default as LearningData } from './LearningData'
 export { default as UsageControl } from './UsageControl'
 export { default as GrowthReport } from './GrowthReport'
 export { default as ParentSettings } from './ParentSettings'
+
+// AI作业助手组件
+export { default as HomeworkHelper } from './HomeworkHelper'
+export { default as HomeworkAnswer } from './HomeworkAnswer'
+export { default as HomeworkHistory } from './HomeworkHistory'

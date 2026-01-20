@@ -15,6 +15,7 @@ export interface ApiResponse<T = any> {
 // 请求配置接口
 export interface RequestConfig extends RequestInit {
   timeout?: number
+  params?: Record<string, any>
 }
 
 // 基础请求函数

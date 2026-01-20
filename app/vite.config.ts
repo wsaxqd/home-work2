@@ -51,13 +51,7 @@ export default defineConfig({
     assetsDir: 'assets',
     sourcemap: false,
     // 生产环境移除 console
-    minify: 'terser',
-    terserOptions: {
-      compress: {
-        drop_console: true,
-        drop_debugger: true,
-      },
-    },
+    minify: 'esbuild',
     // 分块策略
     rollupOptions: {
       output: {
