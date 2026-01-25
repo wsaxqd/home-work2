@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express'
-import pool from '../db'
-import { authenticateToken } from '../middlewares/auth'
+import { query, pool } from '../config/database'
+import { authenticateToken } from '../middleware/auth'
 
 const router = express.Router()
 
@@ -16,7 +16,7 @@ router.get('/active', authenticateToken, async (req: AuthRequest, res: Response)
   try {
     const userId = req.user?.userId
 
-    const result = await pool.query(`
+    const result = await query(`
       SELECT
         up.*,
         pt.name as pet_type_name,
@@ -59,7 +59,7 @@ router.get('/types', authenticateToken, async (req: AuthRequest, res: Response) 
     const userId = req.user?.userId
 
     // 获取用户积分和等级（假设从users表）
-    const userResult = await pool.query(
+    const userResult = await query(
       'SELECT total_points, level FROM users WHERE id = $1',
       [userId]
     )
@@ -68,10 +68,10 @@ router.get('/types', authenticateToken, async (req: AuthRequest, res: Response) 
     const userLevel = userResult.rows[0]?.level || 1
 
     // 获取所有宠物类型
-    const typesResult = await pool.query('SELECT * FROM pet_types ORDER BY id')
+    const typesResult = await query('SELECT * FROM pet_types ORDER BY id')
 
     // 检查用户已拥有的宠物
-    const ownedResult = await pool.query(
+    const ownedResult = await query(
       'SELECT DISTINCT pet_type_id FROM user_pets WHERE user_id = $1',
       [userId]
     )
@@ -121,7 +121,7 @@ router.post('/adopt', authenticateToken, async (req: AuthRequest, res: Response)
     }
 
     // 检查宠物类型是否存在
-    const typeResult = await pool.query(
+    const typeResult = await query(
       'SELECT * FROM pet_types WHERE id = $1',
       [petTypeId]
     )
@@ -131,7 +131,7 @@ router.post('/adopt', authenticateToken, async (req: AuthRequest, res: Response)
     }
 
     // 检查是否已拥有此类型
-    const existingResult = await pool.query(
+    const existingResult = await query(
       'SELECT id FROM user_pets WHERE user_id = $1 AND pet_type_id = $2',
       [userId, petTypeId]
     )
@@ -141,14 +141,14 @@ router.post('/adopt', authenticateToken, async (req: AuthRequest, res: Response)
     }
 
     // 如果是第一只宠物，设为激活状态
-    const countResult = await pool.query(
+    const countResult = await query(
       'SELECT COUNT(*) FROM user_pets WHERE user_id = $1',
       [userId]
     )
     const isFirstPet = parseInt(countResult.rows[0].count) === 0
 
     // 创建宠物
-    const insertResult = await pool.query(`
+    const insertResult = await query(`
       INSERT INTO user_pets
       (user_id, pet_type_id, nickname, is_active, last_fed_at, last_interaction_at)
       VALUES ($1, $2, $3, $4, NOW(), NOW())
@@ -175,7 +175,7 @@ router.post('/interact', authenticateToken, async (req: AuthRequest, res: Respon
     const { interactionType, itemId } = req.body
 
     // 获取激活的宠物
-    const petResult = await pool.query(
+    const petResult = await query(
       'SELECT * FROM user_pets WHERE user_id = $1 AND is_active = true',
       [userId]
     )
@@ -197,7 +197,7 @@ router.post('/interact', authenticateToken, async (req: AuthRequest, res: Respon
           return res.status(400).json({ success: false, message: '请选择食物' })
         }
 
-        const itemResult = await pool.query(
+        const itemResult = await query(
           `SELECT pi.*, upi.quantity
            FROM pet_items pi
            LEFT JOIN user_pet_items upi ON pi.id = upi.pet_item_id AND upi.user_id = $1
@@ -219,7 +219,7 @@ router.post('/interact', authenticateToken, async (req: AuthRequest, res: Respon
         }
 
         // 扣除物品
-        await pool.query(
+        await query(
           `UPDATE user_pet_items
            SET quantity = quantity - 1
            WHERE user_id = $1 AND pet_item_id = $2`,
@@ -278,13 +278,13 @@ router.post('/interact', authenticateToken, async (req: AuthRequest, res: Respon
     const updateFields = Object.keys(updates).map((key, idx) => `${key} = $${idx + 2}`).join(', ')
     const updateValues = Object.values(updates)
 
-    await pool.query(
+    await query(
       `UPDATE user_pets SET ${updateFields}, updated_at = NOW() WHERE id = $1`,
       [pet.id, ...updateValues]
     )
 
     // 记录互动历史
-    await pool.query(
+    await query(
       `INSERT INTO pet_interactions
        (user_pet_id, interaction_type, reward_exp, cost_points, result)
        VALUES ($1, $2, $3, $4, $5)`,
@@ -314,7 +314,7 @@ router.post('/talk', authenticateToken, async (req: AuthRequest, res: Response) 
     const userId = req.user?.userId
     const { message, contextType = 'daily' } = req.body
 
-    const petResult = await pool.query(
+    const petResult = await query(
       `SELECT up.*, pt.name as pet_type_name
        FROM user_pets up
        JOIN pet_types pt ON up.pet_type_id = pt.id
@@ -340,7 +340,7 @@ router.post('/talk', authenticateToken, async (req: AuthRequest, res: Response) 
     const petResponse = responses[Math.floor(Math.random() * responses.length)]
 
     // 保存对话记录
-    await pool.query(
+    await query(
       `INSERT INTO pet_conversations
        (user_pet_id, user_message, pet_response, context_type)
        VALUES ($1, $2, $3, $4)`,
@@ -365,14 +365,14 @@ router.get('/shop', authenticateToken, async (req: AuthRequest, res: Response) =
     const userId = req.user?.userId
 
     // 获取用户积分
-    const userResult = await pool.query(
+    const userResult = await query(
       'SELECT total_points FROM users WHERE id = $1',
       [userId]
     )
     const userPoints = userResult.rows[0]?.total_points || 0
 
     // 获取所有可用物品
-    const itemsResult = await pool.query(`
+    const itemsResult = await query(`
       SELECT
         pi.*,
         COALESCE(upi.quantity, 0) as owned_quantity
@@ -462,6 +462,116 @@ router.post('/shop/buy', authenticateToken, async (req: AuthRequest, res: Respon
   } catch (error: any) {
     console.error('购买物品失败:', error)
     res.status(400).json({ success: false, message: error.message || '购买失败' })
+  }
+})
+
+/**
+ * 使用物品
+ */
+router.post('/use-item', authenticateToken, async (req: AuthRequest, res: Response) => {
+  try {
+    const userId = req.user?.userId
+    const { itemId, quantity = 1 } = req.body
+
+    const client = await pool.connect()
+
+    try {
+      await client.query('BEGIN')
+
+      // 检查用户是否拥有该物品
+      const inventoryResult = await client.query(
+        'SELECT quantity FROM user_pet_items WHERE user_id = $1 AND pet_item_id = $2',
+        [userId, itemId]
+      )
+
+      if (inventoryResult.rows.length === 0 || inventoryResult.rows[0].quantity < quantity) {
+        throw new Error('物品数量不足')
+      }
+
+      // 获取物品信息
+      const itemResult = await client.query(
+        'SELECT * FROM pet_items WHERE id = $1',
+        [itemId]
+      )
+
+      if (itemResult.rows.length === 0) {
+        throw new Error('物品不存在')
+      }
+
+      const item = itemResult.rows[0]
+
+      // 获取用户当前激活的宠物
+      const petResult = await client.query(
+        'SELECT * FROM user_pets WHERE user_id = $1 AND is_active = true',
+        [userId]
+      )
+
+      if (petResult.rows.length === 0) {
+        throw new Error('请先领养宠物')
+      }
+
+      const pet = petResult.rows[0]
+
+      // 根据物品效果类型更新宠物属性
+      const effectValue = item.effect_value * quantity
+      let updateQuery = ''
+      let message = ''
+
+      switch (item.effect_type) {
+        case 'hunger':
+          updateQuery = `UPDATE user_pets SET hunger = LEAST(hunger + $1, 100) WHERE id = $2`
+          message = `饥饿度 +${effectValue}`
+          break
+        case 'happiness':
+          updateQuery = `UPDATE user_pets SET happiness = LEAST(happiness + $1, 100) WHERE id = $2`
+          message = `快乐度 +${effectValue}`
+          break
+        case 'energy':
+          updateQuery = `UPDATE user_pets SET energy = LEAST(energy + $1, 100) WHERE id = $2`
+          message = `精力值 +${effectValue}`
+          break
+        case 'experience':
+          updateQuery = `UPDATE user_pets SET experience = experience + $1 WHERE id = $2`
+          message = `经验值 +${effectValue}`
+          break
+        default:
+          throw new Error('未知的物品效果类型')
+      }
+
+      // 更新宠物属性
+      await client.query(updateQuery, [effectValue, pet.id])
+
+      // 扣除库存
+      await client.query(
+        `UPDATE user_pet_items
+         SET quantity = quantity - $1
+         WHERE user_id = $2 AND pet_item_id = $3`,
+        [quantity, userId, itemId]
+      )
+
+      // 如果库存为0,删除记录
+      await client.query(
+        `DELETE FROM user_pet_items
+         WHERE user_id = $1 AND pet_item_id = $2 AND quantity <= 0`,
+        [userId, itemId]
+      )
+
+      await client.query('COMMIT')
+
+      res.json({
+        success: true,
+        message,
+        data: { item, quantity }
+      })
+    } catch (error) {
+      await client.query('ROLLBACK')
+      throw error
+    } finally {
+      client.release()
+    }
+  } catch (error: any) {
+    console.error('使用物品失败:', error)
+    res.status(400).json({ success: false, message: error.message || '使用失败' })
   }
 })
 

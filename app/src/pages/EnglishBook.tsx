@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { Layout, Header } from '../components/layout'
 import { UsageTracker } from '../services/usageTracking'
+import { useToast } from '../components/Toast'
 import './EnglishBook.css'
 
 interface Book {
@@ -52,6 +53,7 @@ const level3Books: Book[] = [
 ]
 
 export default function EnglishBook() {
+  const toast = useToast()
   const [selectedLevel, setSelectedLevel] = useState<'1' | '2' | '3'>('1')
   const [selectedBook, setSelectedBook] = useState<Book | null>(null)
   const usageTrackerRef = useRef<UsageTracker | null>(null)
@@ -109,7 +111,7 @@ export default function EnglishBook() {
       })
       usageTrackerRef.current = null
     }
-    alert(`开始阅读《${selectedBook?.title}》`)
+    toast.info(`开始阅读《${selectedBook?.title}》`)
     setSelectedBook(null)
   }
 

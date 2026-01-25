@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
+import { useToast } from '../components/Toast'
 import './HomeworkAnswer.css';
 
 interface LocationState {
@@ -13,6 +14,7 @@ const HomeworkAnswer: React.FC = () => {
   const { questionId } = useParams<{ questionId: string }>();
   const location = useLocation();
   const navigate = useNavigate();
+  const toast = useToast();
   const state = location.state as LocationState;
 
   const [loading, setLoading] = useState(true);
@@ -43,11 +45,11 @@ const HomeworkAnswer: React.FC = () => {
       if (data.success) {
         setAnswer(data.data);
       } else {
-        alert(data.message || '获取解答失败');
+        toast.error(data.message || '获取解答失败');
       }
     } catch (error) {
       console.error('获取解答失败:', error);
-      alert('获取解答失败,请重试');
+      toast.error('获取解答失败,请重试');
     } finally {
       setLoading(false);
     }
@@ -71,13 +73,13 @@ const HomeworkAnswer: React.FC = () => {
       const data = await response.json();
 
       if (data.success) {
-        alert('收藏成功!');
+        toast.success('收藏成功!');
       } else {
-        alert(data.message || '收藏失败');
+        toast.error(data.message || '收藏失败');
       }
     } catch (error) {
       console.error('收藏失败:', error);
-      alert('收藏失败,请重试');
+      toast.error('收藏失败,请重试');
     }
   };
 

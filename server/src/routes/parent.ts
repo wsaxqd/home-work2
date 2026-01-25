@@ -104,13 +104,16 @@ router.post('/register', async (req: Request, res: Response) => {
 // 家长登录
 router.post('/login', async (req: Request, res: Response) => {
   try {
-    const { phone, password } = req.body;
+    const { phone, email, password } = req.body;
 
-    if (!phone || !password) {
-      return res.status(400).json({ success: false, message: '手机号和密码不能为空' });
+    // 支持手机号或邮箱登录
+    const loginIdentifier = phone || email;
+
+    if (!loginIdentifier || !password) {
+      return res.status(400).json({ success: false, message: '手机号/邮箱和密码不能为空' });
     }
 
-    const result = await parentAuthService.login({ phone, password });
+    const result = await parentAuthService.login({ phone: loginIdentifier, password });
 
     res.json({
       success: true,

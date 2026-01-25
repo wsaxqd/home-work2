@@ -1,0 +1,153 @@
+.audio-player {
+  background: white;
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin: 15px 0;
+}
+
+.audio-info {
+  margin-bottom: 15px;
+}
+
+.audio-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.audio-description {
+  font-size: 14px;
+  color: #666;
+  line-height: 1.5;
+}
+
+.audio-controls {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.play-button {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: none;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.play-button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.play-button:active {
+  transform: scale(0.95);
+}
+
+.progress-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+}
+
+.time-label {
+  font-size: 14px;
+  color: #666;
+  font-family: monospace;
+  min-width: 45px;
+  text-align: center;
+}
+
+.progress-bar {
+  flex: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  border-radius: 3px;
+  background: #e0e0e0;
+  outline: none;
+  cursor: pointer;
+}
+
+.progress-bar::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #667eea;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.progress-bar::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.2);
+}
+
+.progress-bar::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #667eea;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.progress-bar::-moz-range-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.2);
+}
+
+.audio-placeholder {
+  text-align: center;
+  padding: 30px 20px;
+  background: #f8f9fa;
+  border-radius: 12px;
+  margin-top: 15px;
+}
+
+.placeholder-icon {
+  font-size: 48px;
+  margin-bottom: 10px;
+}
+
+.placeholder-text {
+  font-size: 14px;
+  color: #666;
+  line-height: 1.6;
+}
+
+.placeholder-text small {
+  font-size: 12px;
+  color: #999;
+}
+
+@media (max-width: 768px) {
+  .audio-controls {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .progress-container {
+    width: 100%;
+  }
+
+  .play-button {
+    width: 60px;
+    height: 60px;
+    font-size: 28px;
+  }
+}

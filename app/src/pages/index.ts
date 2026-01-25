@@ -52,3 +52,35 @@ export { default as ParentSettings } from './ParentSettings'
 export { default as HomeworkHelper } from './HomeworkHelper'
 export { default as HomeworkAnswer } from './HomeworkAnswer'
 export { default as HomeworkHistory } from './HomeworkHistory'
+
+// PK对战系统
+export { default as PKBattle } from './PKBattle'
+export { default as PKRoom } from './PKRoom'
+export { default as WrongQuestionBook } from './WrongQuestionBook'
+export { default as LearningMap } from './LearningMap'
+
+// 签到系统
+export { default as Checkin } from './Checkin'
+export { default as HabitTracker } from './HabitTracker'
+export { default as CheckinAchievements } from './CheckinAchievements'
+
+// 游戏排行榜
+export { default as GameLeaderboard } from './GameLeaderboard'
+
+// 宠物系统
+export { default as PetAdopt } from './PetAdopt'
+export { default as PetDetail } from './PetDetail'
+// export { default as PetShop } from './PetShop'
+// export { default as PetInventory } from './PetInventory'
+
+// AI游戏
+export { default as ExpressionGame } from './ExpressionGame'
+export { default as ImageRecognitionGame } from './ImageRecognitionGame'
+
+// 探索发现
+export { default as Explore } from './Explore'
+export { default as Garden } from './Garden'
+export { default as PictureBookReader } from './PictureBookReader'
+export { default as LevelDetail } from './LevelDetail'
+
+

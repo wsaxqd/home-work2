@@ -1,48 +1,20 @@
-/* AI作业助手页面样式 - 参考AIEncyclopedia设计 */
+/* AI作业助手页面样式 */
 
-.homework-container {
-  min-height: 100vh;
-  background: linear-gradient(180deg, #f0f4ff 0%, #e8f0ff 100%);
-  padding-bottom: 100px;
-}
-
-/* 顶部导航 */
-.homework-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-}
-
-.back-button,
-.history-button {
-  width: 40px;
-  height: 40px;
-  border: none;
-  border-radius: 50%;
+/* 历史记录按钮样式 */
+.history-icon-btn {
   background: rgba(255, 255, 255, 0.2);
+  border: none;
   color: white;
   font-size: 20px;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  padding: 8px 12px;
+  border-radius: 8px;
   transition: all 0.3s ease;
 }
 
-.back-button:hover,
-.history-button:hover {
+.history-icon-btn:hover {
   background: rgba(255, 255, 255, 0.3);
   transform: scale(1.1);
-}
-
-.page-title {
-  font-size: 22px;
-  font-weight: 700;
-  margin: 0;
 }
 
 /* AI助手横幅 */
@@ -50,7 +22,7 @@
   display: flex;
   gap: 20px;
   padding: 20px;
-  margin: 20px;
+  margin-bottom: 20px;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   border-radius: 20px;
   color: white;
@@ -131,7 +103,7 @@
 
 /* 选择区域 */
 .selection-section {
-  padding: 20px;
+  margin-bottom: 20px;
 }
 
 .section-label {
@@ -270,7 +242,7 @@
 /* 图片预览 */
 .image-preview {
   position: relative;
-  margin: 20px;
+  margin-bottom: 20px;
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -319,7 +291,7 @@
 .upload-actions {
   display: flex;
   gap: 15px;
-  padding: 0 20px 20px;
+  margin-bottom: 20px;
 }
 
 .action-btn {
@@ -361,7 +333,6 @@
 .usage-tips {
   background: white;
   padding: 20px;
-  margin: 20px;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
@@ -403,16 +374,7 @@
 
 /* 响应式设计 */
 @media (max-width: 768px) {
-  .homework-header {
-    padding: 15px;
-  }
-
-  .page-title {
-    font-size: 18px;
-  }
-
   .ai-assistant-banner {
-    margin: 15px;
     padding: 15px;
   }
 
@@ -449,10 +411,6 @@
     font-size: 12px;
   }
 
-  .selection-section {
-    padding: 15px;
-  }
-
   .stage-buttons {
     flex-direction: column;
   }
@@ -463,12 +421,6 @@
 
   .upload-actions {
     flex-direction: column;
-    padding: 0 15px 15px;
-  }
-
-  .usage-tips {
-    margin: 15px;
-    padding: 15px;
   }
 }
 

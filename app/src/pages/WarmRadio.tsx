@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Layout, Header } from '../components/layout'
+import AudioPlayer from '../components/AudioPlayer'
 import './WarmRadio.css'
 
 interface RadioContent {
@@ -74,11 +75,6 @@ export default function WarmRadio() {
 
   const handlePlayStory = (story: any) => {
     setCurrentStory(story)
-    setIsPlaying(true)
-    // 实际项目中这里会播放音频
-    setTimeout(() => {
-      setIsPlaying(false)
-    }, 3000)
   }
 
   return (
@@ -148,17 +144,11 @@ export default function WarmRadio() {
             <div className="stories-grid">
               {BEDTIME_STORIES.map((story) => (
                 <div key={story.id} className="story-card">
-                  <div className="story-header">
-                    <h3 className="story-title">{story.title}</h3>
-                    <span className="story-duration">{story.duration}</span>
-                  </div>
-                  <p className="story-preview">{story.content}</p>
-                  <button
-                    className="play-btn"
-                    onClick={() => handlePlayStory(story)}
-                  >
-                    {isPlaying && currentStory?.id === story.id ? '⏸️ 暂停' : '▶️ 播放'}
-                  </button>
+                  <AudioPlayer
+                    title={story.title}
+                    description={story.content}
+                    onPlay={() => handlePlayStory(story)}
+                  />
                 </div>
               ))}
             </div>
@@ -171,17 +161,11 @@ export default function WarmRadio() {
             <div className="stories-grid">
               {INSPIRATIONAL_STORIES.map((story) => (
                 <div key={story.id} className="story-card inspire">
-                  <div className="story-header">
-                    <h3 className="story-title">{story.title}</h3>
-                    <span className="story-duration">{story.duration}</span>
-                  </div>
-                  <p className="story-preview">{story.content}</p>
-                  <button
-                    className="play-btn"
-                    onClick={() => handlePlayStory(story)}
-                  >
-                    {isPlaying && currentStory?.id === story.id ? '⏸️ 暂停' : '▶️ 播放'}
-                  </button>
+                  <AudioPlayer
+                    title={story.title}
+                    description={story.content}
+                    onPlay={() => handlePlayStory(story)}
+                  />
                 </div>
               ))}
             </div>

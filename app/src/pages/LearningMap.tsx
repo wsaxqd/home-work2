@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Layout, Header } from '../components/layout'
+import { useToast } from '../components/Toast'
 import './LearningMap.css'
 
 interface LearningMap {
@@ -30,6 +31,7 @@ interface Stage {
 }
 
 export default function LearningMap() {
+  const toast = useToast()
   const navigate = useNavigate()
   const [maps, setMaps] = useState<LearningMap[]>([])
   const [selectedMap, setSelectedMap] = useState<LearningMap | null>(null)
@@ -105,7 +107,7 @@ export default function LearningMap() {
 
   const handleStageClick = (stage: Stage) => {
     if (!stage.is_unlocked) {
-      alert('请先完成前置关卡！')
+      toast.info('请先完成前置关卡！')
       return
     }
     // TODO: 跳转到关卡详情页
@@ -131,6 +133,32 @@ export default function LearningMap() {
       />
 
       <div className="learning-map-container">
+        {/* 学习工具快捷入口 */}
+        <div className="learning-tools">
+          <div
+            className="tool-card homework"
+            onClick={() => navigate('/homework')}
+          >
+            <div className="tool-icon">📝</div>
+            <div className="tool-info">
+              <div className="tool-title">AI作业助手</div>
+              <div className="tool-desc">拍照搜题·智能解答</div>
+            </div>
+            <div className="tool-arrow">→</div>
+          </div>
+          <div
+            className="tool-card wrong-questions"
+            onClick={() => navigate('/wrong-questions')}
+          >
+            <div className="tool-icon">📕</div>
+            <div className="tool-info">
+              <div className="tool-title">我的错题本</div>
+              <div className="tool-desc">错题整理·薄弱分析</div>
+            </div>
+            <div className="tool-arrow">→</div>
+          </div>
+        </div>
+
         {/* 统计卡片 */}
         <div className="stats-overview">
           <div className="stat-card">

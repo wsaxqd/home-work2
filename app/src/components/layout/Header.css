@@ -5,23 +5,97 @@
   padding: 15px 20px;
   color: white;
   border-radius: 0 0 20px 20px;
+  position: relative;
+  overflow: hidden;
+
+  /* 安全区域适配 (状态栏) */
+  padding-top: calc(15px + env(safe-area-inset-top));
+  padding-left: calc(20px + env(safe-area-inset-left));
+  padding-right: calc(20px + env(safe-area-inset-right));
+}
+
+/* 带副标题的Header样式 */
+.header-with-subtitle {
+  padding: 18px 20px;
+  min-height: 80px;
+
+  /* 安全区域适配 */
+  padding-top: calc(18px + env(safe-area-inset-top));
+  padding-left: calc(20px + env(safe-area-inset-left));
+  padding-right: calc(20px + env(safe-area-inset-right));
+}
+
+/* 添加背景装饰 */
+.header-with-subtitle::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -10%;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+  border-radius: 50%;
+  animation: pulse-header 3s ease-in-out infinite;
+}
+
+@keyframes pulse-header {
+  0%, 100% { transform: scale(1); opacity: 0.3; }
+  50% { transform: scale(1.1); opacity: 0.5; }
 }
 
 .back-button {
   font-size: 24px;
   cursor: pointer;
   transition: transform 0.2s;
+  z-index: 1;
+  padding: 8px; /* 增加触摸热区 */
+  margin: -8px; /* 抵消padding,保持视觉位置 */
+
+  /* 触摸优化 */
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .back-button:hover {
   transform: scale(1.1);
 }
 
-.page-title {
-  font-size: 20px;
-  font-weight: 700;
-  text-align: center;
+.back-button:active {
+  transform: scale(0.95);
+}
+
+/* 标题容器 */
+.header-title-wrapper {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  z-index: 1;
+}
+
+.page-title {
+  font-size: 22px;
+  font-weight: 800;
+  text-align: center;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  letter-spacing: 1px;
+}
+
+/* 副标题样式 */
+.page-subtitle {
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.95);
+  text-align: center;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  animation: fade-in 0.5s ease;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .header-right {
@@ -30,6 +104,7 @@
   gap: 10px;
   min-width: 60px;
   justify-content: flex-end;
+  z-index: 1;
 }
 
 .logout-button {
@@ -42,10 +117,22 @@
   transition: all 0.2s;
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255,255,255,0.3);
+
+  /* 触摸优化 */
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  min-height: 36px;
+  display: flex;
+  align-items: center;
 }
 
 .logout-button:hover {
   background: rgba(255,255,255,0.35);
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.logout-button:active {
+  transform: scale(0.96);
 }

@@ -1,0 +1,235 @@
+.reader-container {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 140px);
+  padding: 20px;
+  background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+}
+
+/* 阅读进度 */
+.reading-progress {
+  margin-bottom: 20px;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  text-align: center;
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+}
+
+/* 绘本页面 */
+.book-page {
+  flex: 1;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  padding: 30px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease;
+}
+
+.book-page.flipping {
+  transform: rotateY(10deg);
+  opacity: 0.7;
+}
+
+.page-illustration {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  min-height: 200px;
+}
+
+.illustration-content {
+  font-size: 80px;
+  text-align: center;
+  line-height: 1.2;
+  animation: fadeIn 0.5s ease;
+}
+
+.page-text {
+  font-size: 24px;
+  line-height: 1.8;
+  color: #333;
+  text-align: center;
+  margin-bottom: 20px;
+  animation: fadeIn 0.6s ease;
+}
+
+.page-text p {
+  margin: 10px 0;
+}
+
+.page-number {
+  text-align: center;
+  font-size: 14px;
+  color: #999;
+  font-style: italic;
+}
+
+/* 翻页按钮 */
+.page-controls {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.page-btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 25px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.prev-btn {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  color: white;
+}
+
+.next-btn {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  color: white;
+}
+
+.finish-btn {
+  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+  color: white;
+}
+
+.auto-play-btn {
+  padding: 12px 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 25px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.page-btn:hover:not(:disabled),
+.auto-play-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.page-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* 页面缩略图 */
+.page-thumbnails {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 15px;
+  overflow-x: auto;
+}
+
+.thumbnail {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.thumbnail:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.thumbnail.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  transform: scale(1.2);
+}
+
+.thumbnail-num {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* 动画 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .reader-container {
+    padding: 15px;
+  }
+
+  .book-page {
+    padding: 20px;
+  }
+
+  .illustration-content {
+    font-size: 60px;
+  }
+
+  .page-text {
+    font-size: 18px;
+  }
+
+  .page-btn,
+  .auto-play-btn {
+    padding: 10px 16px;
+    font-size: 14px;
+  }
+
+  .page-controls {
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .thumbnail {
+    width: 35px;
+    height: 35px;
+  }
+}

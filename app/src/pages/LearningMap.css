@@ -6,6 +6,76 @@
   padding: 20px;
 }
 
+/* 学习工具快捷入口 */
+.learning-tools {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.tool-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  background: white;
+  border-radius: 16px;
+  border: 2px solid #e2e8f0;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.tool-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.tool-card.homework {
+  border-color: #667eea;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+}
+
+.tool-card.homework:hover {
+  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+}
+
+.tool-card.wrong-questions {
+  border-color: #ea5455;
+  background: linear-gradient(135deg, rgba(240, 147, 251, 0.05) 0%, rgba(245, 87, 108, 0.05) 100%);
+}
+
+.tool-card.wrong-questions:hover {
+  box-shadow: 0 8px 24px rgba(234, 84, 85, 0.3);
+}
+
+.tool-icon {
+  font-size: 48px;
+  flex-shrink: 0;
+}
+
+.tool-info {
+  flex: 1;
+}
+
+.tool-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #2d3748;
+  margin-bottom: 4px;
+}
+
+.tool-desc {
+  font-size: 13px;
+  color: #64748b;
+}
+
+.tool-arrow {
+  font-size: 24px;
+  color: #94a3b8;
+  font-weight: 700;
+}
+
 /* 统计概览 */
 .stats-overview {
   display: grid;
@@ -359,6 +429,10 @@
 
 /* 响应式 */
 @media (max-width: 1024px) {
+  .learning-tools {
+    grid-template-columns: 1fr;
+  }
+
   .stats-overview {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -371,6 +445,26 @@
 @media (max-width: 768px) {
   .learning-map-container {
     padding: 16px;
+  }
+
+  .learning-tools {
+    gap: 12px;
+  }
+
+  .tool-card {
+    padding: 16px;
+  }
+
+  .tool-icon {
+    font-size: 40px;
+  }
+
+  .tool-title {
+    font-size: 16px;
+  }
+
+  .tool-desc {
+    font-size: 12px;
   }
 
   .stats-overview {

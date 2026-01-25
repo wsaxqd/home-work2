@@ -1,16 +1,19 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Layout, Header } from '../components/layout'
+import TutorialModal from '../components/TutorialModal'
 import './Create.css'
 
 const createItems = [
-  { icon: '🎨', title: 'AI绘画', desc: '输入描述，AI画出你的想象', path: '/art-creator', color: '#ff6b6b', bgColor: '#ffe5e5', tips: '试试：画一只可爱的小猫' },
-  { icon: '🎵', title: 'AI音乐', desc: '选择风格，创作独特的旋律', path: '/music-creator', color: '#4ecdc4', bgColor: '#e0f7f6', tips: '试试：欢快的儿童音乐' },
-  { icon: '📖', title: 'AI故事', desc: '设定角色，编写精彩故事', path: '/story-creator', color: '#a29bfe', bgColor: '#ededff', tips: '试试：小兔子的冒险' },
-  { icon: '✍️', title: 'AI诗词', desc: '学习古诗，创作自己的诗', path: '/poem-creator', color: '#fd79a8', bgColor: '#ffeef5', tips: '试试：关于春天的诗' },
+  { icon: '🎨', title: 'AI绘画', desc: '输入描述，AI画出你的想象', path: '/art-creator', tips: '试试：画一只可爱的小猫' },
+  { icon: '🎵', title: 'AI音乐', desc: '选择风格，创作独特的旋律', path: '/music-creator', tips: '试试：欢快的儿童音乐' },
+  { icon: '📖', title: 'AI故事', desc: '设定角色，编写精彩故事', path: '/story-creator', tips: '试试：小兔子的冒险' },
+  { icon: '✍️', title: 'AI诗词', desc: '学习古诗，创作自己的诗', path: '/poem-creator', tips: '试试：关于春天的诗' },
 ]
 
 export default function Create() {
   const navigate = useNavigate()
+  const [showTutorial, setShowTutorial] = useState(false)
 
   return (
     <Layout>
@@ -42,12 +45,11 @@ export default function Create() {
             <div
               key={item.path}
               className="create-tool-card"
-              style={{ backgroundColor: item.bgColor, borderColor: item.color }}
               onClick={() => navigate(item.path)}
             >
               <div className="tool-header">
-                <div className="tool-icon-huge" style={{ color: item.color }}>{item.icon}</div>
-                <div className="tool-badge" style={{ backgroundColor: item.color }}>点击进入</div>
+                <div className="tool-icon-huge">{item.icon}</div>
+                <div className="tool-badge">点击进入</div>
               </div>
               <div className="tool-title">{item.title}</div>
               <div className="tool-desc">{item.desc}</div>
@@ -59,7 +61,7 @@ export default function Create() {
           ))}
         </div>
 
-        <div className="help-card">
+        <div className="help-card" onClick={() => setShowTutorial(true)}>
           <div className="help-icon">🎓</div>
           <div className="help-content">
             <div className="help-title">新手教程</div>
@@ -68,6 +70,8 @@ export default function Create() {
           <div className="help-arrow">→</div>
         </div>
       </div>
+
+      <TutorialModal isOpen={showTutorial} onClose={() => setShowTutorial(false)} />
     </Layout>
   )
 }

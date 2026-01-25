@@ -3,11 +3,12 @@ import { AppError } from '../utils/errorHandler';
 
 export interface ParentalControl {
   userId: string;
-  dailyTimeLimit: number; // 分钟
-  contentFilterLevel: number; // 1-5
-  allowedFeatures: string[];
-  blockedFeatures: string[];
-  notificationSettings: any;
+  dailyLimit: number; // 分钟
+  gameLimit: number; // 分钟
+  startTime: string; // 时间字符串如 "08:00:00"
+  endTime: string;
+  timeControlEnabled: boolean;
+  contentControls: any; // JSONB对象
 }
 
 export class ParentalControlService {
@@ -27,11 +28,12 @@ export class ParentalControlService {
     const row = result.rows[0];
     return {
       userId: row.user_id,
-      dailyTimeLimit: row.daily_time_limit,
-      contentFilterLevel: row.content_filter_level,
-      allowedFeatures: row.allowed_features || [],
-      blockedFeatures: row.blocked_features || [],
-      notificationSettings: row.notification_settings || {},
+      dailyLimit: row.daily_limit,
+      gameLimit: row.game_limit,
+      startTime: row.start_time,
+      endTime: row.end_time,
+      timeControlEnabled: row.time_control_enabled,
+      contentControls: row.content_controls || {},
     };
   }
 
@@ -45,15 +47,16 @@ export class ParentalControlService {
       // 创建新设置
       await query(
         `INSERT INTO parental_controls
-         (user_id, daily_time_limit, content_filter_level, allowed_features, blocked_features, notification_settings)
-         VALUES ($1, $2, $3, $4, $5, $6)`,
+         (user_id, daily_limit, game_limit, start_time, end_time, time_control_enabled, content_controls)
+         VALUES ($1, $2, $3, $4, $5, $6, $7)`,
         [
           userId,
-          settings.dailyTimeLimit || 120,
-          settings.contentFilterLevel || 1,
-          JSON.stringify(settings.allowedFeatures || []),
-          JSON.stringify(settings.blockedFeatures || []),
-          JSON.stringify(settings.notificationSettings || {}),
+          settings.dailyLimit || 120,
+          settings.gameLimit || 30,
+          settings.startTime || '08:00:00',
+          settings.endTime || '20:00:00',
+          settings.timeControlEnabled !== undefined ? settings.timeControlEnabled : true,
+          JSON.stringify(settings.contentControls || { games: true, reading: true, creation: true, aiEncyclopedia: true }),
         ]
       );
     } else {
@@ -62,25 +65,29 @@ export class ParentalControlService {
       const values: any[] = [];
       let paramIndex = 1;
 
-      if (settings.dailyTimeLimit !== undefined) {
-        updates.push(`daily_time_limit = $${paramIndex++}`);
-        values.push(settings.dailyTimeLimit);
+      if (settings.dailyLimit !== undefined) {
+        updates.push(`daily_limit = $${paramIndex++}`);
+        values.push(settings.dailyLimit);
       }
-      if (settings.contentFilterLevel !== undefined) {
-        updates.push(`content_filter_level = $${paramIndex++}`);
-        values.push(settings.contentFilterLevel);
+      if (settings.gameLimit !== undefined) {
+        updates.push(`game_limit = $${paramIndex++}`);
+        values.push(settings.gameLimit);
       }
-      if (settings.allowedFeatures !== undefined) {
-        updates.push(`allowed_features = $${paramIndex++}`);
-        values.push(JSON.stringify(settings.allowedFeatures));
+      if (settings.startTime !== undefined) {
+        updates.push(`start_time = $${paramIndex++}`);
+        values.push(settings.startTime);
       }
-      if (settings.blockedFeatures !== undefined) {
-        updates.push(`blocked_features = $${paramIndex++}`);
-        values.push(JSON.stringify(settings.blockedFeatures));
+      if (settings.endTime !== undefined) {
+        updates.push(`end_time = $${paramIndex++}`);
+        values.push(settings.endTime);
       }
-      if (settings.notificationSettings !== undefined) {
-        updates.push(`notification_settings = $${paramIndex++}`);
-        values.push(JSON.stringify(settings.notificationSettings));
+      if (settings.timeControlEnabled !== undefined) {
+        updates.push(`time_control_enabled = $${paramIndex++}`);
+        values.push(settings.timeControlEnabled);
+      }
+      if (settings.contentControls !== undefined) {
+        updates.push(`content_controls = $${paramIndex++}`);
+        values.push(JSON.stringify(settings.contentControls));
       }
 
       if (updates.length > 0) {
@@ -101,8 +108,8 @@ export class ParentalControlService {
    */
   async logUsage(userId: string, featureType: string, duration: number, activityData?: any) {
     await query(
-      `INSERT INTO usage_logs (user_id, feature_type, duration, activity_data, logged_date)
-       VALUES ($1, $2, $3, $4, CURRENT_DATE)`,
+      `INSERT INTO usage_logs (user_id, activity_type, duration, metadata, activity_title)
+       VALUES ($1, $2, $3, $4, $2)`,
       [userId, featureType, duration, JSON.stringify(activityData || {})]
     );
   }
@@ -114,7 +121,7 @@ export class ParentalControlService {
     const result = await query(
       `SELECT COALESCE(SUM(duration), 0) as total_duration
        FROM usage_logs
-       WHERE user_id = $1 AND logged_date = CURRENT_DATE`,
+       WHERE user_id = $1 AND DATE(created_at) = CURRENT_DATE`,
       [userId]
     );
 
@@ -130,24 +137,24 @@ export class ParentalControlService {
     let paramIndex = 2;
 
     if (startDate) {
-      whereClause += ` AND logged_date >= $${paramIndex++}`;
+      whereClause += ` AND created_at >= $${paramIndex++}`;
       params.push(startDate);
     }
     if (endDate) {
-      whereClause += ` AND logged_date <= $${paramIndex++}`;
+      whereClause += ` AND created_at <= $${paramIndex++}`;
       params.push(endDate);
     }
 
     const result = await query(
       `SELECT
-        logged_date,
-        feature_type,
+        DATE(created_at) as logged_date,
+        activity_type as feature_type,
         SUM(duration) as total_duration,
         COUNT(*) as session_count
        FROM usage_logs
        ${whereClause}
-       GROUP BY logged_date, feature_type
-       ORDER BY logged_date DESC, feature_type`,
+       GROUP BY DATE(created_at), activity_type
+       ORDER BY logged_date DESC, activity_type`,
       params
     );
 
@@ -159,12 +166,12 @@ export class ParentalControlService {
    */
   async checkTimeLimit(userId: string): Promise<{ exceeded: boolean; remaining: number }> {
     const settings = await this.getSettings(userId);
-    if (!settings) {
+    if (!settings || !settings.timeControlEnabled) {
       return { exceeded: false, remaining: 999999 };
     }
 
     const todayUsage = await this.getTodayUsage(userId);
-    const limit = settings.dailyTimeLimit;
+    const limit = settings.dailyLimit;
     const remaining = Math.max(0, limit - todayUsage);
 
     return {

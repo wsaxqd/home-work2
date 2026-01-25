@@ -5,26 +5,25 @@ import AIChatbot from '../components/AIChatbot'
 import PetCompanion from '../components/PetCompanion'
 import './Home.css'
 
-// 学习功能区
+// 学习功能区 - 按重要性和使用频率排序
 const learningFeatures = [
-  { icon: '📝', title: 'AI作业助手', desc: '拍照搜题·智能解答', path: '/homework', color: '#ff6b6b', bgColor: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', emoji: '🎓' },
-  { icon: '📕', title: '我的错题本', desc: '错题整理·薄弱分析', path: '/wrong-questions', color: '#ea5455', bgColor: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', emoji: '📖' },
+  // 第一优先级：AI核心学习功能（最重要）
   { icon: '🗺️', title: '学习地图', desc: '闯关学习·勋章收集', path: '/learning-map', color: '#5f27cd', bgColor: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)', emoji: '🎮' },
   { icon: '💡', title: 'AI小百科', desc: '探索世界的奥秘', path: '/ai-encyclopedia', color: '#9b59b6', bgColor: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', emoji: '🌟' },
+
+  // 第二优先级：阅读与文化学习
   { icon: '📖', title: '绘本阅读', desc: '92本经典绘本', path: '/picture-book', color: '#3498db', bgColor: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)', emoji: '📚' },
-  { icon: '📜', title: '国学经典', desc: '唐诗宋词·论语三字经', path: '/chinese-classics', color: '#c0392b', bgColor: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)', emoji: '🏮' },
-  { icon: '📚', title: '四大名著', desc: '西游·三国·水浒·红楼', path: '/four-classics', color: '#d35400', bgColor: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', emoji: '🎭' },
-  { icon: '🌍', title: '英语绘本', desc: '快乐学英语', path: '/english-book', color: '#e74c3c', bgColor: 'linear-gradient(135deg, #ffd89b 0%, #19547b 100%)', emoji: '🎈' },
-  { icon: '❓', title: '十万个为什么', desc: '解答你的好奇心', path: '/why-questions', color: '#f39c12', bgColor: 'linear-gradient(135deg, #fddb92 0%, #d1fdff 100%)', emoji: '🤔' },
+
+  // 第三优先级：知识拓展与趣味学习
   { icon: '🎵', title: '儿歌大全', desc: '经典儿歌欢乐唱', path: '/children-songs', color: '#1abc9c', bgColor: 'linear-gradient(135deg, #81fbb8 0%, #28c76f 100%)', emoji: '🎶' },
 ]
 
 // 快捷功能
 const quickActions = [
+  { icon: '📅', title: '每日签到', path: '/checkin', color: '#fa709a' },
   { icon: '📚', title: '我的作品', path: '/my-works', color: '#a29bfe' },
-  { icon: '🏆', title: '成就中心', path: '/achievements', color: '#fdcb6e' },
+  { icon: '🏆', title: '成就中心', path: '/checkin-achievements', color: '#fdcb6e' },
   { icon: '💝', title: '心灵花园', path: '/mind-garden', color: '#fd79a8' },
-  { icon: '⚙️', title: '设置', path: '/settings', color: '#74b9ff' },
 ]
 
 export default function Home() {
@@ -50,14 +49,19 @@ export default function Home() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          message: aiQuestion,
-          history: newMessages.slice(-10) // 保留最近10条对话
+          messages: newMessages.slice(-10) // 保留最近10条对话
         })
       })
 
       const data = await response.json()
-      setAiMessages([...newMessages, { role: 'assistant', content: data.reply || '抱歉，我现在无法回答，请稍后再试。' }])
+
+      if (data.success && data.data) {
+        setAiMessages([...newMessages, { role: 'assistant', content: data.data.reply || data.data.content || '抱歉，我现在无法回答，请稍后再试。' }])
+      } else {
+        setAiMessages([...newMessages, { role: 'assistant', content: data.message || '抱歉，我现在无法回答，请稍后再试。' }])
+      }
     } catch (error) {
+      console.error('AI对话错误:', error)
       setAiMessages([...newMessages, { role: 'assistant', content: '网络连接失败，请检查后重试。' }])
     } finally {
       setIsThinking(false)
@@ -66,66 +70,12 @@ export default function Home() {
 
   return (
     <Layout>
-      <Header title="启蒙之光" showBack={false} />
+      <Header
+        title="启蒙之光"
+        subtitle="普及贫困地区AI教育 · 让每个孩子都能拥抱智能时代"
+        showBack={false}
+      />
       <div className="main-content">
-        {/* 全局搜索入口 */}
-        <div className="search-entry" onClick={() => navigate('/search')}>
-          <span className="search-entry-icon">🔍</span>
-          <span className="search-entry-text">搜索游戏、故事、创作工具...</span>
-        </div>
-
-        {/* 欢迎横幅 - 升级版 */}
-        <div className="welcome-banner-v2">
-          <div className="welcome-bg-particles">
-            <span className="particle">✨</span>
-            <span className="particle">⭐</span>
-            <span className="particle">💫</span>
-            <span className="particle">🌟</span>
-            <span className="particle">✨</span>
-          </div>
-          <div className="welcome-content-wrapper">
-            <div className="welcome-avatar-wrapper">
-              <div className="avatar-ring"></div>
-              <div className="avatar-ring-2"></div>
-              <div className="welcome-avatar-large">{userProfile.avatar || '🌟'}</div>
-            </div>
-            <div className="welcome-info-v2">
-              <div className="welcome-time-badge">
-                {new Date().getHours() < 12 ? '🌅 早上好' :
-                 new Date().getHours() < 18 ? '☀️ 下午好' : '🌙 晚上好'}
-              </div>
-              <h1 className="welcome-greeting-v2">
-                {userProfile.nickname || '小朋友'}
-              </h1>
-              <p className="welcome-subtitle-v2">开始今天的学习之旅吧！</p>
-            </div>
-          </div>
-          <div className="welcome-stats-mini">
-            <div className="mini-stat">
-              <span className="mini-stat-icon">🔥</span>
-              <span className="mini-stat-value">0天</span>
-            </div>
-            <div className="mini-stat">
-              <span className="mini-stat-icon">⭐</span>
-              <span className="mini-stat-value">0分</span>
-            </div>
-          </div>
-        </div>
-
-        {/* AI学习伙伴 - 虚拟宠物 */}
-        <div className="section-header">
-          <div className="section-title">
-            <span className="section-icon">🐾</span>
-            我的学习伙伴
-          </div>
-          <div className="section-subtitle">陪伴你成长的小伙伴</div>
-        </div>
-
-        <PetCompanion onInteraction={(type) => {
-          console.log('宠物互动:', type)
-          // 可以在这里触发积分增加等逻辑
-        }} />
-
         {/* AI对话窗口 - DeepSeek风格 */}
         <div className="ai-chat-window">
           <div className="chat-header">
@@ -199,27 +149,23 @@ export default function Home() {
           ))}
         </div>
 
-        {/* 快捷功能 */}
-        <div className="section-header">
-          <div className="section-title">
-            <span className="section-icon">⚡</span>
-            快捷入口
-          </div>
-          <div className="section-subtitle">快速访问常用功能</div>
+        {/* 全局搜索入口 */}
+        <div className="search-entry" onClick={() => navigate('/search')}>
+          <span className="search-entry-icon">🔍</span>
+          <span className="search-entry-text">搜索游戏、故事、创作工具...</span>
         </div>
 
-        <div className="quick-actions-grid">
-          {quickActions.map((action) => (
-            <div
-              key={action.path}
-              className="quick-action-card"
-              onClick={() => navigate(action.path)}
-            >
-              <div className="quick-action-icon" style={{ color: action.color }}>{action.icon}</div>
-              <div className="quick-action-title">{action.title}</div>
-            </div>
-          ))}
+        {/* 学习伙伴 */}
+        <div className="section-header">
+          <div className="section-title">
+            <span className="section-icon">🐾</span>
+            学习伙伴
+          </div>
+          <div className="section-subtitle">陪你一起成长</div>
         </div>
+        <PetCompanion onInteraction={(type) => {
+          console.log('宠物互动:', type)
+        }} />
 
         {/* 数据统计卡片 */}
         <div className="stats-card">

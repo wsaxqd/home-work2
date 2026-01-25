@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import parentAPI from '../services/parentAPI'
+import { useToast } from '../components/Toast'
 import './UsageControl.css'
 
 interface ChildInfo {
@@ -27,6 +28,7 @@ interface ContentControl {
 }
 
 export default function UsageControl() {
+  const toast = useToast()
   const [children, setChildren] = useState<ChildInfo[]>([])
   const [selectedChild, setSelectedChild] = useState<ChildInfo | null>(null)
   const [timeControl, setTimeControl] = useState<TimeControl>({
@@ -85,7 +87,7 @@ export default function UsageControl() {
       }
     } catch (err: any) {
       console.error('加载孩子列表失败:', err)
-      alert(err.message || '加载失败')
+      toast.info(err.message || '加载失败')
     } finally {
       setIsLoading(false)
     }
@@ -124,7 +126,7 @@ export default function UsageControl() {
 
   const handleSave = async () => {
     if (!selectedChild) {
-      alert('请先选择孩子')
+      toast.info('请先选择孩子')
       return
     }
 
@@ -134,9 +136,9 @@ export default function UsageControl() {
         ...timeControl,
         contentControls: contentControl
       })
-      alert('设置已保存!')
+      toast.success('设置已保存!')
     } catch (error: any) {
-      alert(error.message || '保存失败，请重试')
+      toast.error(error.message || '保存失败，请重试')
     } finally {
       setIsSaving(false)
     }

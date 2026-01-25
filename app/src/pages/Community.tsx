@@ -3,9 +3,11 @@ import { Layout, Header } from '../components/layout'
 import { communityApi } from '../services/api'
 import { favoritesApi } from '../services/api/favorites'
 import type { Post, Topic } from '../types'
+import { useToast } from '../components/Toast'
 import './Community.css'
 
 export default function Community() {
+  const toast = useToast()
   const [posts, setPosts] = useState<Post[]>([])
   const [topics, setTopics] = useState<Topic[]>([])
   const [loading, setLoading] = useState(true)
@@ -58,10 +60,10 @@ export default function Community() {
         itemTitle: (post as any).title || '社区帖子',
         itemContent: post.content.substring(0, 200),
       })
-      alert('收藏成功!')
+      toast.success('收藏成功!')
     } catch (err: any) {
       console.error('收藏失败', err)
-      alert(err.message || '收藏失败，请重试')
+      toast.info(err.message || '收藏失败，请重试')
     }
   }
   if (loading) {

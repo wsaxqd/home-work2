@@ -5,6 +5,7 @@ import { worksApi } from '../services/api/works'
 import { communityApi } from '../services/api'
 import type { Work } from '../types'
 import './MyWorks.css'
+import { useToast } from '../components/Toast'
 
 const WORK_TYPES = [
   { value: 'all', label: '全部作品', icon: '📁', color: '#667eea' },
@@ -15,6 +16,7 @@ const WORK_TYPES = [
 ]
 
 export default function MyWorks() {
+  const toast = useToast()
   const navigate = useNavigate()
   const [works, setWorks] = useState<Work[]>([])
   const [loading, setLoading] = useState(true)
@@ -52,11 +54,11 @@ export default function MyWorks() {
       if (response.success) {
         setWorks(works.filter(w => w.id !== workId))
         setShowDeleteConfirm(null)
-        alert('删除成功!')
+        toast.success('删除成功!')
       }
     } catch (err: any) {
       console.error('删除失败:', err)
-      alert(err.message || '删除失败，请重试')
+      toast.info(err.message || '删除失败，请重试')
     }
   }
 
@@ -75,11 +77,11 @@ export default function MyWorks() {
         work.coverImage ? [work.coverImage] : undefined
       )
 
-      alert('分享到社区成功!')
+      toast.success('分享到社区成功!')
       loadWorks() // 重新加载以更新公开状态
     } catch (err: any) {
       console.error('分享失败:', err)
-      alert(err.message || '分享失败，请重试')
+      toast.info(err.message || '分享失败，请重试')
     }
   }
 

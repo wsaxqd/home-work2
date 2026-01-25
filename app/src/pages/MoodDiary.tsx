@@ -4,6 +4,7 @@ import { Layout, Header } from '../components/layout'
 import { diaryApi } from '../services/api/diary'
 import { aiApi } from '../services/api/ai'
 import './MoodDiary.css'
+import { useToast } from '../components/Toast'
 
 interface DiaryEntry {
   id: string
@@ -25,6 +26,7 @@ const MOODS = [
 ]
 
 export default function MoodDiary() {
+  const toast = useToast()
   const navigate = useNavigate()
   const [view, setView] = useState<'list' | 'write'>('list')
   const [entries, setEntries] = useState<DiaryEntry[]>([])
@@ -65,7 +67,7 @@ export default function MoodDiary() {
   // 保存日记
   const saveDiary = async () => {
     if (!selectedMood || !content.trim()) {
-      alert('请选择心情并写下你的想法')
+      toast.info('请选择心情并写下你的想法')
       return
     }
 
@@ -128,7 +130,7 @@ export default function MoodDiary() {
     } catch (err: any) {
       console.error('保存日记失败:', err)
       setError('保存日记失败，请稍后重试')
-      alert('保存日记失败，请稍后重试')
+      toast.error('保存日记失败，请稍后重试')
     } finally {
       setSaving(false)
     }

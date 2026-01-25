@@ -4,6 +4,7 @@ import { Layout, Header } from '../components/layout'
 import { aiApi, worksApi } from '../services/api'
 import { favoritesApi } from '../services/api/favorites'
 import { UsageTracker } from '../services/usageTracking'
+import { useToast } from '../components/Toast'
 import './Creator.css'
 import './StoryCreator.css'
 
@@ -25,6 +26,7 @@ const personalities = [
 ]
 
 export default function StoryCreator() {
+  const toast = useToast()
   const navigate = useNavigate()
   const [step, setStep] = useState(1)
   const [selectedTheme, setSelectedTheme] = useState('')
@@ -116,7 +118,7 @@ export default function StoryCreator() {
             saved: true
           })
         }
-        alert('故事保存成功！')
+        toast.success('故事保存成功！')
       } else {
         setError(response.message || '保存失败，请重试')
       }
@@ -139,7 +141,7 @@ export default function StoryCreator() {
         // 取消收藏 - 需要先查找收藏ID
         // 这里简化处理,直接切换状态
         setIsFavorited(false)
-        alert('已取消收藏')
+        toast.success('已取消收藏')
       } else {
         // 添加收藏
         await favoritesApi.addFavorite({
@@ -149,7 +151,7 @@ export default function StoryCreator() {
           itemContent: story.substring(0, 200),
         })
         setIsFavorited(true)
-        alert('收藏成功!')
+        toast.success('收藏成功!')
       }
     } catch (err: any) {
       console.error('Favorite error:', err)

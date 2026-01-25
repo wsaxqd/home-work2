@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Layout, Header } from '../components/layout'
+import { useToast } from '../components/Toast'
 import './MindGarden.css'
 
 const moods = [
@@ -14,6 +15,7 @@ const moods = [
 const flowers = ['🌸', '🌺', '🌻', '🌹', '🌷', '💐']
 
 export default function MindGarden() {
+  const toast = useToast()
   const [selectedMood, setSelectedMood] = useState('')
   const [thought, setThought] = useState('')
   const [gardenFlowers, setGardenFlowers] = useState<string[]>(['🌸', '🌺', '🌻'])
@@ -24,7 +26,7 @@ export default function MindGarden() {
       setGardenFlowers([...gardenFlowers, randomFlower])
       setSelectedMood('')
       setThought('')
-      alert('记录成功！你的花园又开了一朵新花 ' + randomFlower)
+      toast.info('记录成功！你的花园又开了一朵新花 ' + randomFlower)
     }
   }
 

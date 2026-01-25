@@ -6,6 +6,7 @@ import type { User } from '../types'
 import './Profile.css'
 
 const menuItems = [
+  { icon: '📅', title: '每日签到', desc: '签到领积分奖励', path: '/checkin', color: '#fa709a', bgColor: '#ffe5f0' },
   { icon: '💝', title: '心灵花园', desc: '记录今天的心情', path: '/mind-garden', color: '#a8edea', bgColor: '#e0f7f6' },
   { icon: '📊', title: '能力评估', desc: '测测你的小能力', path: '/assessment', color: '#4facfe', bgColor: '#e8f4ff' },
   { icon: '📁', title: '我的作品', desc: '查看创作的内容', path: '/my-works', color: '#f093fb', bgColor: '#ffeef5' },
@@ -110,6 +111,59 @@ export default function Profile() {
               <div className="stat-label-new">{stat.label}</div>
             </div>
           ))}
+        </div>
+
+        {/* 学生信息区块 */}
+        <div className="section-header">
+          <div className="section-title">
+            <span className="section-icon">👤</span>
+            学生信息
+          </div>
+          <div className="section-subtitle">我的基本资料</div>
+        </div>
+        <div className="student-info-card">
+          <div className="info-row">
+            <div className="info-label">
+              <span className="info-icon">👤</span>
+              用户名
+            </div>
+            <div className="info-value">{user?.username || '-'}</div>
+          </div>
+          <div className="info-row">
+            <div className="info-label">
+              <span className="info-icon">✨</span>
+              昵称
+            </div>
+            <div className="info-value">{user?.nickname || '-'}</div>
+          </div>
+          <div className="info-row">
+            <div className="info-label">
+              <span className="info-icon">🎂</span>
+              年龄
+            </div>
+            <div className="info-value">{user?.age || '-'}岁</div>
+          </div>
+          <div className="info-row">
+            <div className="info-label">
+              <span className="info-icon">🎯</span>
+              等级
+            </div>
+            <div className="info-value">Lv.{user?.level || 1}</div>
+          </div>
+          <div className="info-row">
+            <div className="info-label">
+              <span className="info-icon">⭐</span>
+              积分
+            </div>
+            <div className="info-value">{user?.coins || 0}</div>
+          </div>
+          <div className="info-row">
+            <div className="info-label">
+              <span className="info-icon">📧</span>
+              邮箱
+            </div>
+            <div className="info-value">{user?.email || '未设置'}</div>
+          </div>
         </div>
 
         {/* 成就展示 */}

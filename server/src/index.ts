@@ -34,6 +34,9 @@ import homeworkRoutes from './routes/homework';
 import petsRoutes from './routes/pets';
 import wrongQuestionsRoutes from './routes/wrongQuestions';
 import learningPathRoutes from './routes/learningPath';
+import pkRoutes from './routes/pk';
+import checkinRoutes from './routes/checkin';
+import aiAssistantRoutes from './routes/aiAssistant';
 
 const app = express();
 
@@ -94,6 +97,9 @@ app.use('/api/homework', homeworkRoutes);
 app.use('/api/pets', petsRoutes);
 app.use('/api/wrong-questions', wrongQuestionsRoutes);
 app.use('/api/learning-path', learningPathRoutes);
+app.use('/api/pk', pkRoutes);
+app.use('/api/checkin', checkinRoutes);
+app.use('/api/ai-assistant', aiAssistantRoutes);
 app.use('/api', homeRoutes);
 
 // 404处理

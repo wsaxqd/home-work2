@@ -1,11 +1,11 @@
 import express, { Request, Response } from 'express'
-import pool from '../db'
-import { authenticateToken } from '../middlewares/auth'
+import { pool } from '../config/database'
+import { authenticateToken } from '../middleware/auth'
 
 const router = express.Router()
 
 interface AuthRequest extends Request {
-  user?: { userId: number; role: string }
+  userId?: string
 }
 
 /**
@@ -14,7 +14,7 @@ interface AuthRequest extends Request {
  */
 router.get('/', authenticateToken, async (req: AuthRequest, res: Response) => {
   try {
-    const userId = req.user?.userId
+    const userId = req.userId
     const {
       subject,
       masteredFilter = 'false',

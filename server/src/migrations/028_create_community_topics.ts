@@ -24,11 +24,11 @@ export const migration_028_create_community_topics: Migration = {
       );
     `);
 
-    // 创建帖子-话题关联表
+    // 创建帖子-话题关联表（暂时不添加外键约束，等community_posts表创建后再添加）
     await query(`
       CREATE TABLE IF NOT EXISTS post_topics (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-        post_id UUID NOT NULL REFERENCES community_posts(id) ON DELETE CASCADE,
+        post_id UUID NOT NULL,
         topic_id UUID NOT NULL REFERENCES community_topics(id) ON DELETE CASCADE,
         created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
         UNIQUE(post_id, topic_id)

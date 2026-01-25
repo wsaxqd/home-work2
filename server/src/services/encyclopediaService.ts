@@ -352,6 +352,18 @@ export class EncyclopediaService {
       lastReadAt: row.last_read_at
     }));
   }
+
+  /**
+   * 获取推荐经典
+   */
+  async getRecommended(): Promise<any[]> {
+    // 获取所有经典作品
+    const allClassics = await this.getClassics();
+    
+    // 简单的推荐逻辑：返回所有经典作品
+    // 可以根据阅读进度、用户偏好等实现更复杂的推荐逻辑
+    return allClassics;
+  }
 }
 
 export const encyclopediaService = new EncyclopediaService();
