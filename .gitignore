@@ -26,6 +26,20 @@ build/
 # Temporary files
 ~$*
 *.tmp
+nul
+NUL
 
 # Third-party repositories
 dify/
+
+# Capacitor/Native builds (可重新生成)
+app/android/
+app/ios/
+app/.capacitor/
+
+# Test outputs
+coverage/
+.nyc_output/
+
+# Trae workspace
+.trae/

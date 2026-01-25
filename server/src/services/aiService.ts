@@ -2,6 +2,7 @@ import { query } from '../config/database';
 import { AppError } from '../utils/errorHandler';
 import { difyAdapter } from './difyAdapter';
 import { zhipuAdapter } from './zhipuAdapter';
+import { deepseekAdapter } from './deepseekAdapter';
 
 export type AITaskType = 'story' | 'chat' | 'voice' | 'image_recognition' | 'emotion_analysis';
 
@@ -21,9 +22,13 @@ export interface AIRequestInput {
 
 export class AIService {
   /**
-   * 获取 AI 适配器（优先使用智谱 AI）
+   * 获取 AI 适配器（优先使用 DeepSeek）
    */
   private getAdapter() {
+    // 优先级: DeepSeek > 智谱 > Dify
+    const useDeepSeek = process.env.DEEPSEEK_API_KEY && !process.env.DEEPSEEK_API_KEY.includes('your-');
+    if (useDeepSeek) return deepseekAdapter;
+
     const useZhipu = process.env.ZHIPU_API_KEY && !process.env.ZHIPU_API_KEY.includes('your-');
     return useZhipu ? zhipuAdapter : difyAdapter;
   }

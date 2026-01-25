@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import parentAPI from '../services/parentAPI'
+import { useToast } from '../components/Toast'
 import './ParentSettings.css'
 
 interface ParentProfile {
@@ -18,6 +19,7 @@ interface NotificationSettings {
 }
 
 export default function ParentSettings() {
+  const toast = useToast()
   const navigate = useNavigate()
   const [profile, setProfile] = useState<ParentProfile>({
     phone: '',
@@ -95,9 +97,9 @@ export default function ParentSettings() {
       // 保存通知设置
       await parentAPI.updateNotificationSettings(notifications)
 
-      alert('保存成功!')
+      toast.success('保存成功!')
     } catch (error: any) {
-      alert(error.message || '保存失败')
+      toast.error(error.message || '保存失败')
     } finally {
       setIsSaving(false)
     }
@@ -105,17 +107,17 @@ export default function ParentSettings() {
 
   const handleChangePassword = async () => {
     if (!passwordForm.oldPassword || !passwordForm.newPassword || !passwordForm.confirmPassword) {
-      alert('请填写完整信息')
+      toast.info('请填写完整信息')
       return
     }
 
     if (passwordForm.newPassword !== passwordForm.confirmPassword) {
-      alert('两次密码不一致')
+      toast.info('两次密码不一致')
       return
     }
 
     if (passwordForm.newPassword.length < 6) {
-      alert('新密码长度不能少于6位')
+      toast.info('新密码长度不能少于6位')
       return
     }
 
@@ -124,7 +126,7 @@ export default function ParentSettings() {
         oldPassword: passwordForm.oldPassword,
         newPassword: passwordForm.newPassword
       })
-      alert('密码修改成功!')
+      toast.success('密码修改成功!')
       setShowPasswordModal(false)
       setPasswordForm({
         oldPassword: '',
@@ -132,7 +134,7 @@ export default function ParentSettings() {
         confirmPassword: ''
       })
     } catch (error: any) {
-      alert(error.message || '密码修改失败')
+      toast.error(error.message || '密码修改失败')
     }
   }
 
@@ -151,7 +153,7 @@ export default function ParentSettings() {
       const doubleConfirm = window.confirm('请再次确认删除账号')
       if (doubleConfirm) {
         localStorage.removeItem('parentProfile')
-        alert('账号已删除')
+        toast.success('账号已删除')
         navigate('/parent/login')
       }
     }
@@ -246,7 +248,7 @@ export default function ParentSettings() {
               <span className="setting-name">登录历史</span>
               <span className="setting-desc">查看最近的登录记录</span>
             </div>
-            <button className="action-btn" onClick={() => alert('功能开发中')}>
+            <button className="action-btn" onClick={() => toast.info('功能开发中')}>
               查看
             </button>
           </div>

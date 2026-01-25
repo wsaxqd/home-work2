@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import parentAPI from '../services/parentAPI'
+import { useToast } from '../components/Toast'
 import './GrowthReport.css'
 
 interface ChildInfo {
@@ -23,6 +24,7 @@ interface ReportData {
 }
 
 export default function GrowthReport() {
+  const toast = useToast()
   const [children, setChildren] = useState<ChildInfo[]>([])
   const [selectedChild, setSelectedChild] = useState<ChildInfo | null>(null)
   const [reportType, setReportType] = useState<'week' | 'month'>('week')
@@ -80,7 +82,7 @@ export default function GrowthReport() {
 
   const handleGenerateReport = async () => {
     if (!selectedChild) {
-      alert('请先选择孩子')
+      toast.info('请先选择孩子')
       return
     }
 
@@ -88,16 +90,16 @@ export default function GrowthReport() {
     try {
       // 重新加载报告数据
       await loadReport()
-      alert('报告生成成功!')
+      toast.success('报告生成成功!')
     } catch (error: any) {
-      alert(error.message || '报告生成失败')
+      toast.error(error.message || '报告生成失败')
     } finally {
       setIsGenerating(false)
     }
   }
 
   const handleExportPDF = () => {
-    alert('PDF导出功能开发中...')
+    toast.info('PDF导出功能开发中...')
   }
 
   // 加载状态

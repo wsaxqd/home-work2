@@ -4,6 +4,7 @@ import { favoritesApi } from '../services/api/favorites'
 import { UsageTracker } from '../services/usageTracking'
 import './Creator.css'
 import './MusicCreator.css'
+import { useToast } from '../components/Toast'
 
 const genres = [
   { icon: '😊', name: '快乐旋律', value: 'happy' },
@@ -38,6 +39,7 @@ const childrenSongs = [
 ]
 
 export default function MusicCreator() {
+  const toast = useToast()
   const [step, setStep] = useState(1)
   const [selectedGenre, setSelectedGenre] = useState('')
   const [tempo, setTempo] = useState(3)
@@ -86,7 +88,7 @@ export default function MusicCreator() {
     try {
       if (isFavorited) {
         setIsFavorited(false)
-        alert('已取消收藏')
+        toast.success('已取消收藏')
       } else {
         await favoritesApi.addFavorite({
           itemType: 'music',
@@ -95,11 +97,11 @@ export default function MusicCreator() {
           itemContent: `${genres.find(g => g.value === selectedGenre)?.name || ''} - ${tempoLabels[tempo]}`,
         })
         setIsFavorited(true)
-        alert('收藏成功!')
+        toast.success('收藏成功!')
       }
     } catch (err: any) {
       console.error('Favorite error:', err)
-      alert(err.message || '操作失败，请重试')
+      toast.info(err.message || '操作失败，请重试')
     } finally {
       setIsFavoriting(false)
     }
@@ -250,7 +252,7 @@ export default function MusicCreator() {
                         saved: true
                       })
                     }
-                    alert('音乐已保存')
+                    toast.success('音乐已保存')
                   }}>保存音乐</button>
                 </div>
               </div>

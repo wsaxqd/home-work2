@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useToast } from '../components/Toast'
 import './HomeworkHistory.css';
 
 interface Question {
@@ -16,6 +17,7 @@ interface Question {
 
 const HomeworkHistory: React.FC = () => {
   const navigate = useNavigate();
+  const toast = useToast();
   const [questions, setQuestions] = useState<Question[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'all' | 'answered' | 'pending'>('all');
@@ -40,11 +42,11 @@ const HomeworkHistory: React.FC = () => {
       if (data.success) {
         setQuestions(data.data.questions);
       } else {
-        alert(data.message || '加载失败');
+        toast.error(data.message || '加载失败');
       }
     } catch (error) {
       console.error('加载历史失败:', error);
-      alert('加载失败,请重试');
+      toast.error('加载失败,请重试');
     } finally {
       setLoading(false);
     }

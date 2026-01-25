@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Layout, Header } from '../components/layout';
 import { UsageTracker } from '../services/usageTracking';
+import { useToast } from '../components/Toast'
 import './HomeworkHelper.css';
 
 // 小学主要课程
@@ -43,6 +45,7 @@ const GRADE_LEVELS = {
 
 const HomeworkHelper: React.FC = () => {
   const navigate = useNavigate();
+  const toast = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
   const usageTrackerRef = useRef<UsageTracker | null>(null);
@@ -96,7 +99,7 @@ const HomeworkHelper: React.FC = () => {
   // 上传图片
   const uploadImage = async (file: File) => {
     if (!selectedSubject || !selectedGrade) {
-      alert('请先选择科目和年级');
+      toast.info('请先选择科目和年级');
       return;
     }
 
@@ -131,11 +134,11 @@ const HomeworkHelper: React.FC = () => {
           },
         });
       } else {
-        alert(data.message || '上传失败');
+        toast.error(data.message || '上传失败');
       }
     } catch (error) {
       console.error('上传失败:', error);
-      alert('上传失败,请重试');
+      toast.error('上传失败,请重试');
     } finally {
       setUploading(false);
     }
@@ -157,32 +160,33 @@ const HomeworkHelper: React.FC = () => {
   };
 
   return (
-    <div className="homework-container">
-      {/* 顶部导航 */}
-      <header className="homework-header">
-        <button className="back-button" onClick={() => navigate('/home')}>
-          <span className="icon">←</span>
-        </button>
-        <h1 className="page-title">AI作业助手</h1>
-        <button className="history-button" onClick={viewHistory}>
-          <span className="icon">📝</span>
-        </button>
-      </header>
+    <Layout>
+      <Header
+        title="AI作业助手"
+        gradient="linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+        showBack={true}
+        rightContent={
+          <button className="history-icon-btn" onClick={viewHistory}>
+            📝
+          </button>
+        }
+      />
 
-      {/* AI助手横幅 */}
-      <div className="ai-assistant-banner">
-        <div className="assistant-avatar">
-          <div className="robot-face">
-            <div className="eye left"></div>
-            <div className="eye right"></div>
-            <div className="smile"></div>
+      <div className="main-content">
+        {/* AI助手横幅 */}
+        <div className="ai-assistant-banner">
+          <div className="assistant-avatar">
+            <div className="robot-face">
+              <div className="eye left"></div>
+              <div className="eye right"></div>
+              <div className="smile"></div>
+            </div>
+          </div>
+          <div className="assistant-info">
+            <h3>我是启启 🤖</h3>
+            <p>拍照搜题，秒出答案！支持小学初中全科目</p>
           </div>
         </div>
-        <div className="assistant-info">
-          <h3>我是启启 🤖</h3>
-          <p>拍照搜题，秒出答案！支持小学初中全科目</p>
-        </div>
-      </div>
 
       {/* 学段和年级选择 */}
       <div className="selection-section">
@@ -299,17 +303,18 @@ const HomeworkHelper: React.FC = () => {
         onChange={handleFileSelect}
       />
 
-      {/* 使用说明 */}
-      <div className="usage-tips">
-        <h3>💡 使用说明</h3>
-        <ul>
-          <li>1. 选择您的年级和科目</li>
-          <li>2. 拍照或上传作业题目图片</li>
-          <li>3. AI自动识别并给出详细解答</li>
-          <li>4. 查看解题步骤和知识点讲解</li>
-        </ul>
+        {/* 使用说明 */}
+        <div className="usage-tips">
+          <h3>💡 使用说明</h3>
+          <ul>
+            <li>1. 选择您的年级和科目</li>
+            <li>2. 拍照或上传作业题目图片</li>
+            <li>3. AI自动识别并给出详细解答</li>
+            <li>4. 查看解题步骤和知识点讲解</li>
+          </ul>
+        </div>
       </div>
-    </div>
+    </Layout>
   );
 };
 

@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
+import { ToastProvider } from './components/Toast'
 import {
   Splash,
   Login,
@@ -48,7 +49,25 @@ import {
   WhyQuestions,
   HomeworkHelper,
   HomeworkAnswer,
-  HomeworkHistory
+  HomeworkHistory,
+  PKBattle,
+  PKRoom,
+  WrongQuestionBook,
+  LearningMap,
+  Checkin,
+  HabitTracker,
+  CheckinAchievements,
+  GameLeaderboard,
+  PetAdopt,
+  PetDetail,
+  // PetShop,
+  // PetInventory,
+  ExpressionGame,
+  ImageRecognitionGame,
+  Explore,
+  Garden,
+  PictureBookReader,
+  LevelDetail
 } from './pages'
 import TimeLockModal from './components/TimeLockModal'
 import ContentProtectedRoute from './components/ContentProtectedRoute'
@@ -147,15 +166,16 @@ function App() {
   }
 
   return (
-    <BrowserRouter>
-      {showTimeLock && (
-        <TimeLockModal
-          remainingTime={remainingTime}
-          reason={lockReason}
-          onUnlock={handleUnlock}
-        />
-      )}
-      <Routes>
+    <ToastProvider>
+      <BrowserRouter>
+        {showTimeLock && (
+          <TimeLockModal
+            remainingTime={remainingTime}
+            reason={lockReason}
+            onUnlock={handleUnlock}
+          />
+        )}
+        <Routes>
         <Route path="/" element={<InitialRoute />} />
         <Route path="/splash" element={<Splash />} />
         <Route path="/login" element={<Login />} />
@@ -172,6 +192,12 @@ function App() {
         {/* 全局搜索页面 */}
         <Route path="/search" element={<ProtectedRoute><Search /></ProtectedRoute>} />
 
+        {/* 探索发现页面 */}
+        <Route path="/explore" element={<ProtectedRoute><Explore /></ProtectedRoute>} />
+
+        {/* 心灵花园导航 */}
+        <Route path="/garden" element={<ProtectedRoute><Garden /></ProtectedRoute>} />
+
         {/* 个人中心子页面 */}
         <Route path="/mind-garden" element={<ProtectedRoute><MindGarden /></ProtectedRoute>} />
         <Route path="/assessment" element={<ProtectedRoute><Assessment /></ProtectedRoute>} />
@@ -186,6 +212,8 @@ function App() {
 
         {/* 游戏子页面 - 受内容访问控制 */}
         <Route path="/fruit-match" element={<ProtectedRoute><ContentProtectedRoute contentType="games"><FruitMatch /></ContentProtectedRoute></ProtectedRoute>} />
+        <Route path="/expression-game" element={<ProtectedRoute><ContentProtectedRoute contentType="games"><ExpressionGame /></ContentProtectedRoute></ProtectedRoute>} />
+        <Route path="/image-recognition-game" element={<ProtectedRoute><ContentProtectedRoute contentType="games"><ImageRecognitionGame /></ContentProtectedRoute></ProtectedRoute>} />
         <Route path="/tank-battle" element={<ProtectedRoute><ContentProtectedRoute contentType="games"><TankBattle /></ContentProtectedRoute></ProtectedRoute>} />
         <Route path="/chess-game" element={<ProtectedRoute><ContentProtectedRoute contentType="games"><ChessGame /></ContentProtectedRoute></ProtectedRoute>} />
         <Route path="/chinese-chess" element={<ProtectedRoute><ContentProtectedRoute contentType="games"><ChineseChess /></ContentProtectedRoute></ProtectedRoute>} />
@@ -197,6 +225,7 @@ function App() {
         {/* 阅读相关页面 - 受内容访问控制 */}
         <Route path="/story-library" element={<ProtectedRoute><ContentProtectedRoute contentType="reading"><StoryLibrary /></ContentProtectedRoute></ProtectedRoute>} />
         <Route path="/picture-book" element={<ProtectedRoute><ContentProtectedRoute contentType="reading"><PictureBook /></ContentProtectedRoute></ProtectedRoute>} />
+        <Route path="/picture-book-reader" element={<ProtectedRoute><ContentProtectedRoute contentType="reading"><PictureBookReader /></ContentProtectedRoute></ProtectedRoute>} />
         <Route path="/four-classics" element={<ProtectedRoute><ContentProtectedRoute contentType="reading"><FourClassics /></ContentProtectedRoute></ProtectedRoute>} />
         <Route path="/chinese-classics" element={<ProtectedRoute><ContentProtectedRoute contentType="reading"><ChineseClassics /></ContentProtectedRoute></ProtectedRoute>} />
         <Route path="/children-songs" element={<ProtectedRoute><ContentProtectedRoute contentType="reading"><ChildrenSongs /></ContentProtectedRoute></ProtectedRoute>} />
@@ -218,6 +247,29 @@ function App() {
         <Route path="/homework/answer/:questionId" element={<ProtectedRoute><HomeworkAnswer /></ProtectedRoute>} />
         <Route path="/homework/history" element={<ProtectedRoute><HomeworkHistory /></ProtectedRoute>} />
 
+        {/* 学习功能 */}
+        <Route path="/wrong-questions" element={<ProtectedRoute><WrongQuestionBook /></ProtectedRoute>} />
+        <Route path="/learning-map" element={<ProtectedRoute><LearningMap /></ProtectedRoute>} />
+        <Route path="/learning/stage/:stageId" element={<ProtectedRoute><LevelDetail /></ProtectedRoute>} />
+
+        {/* 签到系统 */}
+        <Route path="/checkin" element={<ProtectedRoute><Checkin /></ProtectedRoute>} />
+        <Route path="/habit-tracker" element={<ProtectedRoute><HabitTracker /></ProtectedRoute>} />
+        <Route path="/checkin-achievements" element={<ProtectedRoute><CheckinAchievements /></ProtectedRoute>} />
+
+        {/* PK对战系统 */}
+        <Route path="/pk-battle" element={<ProtectedRoute><ContentProtectedRoute contentType="games"><PKBattle /></ContentProtectedRoute></ProtectedRoute>} />
+        <Route path="/pk/room/:roomId" element={<ProtectedRoute><ContentProtectedRoute contentType="games"><PKRoom /></ContentProtectedRoute></ProtectedRoute>} />
+
+        {/* 游戏排行榜 */}
+        <Route path="/game-leaderboard" element={<ProtectedRoute><GameLeaderboard /></ProtectedRoute>} />
+
+        {/* 宠物系统 */}
+        <Route path="/pet-adopt" element={<ProtectedRoute><PetAdopt /></ProtectedRoute>} />
+        <Route path="/pet-detail" element={<ProtectedRoute><PetDetail /></ProtectedRoute>} />
+        {/* <Route path="/pet-shop" element={<ProtectedRoute><PetShop /></ProtectedRoute>} /> */}
+        {/* <Route path="/pet-inventory" element={<ProtectedRoute><PetInventory /></ProtectedRoute>} /> */}
+
         {/* 家长端路由 */}
         <Route path="/parent/login" element={<ParentLogin />} />
         <Route path="/parent" element={<ParentProtectedRoute><ParentLayout /></ParentProtectedRoute>}>
@@ -233,7 +285,9 @@ function App() {
         <Route path="*" element={<Navigate to="/home" replace />} />
       </Routes>
     </BrowserRouter>
+    </ToastProvider>
   )
 }
 
 export default App
+

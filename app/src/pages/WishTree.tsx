@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { Layout, Header } from '../components/layout'
 import { wishesApi } from '../services/api/wishes'
 import './WishTree.css'
+import { useToast } from '../components/Toast'
 
 interface Wish {
   id: string
@@ -22,6 +23,7 @@ const WISH_CATEGORIES = [
 ]
 
 export default function WishTree() {
+  const toast = useToast()
   const navigate = useNavigate()
   const [wishes, setWishes] = useState<Wish[]>([])
   const [showAddModal, setShowAddModal] = useState(false)
@@ -61,7 +63,7 @@ export default function WishTree() {
   // 添加心愿
   const handleAddWish = async () => {
     if (!newWish.trim() || !selectedCategory) {
-      alert('请填写心愿内容并选择类型')
+      toast.info('请填写心愿内容并选择类型')
       return
     }
 
@@ -90,7 +92,7 @@ export default function WishTree() {
     } catch (err: any) {
       console.error('添加心愿失败:', err)
       setError('添加心愿失败，请稍后重试')
-      alert('添加心愿失败，请稍后重试')
+      toast.error('添加心愿失败，请稍后重试')
     } finally {
       setSaving(false)
     }
@@ -109,7 +111,7 @@ export default function WishTree() {
       setWishes(updatedWishes)
     } catch (err: any) {
       console.error('更新心愿失败:', err)
-      alert('更新心愿失败，请稍后重试')
+      toast.error('更新心愿失败，请稍后重试')
     }
   }
 

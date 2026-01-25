@@ -1,6 +1,7 @@
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { contentControlManager, type ContentControlSettings } from '../../services/contentControl'
+import { useToast } from '../Toast'
 import './BottomNav.css'
 
 const navItems = [
@@ -8,45 +9,46 @@ const navItems = [
     path: '/home',
     icon: '🏠',
     text: '首页',
-    gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-    activeColor: '#667eea',
+    gradient: 'linear-gradient(135deg, #66bb6a 0%, #43a047 100%)',
+    activeColor: '#66bb6a',
     contentType: null // 首页不受限制
   },
   {
     path: '/create',
     icon: '✨',
     text: '创作',
-    gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-    activeColor: '#f093fb',
+    gradient: 'linear-gradient(135deg, #ffa726 0%, #fb8c00 100%)',
+    activeColor: '#ffa726',
     contentType: 'creation' as const
   },
   {
     path: '/games',
     icon: '🎮',
     text: '游戏',
-    gradient: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
-    activeColor: '#fa709a',
+    gradient: 'linear-gradient(135deg, #ffca28 0%, #ffa000 100%)',
+    activeColor: '#ffca28',
     contentType: 'games' as const
   },
   {
     path: '/warm-house',
     icon: '💝',
     text: '温暖',
-    gradient: 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
-    activeColor: '#ff9a76',
+    gradient: 'linear-gradient(135deg, #ff7043 0%, #f4511e 100%)',
+    activeColor: '#ff7043',
     contentType: null // 温暖小屋不受限制，公益功能
   },
   {
     path: '/profile',
     icon: '👤',
     text: '我的',
-    gradient: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
-    activeColor: '#43e97b',
+    gradient: 'linear-gradient(135deg, #26c6da 0%, #00acc1 100%)',
+    activeColor: '#26c6da',
     contentType: null // 个人中心不受限制
   },
 ]
 
 export default function BottomNav() {
+  const toast = useToast()
   const navigate = useNavigate()
   const location = useLocation()
   const [contentSettings, setContentSettings] = useState<ContentControlSettings | null>(null)
@@ -72,7 +74,7 @@ export default function BottomNav() {
       try {
         const canAccess = await contentControlManager.canAccess(item.contentType)
         if (!canAccess) {
-          alert(`家长已限制访问${item.text}功能`)
+          toast.info(`家长已限制访问${item.text}功能`)
           return
         }
       } catch (error) {

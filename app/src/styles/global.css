@@ -1,5 +1,24 @@
 @charset "UTF-8";
 
+/* ==========================================
+   移动端APP优化全局样式
+   - 安全区域适配
+   - 触摸优化
+   - 性能优化
+   ========================================== */
+
+:root {
+  /* 安全区域变量 (支持刘海屏/Home Indicator) */
+  --safe-area-inset-top: env(safe-area-inset-top);
+  --safe-area-inset-bottom: env(safe-area-inset-bottom);
+  --safe-area-inset-left: env(safe-area-inset-left);
+  --safe-area-inset-right: env(safe-area-inset-right);
+
+  /* 主题色 */
+  --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --primary-color: #667eea;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -9,6 +28,19 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+
+  /* 移动端触摸优化 */
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+
+html {
+  /* 禁用双击缩放 */
+  touch-action: manipulation;
+  /* 平滑滚动 */
+  scroll-behavior: smooth;
+  /* 防止字体大小调整 */
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
@@ -18,6 +50,15 @@ body {
   overflow-x: hidden;
   font-size: 16px;
   line-height: 1.6;
+
+  /* 适配安全区域 */
+  padding-top: var(--safe-area-inset-top);
+  padding-left: var(--safe-area-inset-left);
+  padding-right: var(--safe-area-inset-right);
+
+  /* 移动端滚动优化 */
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
 }
 
 .container {
@@ -32,14 +73,14 @@ body {
 }
 
 .main-content {
-  padding: 24px;
-  padding-bottom: calc(82px + 32px);
+  padding: 20px;
+  padding-bottom: calc(82px + 24px);
   overflow-y: auto;
 }
 
 .section-title {
-  font-size: 20px;
-  margin: 25px 0 18px;
+  font-size: 18px;
+  margin: 20px 0 16px;
   color: #2d3748;
   display: flex;
   align-items: center;
@@ -58,13 +99,23 @@ body {
 }
 
 .btn {
-  padding: 14px 24px;
+  padding: 12px 20px;
   border: none;
-  border-radius: 14px;
-  font-size: 17px;
+  border-radius: 12px;
+  font-size: 16px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  min-height: 44px; /* 确保触摸热区足够 */
+
+  /* 触摸反馈优化 */
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.btn:active {
+  transform: scale(0.98);
+  transition-duration: 0.1s;
 }
 
 .btn:disabled {
@@ -99,12 +150,21 @@ body {
 
 .card {
   background: white;
-  border-radius: 20px;
-  padding: 20px;
-  margin-bottom: 18px;
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 16px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
   box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+
+  /* 触摸优化 */
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.card:active {
+  transform: scale(0.98);
+  transition-duration: 0.1s;
 }
 
 .card:hover {
@@ -151,8 +211,66 @@ body {
 }
 
 .loading-text {
-  font-size: 16px;
+  font-size: 14px;
   color: #718096;
-  margin-top: 20px;
+  margin-top: 16px;
   font-weight: 600;
+}
+
+/* 移动端响应式优化 - 小屏设备 */
+@media (max-width: 360px) {
+  .container {
+    padding-bottom: 80px;
+  }
+
+  .main-content {
+    padding: 16px;
+    padding-bottom: calc(70px + 20px);
+  }
+
+  .section-title {
+    font-size: 16px;
+    margin: 16px 0 12px;
+  }
+
+  .btn {
+    padding: 10px 16px;
+    font-size: 14px;
+    min-height: 40px;
+  }
+
+  .card {
+    padding: 14px;
+    margin-bottom: 12px;
+    border-radius: 14px;
+  }
+}
+
+/* 超小屏设备适配 (iPhone SE 1st gen等) */
+@media (max-width: 320px) {
+  .container {
+    padding-bottom: 75px;
+  }
+
+  .main-content {
+    padding: 12px;
+    padding-bottom: calc(65px + 16px);
+  }
+
+  .section-title {
+    font-size: 15px;
+    margin: 12px 0 10px;
+  }
+
+  .btn {
+    padding: 8px 12px;
+    font-size: 13px;
+    min-height: 38px;
+  }
+
+  .card {
+    padding: 12px;
+    margin-bottom: 10px;
+    border-radius: 12px;
+  }
 }

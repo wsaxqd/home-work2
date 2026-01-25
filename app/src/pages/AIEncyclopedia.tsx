@@ -1,6 +1,7 @@
 // src/pages/AIEncyclopedia.tsx
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { Layout, Header } from '../components/layout';
 import { UsageTracker } from '../services/usageTracking';
 import './AIEncyclopedia.css';
 
@@ -175,35 +176,51 @@ const AIEncyclopedia: React.FC = () => {
   }, []);
 
   return (
-    <div className="encyclopedia-container">
-      {/* 顶部导航 */}
-      <header className="encyclopedia-header">
-        <button className="back-button" onClick={() => navigate('/home')}>
-          <span className="icon">←</span>
-        </button>
-        <h1 className="page-title">AI十万个为什么</h1>
-        <button className="voice-assistant-btn" onClick={askQuestionToAI}>
-          <span className="icon">🎤</span>
-        </button>
-      </header>
+    <Layout>
+      <Header
+        title="AI小百科"
+        gradient="linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+        showBack={true}
+        rightContent={
+          <button className="voice-assistant-btn" onClick={askQuestionToAI}>
+            🎤
+          </button>
+        }
+      />
 
-      {/* 启启机器人助手 */}
-      <div className="ai-assistant-banner">
-        <div className="assistant-avatar">
-          <div className="robot-face">
-            <div className="eye left"></div>
-            <div className="eye right"></div>
-            <div className="smile"></div>
+      <div className="main-content">
+        {/* 知识拓展快捷入口 */}
+        <div className="knowledge-tools">
+          <div
+            className="tool-card why-questions"
+            onClick={() => navigate('/why-questions')}
+          >
+            <div className="tool-icon">❓</div>
+            <div className="tool-info">
+              <div className="tool-title">十万个为什么</div>
+              <div className="tool-desc">解答你的好奇心</div>
+            </div>
+            <div className="tool-arrow">→</div>
           </div>
         </div>
-        <div className="assistant-info">
-          <h3>我是启启 🤖</h3>
-          <p>有什么关于AI的好奇问题，尽管问我吧！</p>
-          <button className="talk-to-me-btn" onClick={askQuestionToAI}>
-            <span className="icon">💬</span> 和我聊天
-          </button>
+
+        {/* 启启机器人助手 */}
+        <div className="ai-assistant-banner">
+          <div className="assistant-avatar">
+            <div className="robot-face">
+              <div className="eye left"></div>
+              <div className="eye right"></div>
+              <div className="smile"></div>
+            </div>
+          </div>
+          <div className="assistant-info">
+            <h3>我是启启 🤖</h3>
+            <p>有什么关于AI的好奇问题，尽管问我吧！</p>
+            <button className="talk-to-me-btn" onClick={askQuestionToAI}>
+              <span className="icon">💬</span> 和我聊天
+            </button>
+          </div>
         </div>
-      </div>
 
       {/* 搜索和筛选 */}
       <div className="filter-section">
@@ -397,22 +414,23 @@ const AIEncyclopedia: React.FC = () => {
         </div>
       )}
 
-      {/* 底部操作栏 */}
-      <div className="bottom-actions">
-        <button className="ask-question-btn" onClick={askQuestionToAI}>
-          <span className="icon">+</span> 我要提问
-        </button>
-        <button 
-          className="history-link-btn"
-          onClick={() => navigate('/ai-history')}
-        >
-          <span className="icon">📜</span> 看AI发展史
-        </button>
-        <Link to="/games" className="games-link-btn">
-          <span className="icon">🎮</span> 玩AI游戏
-        </Link>
+        {/* 底部操作栏 */}
+        <div className="bottom-actions">
+          <button className="ask-question-btn" onClick={askQuestionToAI}>
+            <span className="icon">+</span> 我要提问
+          </button>
+          <button
+            className="history-link-btn"
+            onClick={() => navigate('/ai-history')}
+          >
+            <span className="icon">📜</span> 看AI发展史
+          </button>
+          <Link to="/games" className="games-link-btn">
+            <span className="icon">🎮</span> 玩AI游戏
+          </Link>
+        </div>
       </div>
-    </div>
+    </Layout>
   );
 };
 

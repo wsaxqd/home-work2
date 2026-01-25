@@ -196,7 +196,11 @@ export default function WhyQuestions() {
 
   return (
     <Layout>
-      <Header title="十万个为什么" gradient="linear-gradient(135deg, #fddb92 0%, #d1fdff 100%)" />
+      <Header
+        title="AI十万个为什么"
+        gradient="linear-gradient(135deg, #fddb92 0%, #d1fdff 100%)"
+        showBack={true}
+      />
 
       <div className="main-content">
         {/* 介绍横幅 */}

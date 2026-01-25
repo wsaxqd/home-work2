@@ -2,7 +2,9 @@ import { useState, useEffect, useRef } from 'react'
 import { Layout, Header } from '../components/layout'
 import { favoritesApi } from '../services/api/favorites'
 import { UsageTracker } from '../services/usageTracking'
+import { imageGenerationService } from '../services/imageGeneration'
 import './Creator.css'
+import { useToast } from '../components/Toast'
 
 const styles = [
   { icon: '🖍️', name: '卡通风格', value: 'cartoon' },
@@ -21,11 +23,14 @@ const templates = [
 ]
 
 export default function ArtCreator() {
+  const toast = useToast()
   const [step, setStep] = useState(1)
   const [selectedStyle, setSelectedStyle] = useState('')
   const [prompt, setPrompt] = useState('')
   const [isGenerating, setIsGenerating] = useState(false)
   const [generatedArt, setGeneratedArt] = useState('')
+  const [generationError, setGenerationError] = useState('')
+  const [artworkId, setArtworkId] = useState<number | null>(null)
   const [isFavorited, setIsFavorited] = useState(false)
   const [isFavoriting, setIsFavoriting] = useState(false)
   const usageTrackerRef = useRef<UsageTracker | null>(null)
@@ -42,14 +47,56 @@ export default function ArtCreator() {
     }
   }, [])
 
-  const handleGenerate = () => {
-    if (!prompt) return
+  const handleGenerate = async () => {
+    if (!prompt) {
+      toast.info('请描述你想画的内容')
+      return
+    }
+
     setIsGenerating(true)
-    setTimeout(() => {
+    setGenerationError('')
+
+    try {
+      // 调用AI图像生成服务
+      const result = await imageGenerationService.generateImage({
+        prompt: prompt,
+        style: selectedStyle,
+        size: '512x512'
+      })
+
+      if (result.success && result.imageUrl) {
+        setGeneratedArt(result.imageUrl)
+
+        // 保存作品到数据库
+        const saveResult = await imageGenerationService.saveArtwork(result.imageUrl, {
+          prompt: prompt,
+          style: selectedStyle
+        })
+
+        if (saveResult.success && saveResult.artworkId) {
+          setArtworkId(saveResult.artworkId)
+        }
+
+        setStep(3)
+
+        // 记录成功生成
+        if (usageTrackerRef.current) {
+          usageTrackerRef.current.end(undefined, {
+            success: true,
+            style: selectedStyle,
+            prompt: prompt
+          })
+          usageTrackerRef.current = null
+        }
+      } else {
+        setGenerationError(result.error || '生成失败，请重试')
+      }
+    } catch (error) {
+      console.error('生成图像失败:', error)
+      setGenerationError('生成失败，请检查网络连接')
+    } finally {
       setIsGenerating(false)
-      setGeneratedArt('🖼️')
-      setStep(3)
-    }, 3000)
+    }
   }
 
   const handleFavorite = async () => {
@@ -60,7 +107,7 @@ export default function ArtCreator() {
     try {
       if (isFavorited) {
         setIsFavorited(false)
-        alert('已取消收藏')
+        toast.success('已取消收藏')
       } else {
         await favoritesApi.addFavorite({
           itemType: 'art',
@@ -69,11 +116,11 @@ export default function ArtCreator() {
           itemContent: prompt,
         })
         setIsFavorited(true)
-        alert('收藏成功!')
+        toast.success('收藏成功!')
       }
     } catch (err: any) {
       console.error('Favorite error:', err)
-      alert(err.message || '操作失败，请重试')
+      toast.info(err.message || '操作失败，请重试')
     } finally {
       setIsFavoriting(false)
     }
@@ -169,18 +216,44 @@ export default function ArtCreator() {
               <div className="loading-animation">
                 <div className="spinner"></div>
                 <div className="loading-text">AI正在创作你的画作...</div>
+                <div className="loading-hint">这可能需要10-30秒，请耐心等待</div>
+              </div>
+            ) : generationError ? (
+              <div className="error-section">
+                <div className="error-icon">😔</div>
+                <div className="error-message">{generationError}</div>
+                <div className="control-buttons">
+                  <button className="btn btn-secondary" onClick={() => setStep(2)}>
+                    返回修改
+                  </button>
+                  <button className="btn btn-primary" onClick={handleGenerate}>
+                    重新生成
+                  </button>
+                </div>
               </div>
             ) : (
               <div className="result-section">
                 <div className="artwork-preview">
-                  <div className="artwork-display">{generatedArt}</div>
+                  {generatedArt.startsWith('http') ? (
+                    <img
+                      src={generatedArt}
+                      alt="AI生成的画作"
+                      className="artwork-image"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgZmlsbD0iI2Y1ZjVmNSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTgiIGZpbGw9IiM5OTkiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj7lm77niYfliqDovb3lpLHotKU8L3RleHQ+PC9zdmc+'
+                      }}
+                    />
+                  ) : (
+                    <div className="artwork-display">{generatedArt}</div>
+                  )}
                 </div>
                 <div className="artwork-info">
                   <div className="artwork-title">我的AI画作</div>
                   <div className="artwork-desc">"{prompt}"</div>
+                  <div className="artwork-style">风格：{styles.find(s => s.value === selectedStyle)?.name}</div>
                 </div>
                 <div className="action-buttons">
-                  <button className="btn btn-secondary" onClick={() => { setStep(1); setPrompt(''); setIsFavorited(false); }}>
+                  <button className="btn btn-secondary" onClick={() => { setStep(1); setPrompt(''); setGeneratedArt(''); setGenerationError(''); setIsFavorited(false); }}>
                     重新创作
                   </button>
                   <button
@@ -200,7 +273,7 @@ export default function ArtCreator() {
                         saved: true
                       })
                     }
-                    alert('作品已保存')
+                    toast.success('作品已保存')
                   }}>保存作品</button>
                 </div>
               </div>

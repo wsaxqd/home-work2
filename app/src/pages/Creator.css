@@ -257,3 +257,45 @@
   font-size: 12px;
   color: #666;
 }
+
+
+/* AI绘画作品图片显示 */
+.artwork-image {
+  width: 100%;
+  height: auto;
+  max-width: 512px;
+  border-radius: 15px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  display: block;
+  margin: 0 auto;
+}
+
+.artwork-style {
+  font-size: 14px;
+  color: #999;
+  margin-top: 8px;
+}
+
+.loading-hint {
+  font-size: 14px;
+  color: #999;
+  margin-top: 15px;
+}
+
+.error-section {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.error-icon {
+  font-size: 64px;
+  margin-bottom: 20px;
+}
+
+.error-message {
+  font-size: 18px;
+  color: #666;
+  margin-bottom: 30px;
+  line-height: 1.6;
+}
+

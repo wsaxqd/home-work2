@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import parentAPI from '../services/parentAPI'
+import { useToast } from '../components/Toast'
 import './ChildrenManagement.css'
 
 interface Child {
@@ -14,6 +15,7 @@ interface Child {
 }
 
 export default function ChildrenManagement() {
+  const toast = useToast()
   const [children, setChildren] = useState<Child[]>([])
   const [showModal, setShowModal] = useState(false)
   const [editingChild, setEditingChild] = useState<Child | null>(null)
@@ -39,7 +41,7 @@ export default function ChildrenManagement() {
       setChildren(data || [])
     } catch (err: any) {
       console.error('加载孩子列表失败:', err)
-      alert(err.message || '加载失败')
+      toast.info(err.message || '加载失败')
     } finally {
       setIsLoading(false)
     }
@@ -84,12 +86,12 @@ export default function ChildrenManagement() {
 
   const handleSubmit = async () => {
     if (!formData.nickname || !formData.age || !formData.grade) {
-      alert('请填写完整信息')
+      toast.info('请填写完整信息')
       return
     }
 
     if (!editingChild && !formData.account) {
-      alert('请输入孩子账号')
+      toast.info('请输入孩子账号')
       return
     }
 
@@ -105,7 +107,7 @@ export default function ChildrenManagement() {
           grade: formData.grade,
           avatar: formData.avatar
         })
-        alert('修改成功!')
+        toast.success('修改成功!')
       } else {
         // 添加模式
         await parentAPI.addChild({
@@ -116,13 +118,13 @@ export default function ChildrenManagement() {
           grade: formData.grade,
           avatar: formData.avatar
         })
-        alert('添加成功!')
+        toast.success('添加成功!')
       }
 
       handleCloseModal()
       loadChildren() // 重新加载列表
     } catch (err: any) {
-      alert(err.message || '操作失败')
+      toast.info(err.message || '操作失败')
     } finally {
       setIsSubmitting(false)
     }
@@ -132,10 +134,10 @@ export default function ChildrenManagement() {
     if (window.confirm(`确定要解除与 ${child.nickname} 的绑定吗?`)) {
       try {
         await parentAPI.deleteChild(child.id)
-        alert('已解除绑定')
+        toast.success('已解除绑定')
         loadChildren() // 重新加载列表
       } catch (err: any) {
-        alert(err.message || '解绑失败')
+        toast.info(err.message || '解绑失败')
       }
     }
   }

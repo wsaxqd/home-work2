@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { Layout, Header } from '../components/layout'
 import { favoritesApi } from '../services/api/favorites'
 import './Favorites.css'
+import { useToast } from '../components/Toast'
 
 interface Favorite {
   id: string
@@ -23,6 +24,7 @@ const ITEM_TYPE_LABELS: Record<string, string> = {
 }
 
 export default function Favorites() {
+  const toast = useToast()
   const navigate = useNavigate()
   const [favorites, setFavorites] = useState<Favorite[]>([])
   const [loading, setLoading] = useState(true)
@@ -53,7 +55,7 @@ export default function Favorites() {
       setFavorites(favorites.filter(f => f.id !== favoriteId))
     } catch (error) {
       console.error('取消收藏失败:', error)
-      alert('取消收藏失败，请稍后重试')
+      toast.error('取消收藏失败，请稍后重试')
     }
   }
 

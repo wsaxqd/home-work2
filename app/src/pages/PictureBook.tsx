@@ -1,7 +1,9 @@
 import { useState, useRef, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Layout, Header } from '../components/layout'
 import { UsageTracker } from '../services/usageTracking'
 import { favoritesApi } from '../services/api/favorites'
+import { useToast } from '../components/Toast'
 import './PictureBook.css'
 
 interface Book {
@@ -123,6 +125,8 @@ const books6to12: Book[] = [
 ]
 
 export default function PictureBook() {
+  const toast = useToast()
+  const navigate = useNavigate()
   const [selectedAge, setSelectedAge] = useState<'0-3' | '3-6' | '6-12'>('0-3')
   const [selectedBook, setSelectedBook] = useState<Book | null>(null)
   const [isFavorited, setIsFavorited] = useState(false)
@@ -177,16 +181,23 @@ export default function PictureBook() {
 
   // 开始阅读按钮
   const handleStartReading = () => {
-    // 记录为完成阅读
-    if (usageTrackerRef.current && selectedBook) {
+    if (!selectedBook) return
+
+    // 记录进入阅读
+    if (usageTrackerRef.current) {
       usageTrackerRef.current.end(undefined, {
-        completed: true // 完成阅读
+        action: 'enter_reader'
       })
       usageTrackerRef.current = null
     }
-    // 这里可以添加实际的阅读功能
-    alert(`开始阅读《${selectedBook?.title}》`)
-    setSelectedBook(null)
+
+    // 跳转到绘本阅读器
+    navigate('/picture-book-reader', {
+      state: {
+        bookId: selectedBook.id,
+        bookTitle: selectedBook.title
+      }
+    })
   }
 
   // 收藏绘本
@@ -199,7 +210,7 @@ export default function PictureBook() {
       if (isFavorited) {
         // 取消收藏
         setIsFavorited(false)
-        alert('已取消收藏')
+        toast.success('已取消收藏')
       } else {
         // 添加收藏
         await favoritesApi.addFavorite({
@@ -209,11 +220,11 @@ export default function PictureBook() {
           itemContent: `${selectedBook.author} | ${selectedBook.summary.substring(0, 100)}`,
         })
         setIsFavorited(true)
-        alert('收藏成功!')
+        toast.success('收藏成功!')
       }
     } catch (err: any) {
       console.error('Favorite error:', err)
-      alert(err.message || '操作失败，请重试')
+      toast.info(err.message || '操作失败，请重试')
     } finally {
       setIsFavoriting(false)
     }
@@ -224,6 +235,43 @@ export default function PictureBook() {
       <Header title="绘本阅读" gradient="linear-gradient(135deg, #3498db 0%, #2ecc71 100%)" />
 
       <div className="main-content">
+        {/* 阅读专区快捷入口 */}
+        <div className="reading-tools">
+          <div
+            className="tool-card classics"
+            onClick={() => navigate('/chinese-classics')}
+          >
+            <div className="tool-icon">📜</div>
+            <div className="tool-info">
+              <div className="tool-title">国学经典</div>
+              <div className="tool-desc">唐诗宋词·论语三字经</div>
+            </div>
+            <div className="tool-arrow">→</div>
+          </div>
+          <div
+            className="tool-card four-classics"
+            onClick={() => navigate('/four-classics')}
+          >
+            <div className="tool-icon">📚</div>
+            <div className="tool-info">
+              <div className="tool-title">四大名著</div>
+              <div className="tool-desc">西游·三国·水浒·红楼</div>
+            </div>
+            <div className="tool-arrow">→</div>
+          </div>
+          <div
+            className="tool-card english"
+            onClick={() => navigate('/english-book')}
+          >
+            <div className="tool-icon">🌍</div>
+            <div className="tool-info">
+              <div className="tool-title">英语绘本</div>
+              <div className="tool-desc">快乐学英语</div>
+            </div>
+            <div className="tool-arrow">→</div>
+          </div>
+        </div>
+
         {/* 年龄段选择 */}
         <div className="age-selector">
           <button

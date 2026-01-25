@@ -95,14 +95,14 @@ class ParentAuthService {
   async login(data: ParentLoginData) {
     const { phone, password } = data;
 
-    // 查找家长账号
+    // 查找家长账号(支持手机号或邮箱)
     const result = await pool.query(
-      'SELECT * FROM parents WHERE phone = $1',
+      'SELECT * FROM parents WHERE phone = $1 OR email = $1',
       [phone]
     );
 
     if (result.rows.length === 0) {
-      throw new Error('手机号或密码错误');
+      throw new Error('手机号/邮箱或密码错误');
     }
 
     const parent = result.rows[0];
@@ -111,7 +111,7 @@ class ParentAuthService {
     const isPasswordValid = await bcrypt.compare(password, parent.password);
 
     if (!isPasswordValid) {
-      throw new Error('手机号或密码错误');
+      throw new Error('手机号/邮箱或密码错误');
     }
 
     // 生成 JWT token

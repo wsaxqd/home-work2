@@ -25,6 +25,8 @@ export default function PetCompanion({ onInteraction }: PetCompanionProps) {
   const [loading, setLoading] = useState(true)
   const [showMenu, setShowMenu] = useState(false)
   const [message, setMessage] = useState('')
+  const [showFeedModal, setShowFeedModal] = useState(false)
+  const [interacting, setInteracting] = useState(false)
 
   // 加载宠物数据
   useEffect(() => {
@@ -53,7 +55,11 @@ export default function PetCompanion({ onInteraction }: PetCompanionProps) {
 
   // 互动
   const handleInteract = async (type: string) => {
-    if (!pet) return
+    if (!pet || interacting) return
+
+    // 如果是喂食，先检查是否有食物，简化流程直接喂食
+    setInteracting(true)
+    setShowMenu(false)
 
     try {
       const token = localStorage.getItem('token')
@@ -68,21 +74,36 @@ export default function PetCompanion({ onInteraction }: PetCompanionProps) {
 
       const data = await response.json()
       if (data.success) {
-        setMessage(data.message)
-        setTimeout(() => setMessage(''), 2000)
-        loadPet() // 重新加载宠物数据
+        // 显示互动反馈消息
+        const messages = {
+          feed: `🍎 ${pet.nickname}开心地吃了起来！饥饿度+20`,
+          play: `🎮 ${pet.nickname}玩得很开心！快乐度+15`,
+          study: `📚 ${pet.nickname}认真学习中！经验值+20`
+        }
+        setMessage(messages[type as keyof typeof messages] || data.message)
+        setTimeout(() => setMessage(''), 2500)
+
+        // 重新加载宠物数据
+        await loadPet()
         onInteraction?.(type)
 
         // 检查是否升级
         if (data.data.newLevel) {
-          showLevelUpAnimation(data.data.newLevel)
+          setTimeout(() => {
+            showLevelUpAnimation(data.data.newLevel)
+          }, 2600)
         }
+      } else {
+        setMessage(data.message || '互动失败')
+        setTimeout(() => setMessage(''), 2000)
       }
     } catch (error) {
       console.error('互动失败:', error)
+      setMessage('互动失败，请稍后重试')
+      setTimeout(() => setMessage(''), 2000)
+    } finally {
+      setInteracting(false)
     }
-
-    setShowMenu(false)
   }
 
   const showLevelUpAnimation = (newLevel: number) => {
@@ -102,7 +123,7 @@ export default function PetCompanion({ onInteraction }: PetCompanionProps) {
     return (
       <div className="pet-companion empty">
         <div className="pet-empty-state">
-          <div className="empty-icon">🥚</div>
+          <div className="empty-icon">🐾</div>
           <p>还没有学习伙伴</p>
           <button className="adopt-btn" onClick={() => window.location.href = '/pet-adopt'}>
             领养一只
@@ -148,7 +169,10 @@ export default function PetCompanion({ onInteraction }: PetCompanionProps) {
 
         {/* 宠物信息 */}
         <div className="pet-info">
-          <div className="pet-name">{pet.nickname || pet.pet_type_name}</div>
+          <div className="pet-name-section">
+            <div className="pet-name">{pet.nickname}</div>
+            <div className="pet-type">({pet.pet_type_name})</div>
+          </div>
 
           {/* 经验值进度条 */}
           <div className="exp-bar-container">
@@ -205,15 +229,24 @@ export default function PetCompanion({ onInteraction }: PetCompanionProps) {
       {/* 互动菜单 */}
       {showMenu && (
         <div className="pet-interaction-menu">
-          <div className="interaction-option" onClick={() => handleInteract('feed')}>
+          <div
+            className={`interaction-option ${interacting ? 'disabled' : ''}`}
+            onClick={() => !interacting && handleInteract('feed')}
+          >
             <span className="option-icon">🍎</span>
             <span className="option-label">喂食</span>
           </div>
-          <div className="interaction-option" onClick={() => handleInteract('play')}>
+          <div
+            className={`interaction-option ${interacting ? 'disabled' : ''}`}
+            onClick={() => !interacting && handleInteract('play')}
+          >
             <span className="option-icon">🎮</span>
             <span className="option-label">玩耍</span>
           </div>
-          <div className="interaction-option" onClick={() => handleInteract('study')}>
+          <div
+            className={`interaction-option ${interacting ? 'disabled' : ''}`}
+            onClick={() => !interacting && handleInteract('study')}
+          >
             <span className="option-icon">📚</span>
             <span className="option-label">学习</span>
           </div>

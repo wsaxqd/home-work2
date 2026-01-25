@@ -5,6 +5,7 @@ import { favoritesApi } from '../services/api/favorites'
 import { UsageTracker } from '../services/usageTracking'
 import './Creator.css'
 import './PoemCreator.css'
+import { useToast } from '../components/Toast'
 
 const themes = [
   { icon: '🌳', name: '自然风光', value: 'nature' },
@@ -23,6 +24,7 @@ const styles = [
 ]
 
 export default function PoemCreator() {
+  const toast = useToast()
   const [mode, setMode] = useState<'create' | 'browse'>('create') // 'create' 创作模式, 'browse' 浏览模式
   const [step, setStep] = useState(1)
   const [selectedTheme, setSelectedTheme] = useState('')
@@ -120,7 +122,7 @@ export default function PoemCreator() {
     try {
       if (isFavorited) {
         setIsFavorited(false)
-        alert('已取消收藏')
+        toast.success('已取消收藏')
       } else {
         await favoritesApi.addFavorite({
           itemType: 'poem',
@@ -129,11 +131,11 @@ export default function PoemCreator() {
           itemContent: poem.content.substring(0, 200),
         })
         setIsFavorited(true)
-        alert('收藏成功!')
+        toast.success('收藏成功!')
       }
     } catch (err: any) {
       console.error('Favorite error:', err)
-      alert(err.message || '操作失败，请重试')
+      toast.info(err.message || '操作失败，请重试')
     } finally {
       setIsFavoriting(false)
     }
@@ -300,7 +302,7 @@ export default function PoemCreator() {
                         saved: true
                       })
                     }
-                    alert('诗词已保存')
+                    toast.success('诗词已保存')
                   }}>保存诗词</button>
                 </div>
               </div>
