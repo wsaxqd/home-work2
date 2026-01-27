@@ -1,0 +1,547 @@
+/* 学习仪表盘样式 */
+.learning-dashboard {
+  width: 100%;
+  padding: 0;
+  margin: 0;
+}
+
+/* 加载状态 */
+.welcome-card-new.loading-state {
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loading-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.loading-spinner {
+  font-size: 48px;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 500;
+}
+
+/* 错误/未登录状态 */
+.welcome-card-new.error-state {
+  min-height: 280px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.error-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  text-align: center;
+  max-width: 320px;
+}
+
+.error-icon {
+  font-size: 64px;
+  opacity: 0.9;
+}
+
+.error-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: white;
+  margin: 0;
+}
+
+.error-description {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.error-login-btn {
+  background: white;
+  color: #667eea;
+  border: none;
+  border-radius: 24px;
+  padding: 12px 32px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  margin-top: 8px;
+}
+
+.error-login-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.error-login-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* 欢迎卡片 */
+.welcome-card-new {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 20px;
+  padding: 24px;
+  margin-bottom: 16px;
+  color: white;
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.25);
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.welcome-header-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.welcome-user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.welcome-avatar-new {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  flex-shrink: 0;
+}
+
+.welcome-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.welcome-greeting-new {
+  font-size: 20px;
+  font-weight: 700;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.welcome-subtitle-new {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 400;
+}
+
+/* 排名徽章 */
+.rank-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  padding: 8px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.rank-icon {
+  font-size: 20px;
+}
+
+.rank-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.rank-label {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.rank-value {
+  font-size: 14px;
+  font-weight: 700;
+  color: white;
+}
+
+/* 学习统计卡片行 */
+.learning-stats-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; /* Firefox */
+}
+
+.learning-stats-row::-webkit-scrollbar {
+  display: none; /* Chrome, Safari */
+}
+
+.stat-chip {
+  flex: 1 1 auto;
+  min-width: 90px;
+  max-width: 140px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 14px;
+  padding: 12px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.stat-chip:active {
+  transform: scale(0.95);
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.stat-chip-icon {
+  font-size: 20px;
+}
+
+.stat-chip-label {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+.stat-chip-value {
+  font-size: 16px;
+  font-weight: 800;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* 等级部分 */
+.level-section {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 16px;
+}
+
+.level-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.level-badge {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.level-progress-text {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.level-progress {
+  background: linear-gradient(90deg, #f093fb 0%, #f5576c 100%);
+}
+
+/* 任务进度部分 */
+.progress-section {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 16px;
+}
+
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.progress-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.progress-percentage {
+  font-size: 14px;
+  font-weight: 700;
+  color: white;
+}
+
+.progress-bar-container {
+  height: 8px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+  border-radius: 10px;
+  transition: width 0.5s ease;
+  box-shadow: 0 0 10px rgba(79, 172, 254, 0.5);
+}
+
+/* 今日统计网格 */
+.today-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.today-stat-item {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  padding: 12px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-width: 0; /* 允许flex子项收缩 */
+  box-sizing: border-box;
+}
+
+.today-stat-icon {
+  font-size: 20px;
+  margin-bottom: 4px;
+}
+
+.today-stat-value {
+  font-size: 18px;
+  font-weight: 800;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.today-stat-label {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.85);
+  text-align: center;
+}
+
+/* 最近成就 */
+.recent-achievements {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 16px;
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.achievements-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.achievements-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+}
+
+.achievements-more {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.achievements-more:hover {
+  color: white;
+}
+
+.achievements-list {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.achievements-list::-webkit-scrollbar {
+  height: 3px;
+}
+
+.achievements-list::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+.achievements-list::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 10px;
+}
+
+.achievement-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 2px solid;
+  border-radius: 10px;
+  padding: 10px 12px;
+  min-width: 80px;
+  flex-shrink: 0;
+}
+
+.achievement-icon {
+  font-size: 24px;
+}
+
+.achievement-name {
+  font-size: 11px;
+  color: white;
+  text-align: center;
+  font-weight: 500;
+}
+
+/* 快捷操作按钮 */
+.quick-task-buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.task-btn {
+  flex: 1;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.task-btn-primary {
+  background: white;
+  color: #667eea;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.task-btn-primary:active {
+  transform: scale(0.95);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.task-btn-secondary {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.task-btn-secondary:active {
+  transform: scale(0.95);
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* 响应式设计 */
+@media (max-width: 480px) {
+  .welcome-card-new {
+    padding: 20px 16px;
+    margin-left: -16px;
+    margin-right: -16px;
+    border-radius: 0;
+    width: calc(100% + 32px);
+  }
+
+  .learning-stats-row {
+    gap: 8px;
+  }
+
+  .stat-chip {
+    padding: 10px 6px;
+    min-width: 80px;
+    max-width: 110px;
+  }
+
+  .stat-chip-icon {
+    font-size: 18px;
+  }
+
+  .stat-chip-label {
+    font-size: 10px;
+  }
+
+  .stat-chip-value {
+    font-size: 14px;
+  }
+
+  .today-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .rank-badge {
+    padding: 6px 10px;
+  }
+
+  .rank-icon {
+    font-size: 18px;
+  }
+
+  .rank-label,
+  .rank-value {
+    font-size: 11px;
+  }
+}

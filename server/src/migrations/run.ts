@@ -33,6 +33,16 @@ import { migration_025_create_reading_progress } from './025_create_reading_prog
 import { migration_026_create_story_play_records } from './026_create_story_play_records';
 import { migration_027_create_conversation_history } from './027_create_conversation_history';
 import { migration_028_create_community_topics } from './028_create_community_topics';
+import { migration_031_create_adaptive_learning } from './031_create_adaptive_learning';
+import { migration_032_insert_knowledge_points } from './032_insert_knowledge_points';
+import { migration_033_create_questions_table } from './033_create_questions_table';
+import { migration_034_insert_sample_questions } from './034_insert_sample_questions';
+import { migration_035_create_points_system } from './035_create_points_system';
+import { migration_036_insert_points_data } from './036_insert_points_data';
+import { migration_037_create_learning_analytics } from './037_create_learning_analytics';
+import { migration_038_enhance_notification_system } from './038_enhance_notification_system';
+import { migration_039_create_learning_plan } from './039_create_learning_plan';
+import { migration_040_create_skill_tree } from './040_create_skill_tree';
 
 const migrations: Migration[] = [
   migration_001_create_users,
@@ -63,6 +73,16 @@ const migrations: Migration[] = [
   migration_026_create_story_play_records,
   migration_027_create_conversation_history,
   migration_028_create_community_topics,
+  migration_031_create_adaptive_learning,
+  migration_032_insert_knowledge_points,
+  migration_033_create_questions_table,
+  migration_034_insert_sample_questions,
+  migration_035_create_points_system,
+  migration_036_insert_points_data,
+  migration_037_create_learning_analytics,
+  migration_038_enhance_notification_system,
+  migration_039_create_learning_plan,
+  migration_040_create_skill_tree,
 ];
 
 async function run() {

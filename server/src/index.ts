@@ -31,12 +31,17 @@ import wishesRoutes from './routes/wishes';
 import conversationRoutes from './routes/conversation';
 import favoritesRoutes from './routes/favorites';
 import homeworkRoutes from './routes/homework';
-import petsRoutes from './routes/pets';
 import wrongQuestionsRoutes from './routes/wrongQuestions';
 import learningPathRoutes from './routes/learningPath';
 import pkRoutes from './routes/pk';
 import checkinRoutes from './routes/checkin';
 import aiAssistantRoutes from './routes/aiAssistant';
+import adaptiveLearningRoutes from './routes/adaptiveLearning';
+import pointsRoutes from './routes/points';
+import rewardsRoutes from './routes/rewards';
+import learningAnalyticsRoutes from './routes/learningAnalytics';
+import learningPlanRoutes from './routes/learningPlan';
+import skillTreeRoutes from './routes/skillTree';
 
 const app = express();
 
@@ -94,12 +99,17 @@ app.use('/api/wishes', wishesRoutes);
 app.use('/api/conversation', conversationRoutes);
 app.use('/api/favorites', favoritesRoutes);
 app.use('/api/homework', homeworkRoutes);
-app.use('/api/pets', petsRoutes);
 app.use('/api/wrong-questions', wrongQuestionsRoutes);
 app.use('/api/learning-path', learningPathRoutes);
 app.use('/api/pk', pkRoutes);
 app.use('/api/checkin', checkinRoutes);
 app.use('/api/ai-assistant', aiAssistantRoutes);
+app.use('/api/adaptive-learning', adaptiveLearningRoutes);
+app.use('/api/points', pointsRoutes);
+app.use('/api/rewards', rewardsRoutes);
+app.use('/api/learning-analytics', learningAnalyticsRoutes);
+app.use('/api/learning-plan', learningPlanRoutes);
+app.use('/api/skill-tree', skillTreeRoutes);
 app.use('/api', homeRoutes);
 
 // 404处理
