@@ -248,4 +248,34 @@ describe('AuthService - 认证服务单元测试', () => {
   });
 
   describe('verifyToken - JWT Token 验证功能', () => {
-    it('应该成功验证有效的 token
+    it('应该成功验证有效的 token', () => {
+      const userId = 99999;
+      const email = 'verify@example.com';
+
+      const token = authService.generateToken(userId, email);
+      const decoded = authService.verifyToken(token);
+
+      expect(decoded).not.toBeNull();
+      expect(decoded?.userId).toBe(userId);
+      expect(decoded?.email).toBe(email);
+    });
+
+    it('边界条件：应该拒绝无效的 token', () => {
+      const decoded = authService.verifyToken('invalid-token-string');
+      expect(decoded).toBeNull();
+    });
+
+    it('边界条件：应该拒绝空 token', () => {
+      const decoded = authService.verifyToken('');
+      expect(decoded).toBeNull();
+    });
+
+    it('真实场景：生成和验证完整流程', () => {
+      const token = authService.generateToken(12345, 'user@example.com');
+      const decoded = authService.verifyToken(token);
+
+      expect(decoded).not.toBeNull();
+      expect(decoded?.userId).toBe(12345);
+    });
+  });
+});
