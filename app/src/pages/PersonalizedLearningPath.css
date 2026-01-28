@@ -1,0 +1,433 @@
+.learning-path-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px;
+  padding-bottom: 100px;
+}
+
+/* 页面头部 */
+.page-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.page-header h1 {
+  color: white;
+  font-size: 24px;
+  font-weight: bold;
+  margin: 0;
+  flex: 1;
+  text-align: center;
+}
+
+.back-button {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+}
+
+.back-button:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* 路径概览卡片 */
+.path-overview-card {
+  background: white;
+  border-radius: 20px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.path-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.path-title h2 {
+  font-size: 18px;
+  color: #333;
+  margin: 0;
+  flex: 1;
+}
+
+.subject-tag {
+  background: #E6F0FF;
+  color: #409EFF;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+/* 进度部分 */
+.progress-section {
+  margin-bottom: 20px;
+}
+
+.progress-text {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 8px;
+}
+
+.progress-bar {
+  height: 10px;
+  background: #E4E7ED;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #67C23A 0%, #85CE61 100%);
+  border-radius: 5px;
+  transition: width 0.3s ease;
+}
+
+.path-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #E4E7ED;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: #909399;
+}
+
+.stat-value {
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+}
+
+/* 当前步骤卡片 */
+.current-step-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 20px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  color: white;
+}
+
+.current-step-header {
+  margin-bottom: 15px;
+}
+
+.step-badge {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.3);
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.current-step-header h3 {
+  font-size: 18px;
+  margin: 10px 0 0 0;
+  font-weight: bold;
+}
+
+.step-info {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  opacity: 0.95;
+}
+
+.info-item .icon {
+  font-size: 18px;
+}
+
+/* 学习资源 */
+.resources-section {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  padding: 15px;
+  margin-bottom: 20px;
+  backdrop-filter: blur(10px);
+}
+
+.resources-section h4 {
+  font-size: 14px;
+  margin: 0 0 15px 0;
+  font-weight: bold;
+}
+
+.resources-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.resource-group {
+  display: flex;
+  gap: 10px;
+}
+
+.resource-icon {
+  font-size: 24px;
+  min-width: 30px;
+}
+
+.resource-content {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  flex: 1;
+}
+
+.resource-label {
+  font-size: 13px;
+  font-weight: bold;
+  opacity: 0.9;
+}
+
+.resource-item {
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+.continue-button {
+  width: 100%;
+  background: white;
+  border: none;
+  color: #667eea;
+  padding: 14px 20px;
+  border-radius: 25px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.continue-button:hover {
+  transform: translateY(-2px);
+}
+
+.continue-button:active {
+  transform: translateY(0);
+}
+
+/* 时间线部分 */
+.timeline-section {
+  background: white;
+  border-radius: 20px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.timeline-title {
+  font-size: 18px;
+  color: #333;
+  margin: 0 0 20px 0;
+  font-weight: bold;
+}
+
+.timeline {
+  display: flex;
+  flex-direction: column;
+}
+
+.timeline-item {
+  display: flex;
+  gap: 15px;
+  position: relative;
+}
+
+.timeline-marker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 40px;
+}
+
+.marker-dot {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  z-index: 2;
+}
+
+.marker-line {
+  width: 2px;
+  flex: 1;
+  background: #E4E7ED;
+  margin: 5px 0;
+}
+
+.timeline-content {
+  flex: 1;
+  padding-bottom: 20px;
+}
+
+.step-header {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-bottom: 10px;
+}
+
+.step-number {
+  font-size: 12px;
+  color: #909399;
+}
+
+.step-title {
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+}
+
+.step-stats {
+  display: flex;
+  gap: 15px;
+  font-size: 13px;
+  color: #67C23A;
+}
+
+.step-badge-group {
+  display: flex;
+  gap: 8px;
+}
+
+.badge-current {
+  background: #409EFF;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.step-locked {
+  font-size: 13px;
+  color: #909399;
+}
+
+/* 底部操作按钮 */
+.bottom-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.pause-button,
+.adjust-button {
+  flex: 1;
+  background: white;
+  border: none;
+  color: #667eea;
+  padding: 12px 20px;
+  border-radius: 25px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pause-button:hover,
+.adjust-button:hover {
+  background: #667eea;
+  color: white;
+}
+
+/* 加载和错误状态 */
+.loading-container,
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  color: white;
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-container p,
+.error-container p {
+  margin-top: 20px;
+  font-size: 16px;
+}
+
+.error-icon {
+  font-size: 64px;
+  margin-bottom: 20px;
+}
+
+.retry-button {
+  background: white;
+  border: none;
+  color: #667eea;
+  padding: 12px 30px;
+  border-radius: 25px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+/* 响应式设计 */
+@media (max-width: 480px) {
+  .learning-path-page {
+    padding: 15px;
+  }
+
+  .path-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .bottom-actions {
+    flex-direction: column;
+  }
+}

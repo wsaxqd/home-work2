@@ -1,0 +1,412 @@
+/* ==========================================
+   每日任务页面样式
+   ========================================== */
+
+.coins-banner {
+  background: linear-gradient(135deg, #fdcb6e 0%, #f39c12 100%);
+  border-radius: 20px;
+  padding: 24px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 8px 24px rgba(243, 156, 18, 0.3);
+}
+
+.coins-icon {
+  font-size: 48px;
+  flex-shrink: 0;
+  animation: pulse-coin 2s ease-in-out infinite;
+}
+
+@keyframes pulse-coin {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+.coins-info {
+  flex: 1;
+}
+
+.coins-label {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.coins-value {
+  font-size: 32px;
+  font-weight: 800;
+  color: white;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.coins-detail-btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  border: 2px solid white;
+  min-height: 40px;
+}
+
+.coins-detail-btn:hover {
+  background: white;
+  color: #fdcb6e;
+  transform: translateX(4px);
+}
+
+.coins-detail-btn:active {
+  transform: scale(0.98);
+}
+
+/* 任务统计卡片 */
+.task-stats-card {
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.stat-value {
+  font-size: 24px;
+  font-weight: 800;
+  color: #333;
+  background: linear-gradient(135deg, #fdcb6e 0%, #f39c12 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.stat-label {
+  font-size: 13px;
+  color: #999;
+  font-weight: 500;
+}
+
+.stat-divider {
+  width: 1px;
+  height: 40px;
+  background: #f0f0f0;
+}
+
+.task-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  background: white;
+  border-radius: 16px;
+  padding: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.task-tab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 8px;
+  border: none;
+  border-radius: 12px;
+  background: transparent;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  min-height: 72px;
+}
+
+.task-tab.active {
+  background: linear-gradient(135deg, #fdcb6e 0%, #f39c12 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(243, 156, 18, 0.3);
+}
+
+.tab-icon {
+  font-size: 24px;
+}
+
+.tab-label {
+  font-size: 12px;
+}
+
+.tab-count {
+  font-size: 11px;
+  background: rgba(255, 255, 255, 0.3);
+  padding: 2px 8px;
+  border-radius: 10px;
+  margin-top: 2px;
+}
+
+.tasks-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.task-card {
+  background: white;
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  border-left: 4px solid #fdcb6e;
+}
+
+.task-card.completed {
+  opacity: 0.7;
+  border-left-color: #95afc0;
+}
+
+.task-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+}
+
+.task-icon {
+  font-size: 40px;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.task-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.task-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 6px;
+}
+
+.task-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #2d3748;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.task-reward {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  background: linear-gradient(135deg, #fdcb6e 0%, #f39c12 100%);
+  border-radius: 12px;
+  flex-shrink: 0;
+}
+
+.reward-icon {
+  font-size: 14px;
+}
+
+.reward-value {
+  font-size: 13px;
+  font-weight: 700;
+  color: white;
+}
+
+.task-description {
+  font-size: 13px;
+  color: #64748b;
+  margin: 0 0 10px 0;
+  line-height: 1.5;
+}
+
+.task-progress {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.progress-bar {
+  flex: 1;
+  height: 8px;
+  background: #e2e8f0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #fdcb6e 0%, #f39c12 100%);
+  border-radius: 8px;
+  transition: width 0.6s ease;
+  box-shadow: 0 0 8px rgba(253, 203, 110, 0.6);
+}
+
+.progress-text {
+  font-size: 12px;
+  color: #94a3b8;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.task-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 14px;
+  border: none;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+  min-width: 70px;
+  min-height: 60px;
+  justify-content: center;
+}
+
+.claim-btn {
+  background: linear-gradient(135deg, #fdcb6e 0%, #f39c12 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(243, 156, 18, 0.3);
+}
+
+.claim-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(243, 156, 18, 0.4);
+}
+
+.claim-btn:active {
+  transform: scale(0.95);
+}
+
+.claim-btn span:first-child {
+  font-size: 20px;
+}
+
+.completed-btn {
+  background: #95afc0;
+  color: white;
+  cursor: not-allowed;
+}
+
+.completed-btn span:first-child {
+  font-size: 18px;
+}
+
+.goto-btn {
+  background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
+  color: #94a3b8;
+  cursor: not-allowed;
+}
+
+.loading-state,
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid #fff8e1;
+  border-top: 5px solid #fdcb6e;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-text {
+  font-size: 14px;
+  color: #718096;
+  margin-top: 16px;
+  font-weight: 600;
+}
+
+.empty-icon {
+  font-size: 64px;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.empty-text {
+  font-size: 15px;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+/* 响应式设计 */
+@media (max-width: 480px) {
+  .coins-banner {
+    padding: 20px 16px;
+  }
+
+  .coins-icon {
+    font-size: 40px;
+  }
+
+  .coins-value {
+    font-size: 28px;
+  }
+
+  .task-card {
+    padding: 14px;
+  }
+
+  .task-icon {
+    font-size: 36px;
+  }
+
+  .task-title {
+    font-size: 15px;
+  }
+
+  .task-description {
+    font-size: 12px;
+  }
+
+  .task-btn {
+    min-width: 64px;
+    min-height: 56px;
+    padding: 8px 12px;
+    font-size: 11px;
+  }
+}

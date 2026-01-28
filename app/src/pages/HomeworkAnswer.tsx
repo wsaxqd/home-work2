@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
-import { useToast } from '../components/Toast'
+import { useToast } from '../components/Toast';
+import TextToSpeech from '../components/TextToSpeech';
 import './HomeworkAnswer.css';
 
 interface LocationState {
@@ -153,6 +154,12 @@ const HomeworkAnswer: React.FC = () => {
             <div className="answer-text">
               {answer.answerText || answer.answer}
             </div>
+            <div className="answer-voice-controls">
+              <TextToSpeech
+                text={`题目的答案是:${answer.answerText || answer.answer}`}
+                onError={(err) => toast.error(err)}
+              />
+            </div>
           </div>
 
           {/* 解题步骤 */}
@@ -167,11 +174,19 @@ const HomeworkAnswer: React.FC = () => {
                 <span className="toggle-icon">{showSteps ? '▼' : '▶'}</span>
               </h3>
               {showSteps && (
-                <ol className="steps-list">
-                  {answer.steps.map((step: string, index: number) => (
-                    <li key={index}>{step}</li>
-                  ))}
-                </ol>
+                <>
+                  <ol className="steps-list">
+                    {answer.steps.map((step: string, index: number) => (
+                      <li key={index}>{step}</li>
+                    ))}
+                  </ol>
+                  <div className="steps-voice-controls">
+                    <TextToSpeech
+                      text={`解题步骤如下:${answer.steps.map((step: string, i: number) => `第${i + 1}步,${step}`).join('。')}`}
+                      onError={(err) => toast.error(err)}
+                    />
+                  </div>
+                </>
               )}
             </div>
           )}

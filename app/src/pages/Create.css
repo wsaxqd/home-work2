@@ -58,10 +58,12 @@
 
 .intro-content p {
   font-size: 14px;
-  opacity: 0.95;
-  font-weight: 600;
+  opacity: 1;
+  font-weight: 700;
   margin: 0;
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  color: rgba(255, 255, 255, 0.98);
+  letter-spacing: 0.3px;
 }
 
 /* 区块标题 */

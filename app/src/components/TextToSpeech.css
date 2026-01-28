@@ -1,0 +1,92 @@
+/* ==========================================
+   语音播报组件样式
+   ========================================== */
+
+.tts-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tts-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-height: 40px;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+
+  /* 触摸优化 */
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tts-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.tts-btn:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.tts-play {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.tts-pause {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.tts-resume {
+  background: linear-gradient(135deg, #81fbb8 0%, #28c76f 100%);
+}
+
+.tts-stop {
+  background: linear-gradient(135deg, #ff7043 0%, #f4511e 100%);
+}
+
+.tts-icon {
+  font-size: 16px;
+}
+
+.tts-label {
+  font-size: 14px;
+}
+
+.tts-unsupported {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: #fee;
+  color: #c33;
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+/* 响应式设计 */
+@media (max-width: 480px) {
+  .tts-btn {
+    padding: 6px 12px;
+    font-size: 13px;
+    min-height: 36px;
+  }
+
+  .tts-icon {
+    font-size: 14px;
+  }
+
+  .tts-label {
+    font-size: 13px;
+  }
+}

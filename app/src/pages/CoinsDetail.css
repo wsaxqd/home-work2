@@ -1,0 +1,371 @@
+/* ==========================================
+   积分明细页面样式
+   ========================================== */
+
+.coins-overview-card {
+  background: linear-gradient(135deg, #fdcb6e 0%, #f39c12 100%);
+  border-radius: 20px;
+  padding: 24px;
+  margin-bottom: 20px;
+  box-shadow: 0 8px 24px rgba(243, 156, 18, 0.3);
+}
+
+.overview-main {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.overview-icon {
+  font-size: 56px;
+  animation: pulse-coin 2s ease-in-out infinite;
+}
+
+@keyframes pulse-coin {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+.overview-info {
+  flex: 1;
+}
+
+.overview-label {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.overview-value {
+  font-size: 40px;
+  font-weight: 800;
+  color: white;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.overview-stats {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.stat-item {
+  text-align: center;
+  flex: 1;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+.stat-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: white;
+}
+
+.stat-value.earn {
+  color: #a8e6cf;
+}
+
+.stat-value.spend {
+  color: #ffaaa5;
+}
+
+.stat-value.today {
+  color: #ffd3b6;
+}
+
+.stat-divider {
+  width: 1px;
+  height: 30px;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.filter-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  background: white;
+  border-radius: 16px;
+  padding: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.filter-tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 12px 8px;
+  border: none;
+  border-radius: 12px;
+  background: transparent;
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-height: 48px;
+}
+
+.filter-tab.active {
+  background: linear-gradient(135deg, #fdcb6e 0%, #f39c12 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(243, 156, 18, 0.3);
+}
+
+.filter-tab .tab-icon {
+  font-size: 18px;
+}
+
+.records-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.record-item {
+  background: white;
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  border-left: 4px solid transparent;
+}
+
+.record-item.earn {
+  border-left-color: #a8e6cf;
+}
+
+.record-item.spend {
+  border-left-color: #ffaaa5;
+}
+
+.record-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+}
+
+.record-icon {
+  font-size: 36px;
+  flex-shrink: 0;
+}
+
+.record-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.record-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.record-reason {
+  font-size: 15px;
+  font-weight: 700;
+  color: #2d3748;
+}
+
+.record-amount {
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.record-amount.earn {
+  color: #00b894;
+}
+
+.record-amount.spend {
+  color: #ff7675;
+}
+
+.record-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.record-source {
+  font-size: 12px;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.record-time {
+  font-size: 11px;
+  color: #cbd5e0;
+  font-weight: 500;
+}
+
+.earn-tips-card {
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  margin-bottom: 20px;
+}
+
+.tips-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.tips-icon {
+  font-size: 24px;
+}
+
+.tips-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #2d3748;
+}
+
+.tips-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.tip-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 13px;
+  color: #64748b;
+  line-height: 1.6;
+}
+
+.tip-dot {
+  color: #fdcb6e;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.goto-tasks-btn {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #fdcb6e 0%, #f39c12 100%);
+  color: white;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(243, 156, 18, 0.3);
+  min-height: 44px;
+}
+
+.goto-tasks-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(243, 156, 18, 0.4);
+}
+
+.goto-tasks-btn:active {
+  transform: scale(0.98);
+}
+
+.loading-state,
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid #fff8e1;
+  border-top: 5px solid #fdcb6e;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-text {
+  font-size: 14px;
+  color: #718096;
+  margin-top: 16px;
+  font-weight: 600;
+}
+
+.empty-icon {
+  font-size: 64px;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.empty-text {
+  font-size: 15px;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+/* 响应式设计 */
+@media (max-width: 480px) {
+  .coins-overview-card {
+    padding: 20px 16px;
+  }
+
+  .overview-icon {
+    font-size: 48px;
+  }
+
+  .overview-value {
+    font-size: 36px;
+  }
+
+  .stat-value {
+    font-size: 18px;
+  }
+
+  .record-item {
+    padding: 14px;
+  }
+
+  .record-icon {
+    font-size: 32px;
+  }
+
+  .record-reason {
+    font-size: 14px;
+  }
+
+  .record-amount {
+    font-size: 16px;
+  }
+}

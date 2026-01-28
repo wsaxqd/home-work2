@@ -67,11 +67,6 @@ export { default as CheckinAchievements } from './CheckinAchievements'
 // 游戏排行榜
 export { default as GameLeaderboard } from './GameLeaderboard'
 
-// 宠物系统
-export { default as PetAdopt } from './PetAdopt'
-export { default as PetDetail } from './PetDetail'
-// export { default as PetShop } from './PetShop'
-// export { default as PetInventory } from './PetInventory'
 
 // AI游戏
 export { default as ExpressionGame } from './ExpressionGame'
@@ -82,5 +77,30 @@ export { default as Explore } from './Explore'
 export { default as Garden } from './Garden'
 export { default as PictureBookReader } from './PictureBookReader'
 export { default as LevelDetail } from './LevelDetail'
+
+// 消息中心
+export { default as Messages } from './Messages'
+
+// 每日任务
+export { default as DailyTasks } from './DailyTasks'
+
+// 积分系统
+export { default as CoinsDetail } from './CoinsDetail'
+export { default as CoinsRanking } from './CoinsRanking'
+export { default as ShopMall } from './ShopMall'
+export { default as ShopHistory } from './ShopHistory'
+
+// 个性化学习引擎
+export { default as WeakPointDiagnosis } from './WeakPointDiagnosis'
+export { default as PersonalizedLearningPath } from './PersonalizedLearningPath'
+export { default as KnowledgePointDetail } from './KnowledgePointDetail'
+export { default as Practice } from './Practice'
+
+// 学习计划系统
+export { default as LearningPlan } from './LearningPlan'
+export { default as TodayTasks } from './TodayTasks'
+
+// 技能树系统
+export { default as SkillTree } from './SkillTree'
 
 

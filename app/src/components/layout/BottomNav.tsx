@@ -9,9 +9,25 @@ const navItems = [
     path: '/home',
     icon: '🏠',
     text: '首页',
-    gradient: 'linear-gradient(135deg, #66bb6a 0%, #43a047 100%)',
-    activeColor: '#66bb6a',
+    gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    activeColor: '#667eea',
     contentType: null // 首页不受限制
+  },
+  {
+    path: '/learning-map',
+    icon: '📚',
+    text: '学习',
+    gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+    activeColor: '#4facfe',
+    contentType: null // 学习功能不受限制
+  },
+  {
+    path: '/games',
+    icon: '🎮',
+    text: '游戏',
+    gradient: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+    activeColor: '#fa709a',
+    contentType: 'games' as const
   },
   {
     path: '/create',
@@ -20,22 +36,6 @@ const navItems = [
     gradient: 'linear-gradient(135deg, #ffa726 0%, #fb8c00 100%)',
     activeColor: '#ffa726',
     contentType: 'creation' as const
-  },
-  {
-    path: '/games',
-    icon: '🎮',
-    text: '游戏',
-    gradient: 'linear-gradient(135deg, #ffca28 0%, #ffa000 100%)',
-    activeColor: '#ffca28',
-    contentType: 'games' as const
-  },
-  {
-    path: '/warm-house',
-    icon: '💝',
-    text: '温暖',
-    gradient: 'linear-gradient(135deg, #ff7043 0%, #f4511e 100%)',
-    activeColor: '#ff7043',
-    contentType: null // 温暖小屋不受限制，公益功能
   },
   {
     path: '/profile',

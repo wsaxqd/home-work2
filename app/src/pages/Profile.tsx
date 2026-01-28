@@ -7,10 +7,14 @@ import './Profile.css'
 
 const menuItems = [
   { icon: '📅', title: '每日签到', desc: '签到领积分奖励', path: '/checkin', color: '#fa709a', bgColor: '#ffe5f0' },
-  { icon: '💝', title: '心灵花园', desc: '记录今天的心情', path: '/mind-garden', color: '#a8edea', bgColor: '#e0f7f6' },
-  { icon: '📊', title: '能力评估', desc: '测测你的小能力', path: '/assessment', color: '#4facfe', bgColor: '#e8f4ff' },
+  { icon: '🎯', title: '每日任务', desc: '完成任务赚积分', path: '/daily-tasks', color: '#fdcb6e', bgColor: '#fff8e1' },
+  { icon: '🎓', title: '学习路径', desc: 'AI个性化学习计划', path: '/weak-point-diagnosis', color: '#ff9f43', bgColor: '#fff4e6' },
+  { icon: '🏆', title: '积分排行', desc: '查看积分排行榜', path: '/coins-ranking', color: '#f093fb', bgColor: '#ffeef5' },
+  { icon: '📬', title: '消息中心', desc: '查看系统消息通知', path: '/messages', color: '#667eea', bgColor: '#e8f0fe' },
+  { icon: '💝', title: '温暖小屋', desc: '情感陪伴与心灵关怀', path: '/warm-house', color: '#ff7043', bgColor: '#ffe5e0' },
   { icon: '📁', title: '我的作品', desc: '查看创作的内容', path: '/my-works', color: '#f093fb', bgColor: '#ffeef5' },
   { icon: '❤️', title: '我的收藏', desc: '喜欢的作品集合', path: '/favorites', color: '#fdcb6e', bgColor: '#fff8e1' },
+  { icon: '🏅', title: '成就中心', desc: '查看学习成就', path: '/checkin-achievements', color: '#4facfe', bgColor: '#e8f4ff' },
 ]
 
 export default function Profile() {
@@ -91,114 +95,98 @@ export default function Profile() {
         showLogout={true}
       />
       <div className="main-content">
-        {/* 个人信息卡 */}
-        <div className="profile-card-new">
-          <div className="profile-avatar-big">{user?.avatar || '🌟'}</div>
-          <div className="profile-info">
-            <div className="profile-name-big">{user?.nickname || user?.username || '小朋友'}</div>
-            <div className="profile-age-big">
-              {user?.age || 8}岁 · Lv.{user?.level || 1} {user?.level && user.level > 5 ? '创意大师' : '创意小达人'}
+        {/* 紧凑型个人信息 + 统计 */}
+        <div className="profile-compact-header">
+          <div className="profile-top-row">
+            <div className="profile-user-section">
+              <div className="profile-avatar-compact">{user?.avatar || '🌟'}</div>
+              <div className="profile-text-compact">
+                <div className="profile-name-compact">{user?.nickname || user?.username || '小朋友'}</div>
+                <div className="profile-meta-compact">
+                  Lv.{user?.level || 1} · {user?.age || 8}岁
+                </div>
+              </div>
             </div>
+            <div className="profile-level-badge">
+              <div className="level-badge-icon">🏆</div>
+              <div className="level-badge-text">Lv.{user?.level || 1}</div>
+            </div>
+          </div>
+
+          {/* 横向统计条 */}
+          <div className="stats-row-compact">
+            {stats.map((stat) => (
+              <div key={stat.label} className="stat-item-compact">
+                <span className="stat-icon-compact">{stat.icon}</span>
+                <span className="stat-value-compact">{stat.value}</span>
+                <span className="stat-label-compact">{stat.label}</span>
+              </div>
+            ))}
           </div>
         </div>
 
-        {/* 数据统计 */}
-        <div className="stats-grid">
-          {stats.map((stat) => (
-            <div key={stat.label} className="stat-card-new">
-              <div className="stat-icon-big">{stat.icon}</div>
-              <div className="stat-value-big">{stat.value}</div>
-              <div className="stat-label-new">{stat.label}</div>
-            </div>
-          ))}
-        </div>
-
-        {/* 学生信息区块 */}
-        <div className="section-header">
-          <div className="section-title">
-            <span className="section-icon">👤</span>
-            学生信息
+        {/* 快捷功能网格 - 直接显示核心功能 */}
+        <div className="quick-grid-compact">
+          <div className="grid-item" onClick={() => navigate('/checkin')}>
+            <div className="grid-icon" style={{ background: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)' }}>📅</div>
+            <div className="grid-label">每日签到</div>
           </div>
-          <div className="section-subtitle">我的基本资料</div>
-        </div>
-        <div className="student-info-card">
-          <div className="info-row">
-            <div className="info-label">
-              <span className="info-icon">👤</span>
-              用户名
-            </div>
-            <div className="info-value">{user?.username || '-'}</div>
+          <div className="grid-item" onClick={() => navigate('/daily-tasks')}>
+            <div className="grid-icon" style={{ background: 'linear-gradient(135deg, #fdcb6e 0%, #f39c12 100%)' }}>🎯</div>
+            <div className="grid-label">每日任务</div>
           </div>
-          <div className="info-row">
-            <div className="info-label">
-              <span className="info-icon">✨</span>
-              昵称
-            </div>
-            <div className="info-value">{user?.nickname || '-'}</div>
+          <div className="grid-item" onClick={() => navigate('/weak-point-diagnosis')}>
+            <div className="grid-icon" style={{ background: 'linear-gradient(135deg, #ff9f43 0%, #ee5a24 100%)' }}>🎓</div>
+            <div className="grid-label">学习路径</div>
           </div>
-          <div className="info-row">
-            <div className="info-label">
-              <span className="info-icon">🎂</span>
-              年龄
-            </div>
-            <div className="info-value">{user?.age || '-'}岁</div>
-          </div>
-          <div className="info-row">
-            <div className="info-label">
-              <span className="info-icon">🎯</span>
-              等级
-            </div>
-            <div className="info-value">Lv.{user?.level || 1}</div>
-          </div>
-          <div className="info-row">
-            <div className="info-label">
-              <span className="info-icon">⭐</span>
-              积分
-            </div>
-            <div className="info-value">{user?.coins || 0}</div>
-          </div>
-          <div className="info-row">
-            <div className="info-label">
-              <span className="info-icon">📧</span>
-              邮箱
-            </div>
-            <div className="info-value">{user?.email || '未设置'}</div>
+          <div className="grid-item" onClick={() => navigate('/coins-ranking')}>
+            <div className="grid-icon" style={{ background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' }}>🏆</div>
+            <div className="grid-label">积分排行</div>
           </div>
         </div>
 
-        {/* 成就展示 */}
-        <div className="section-header">
-          <div className="section-title">
-            <span className="section-icon">🏆</span>
-            我的成就
-          </div>
-          <div className="section-subtitle">继续努力，解锁更多成就</div>
-        </div>
-        <div style={{ textAlign: 'center', padding: '40px', color: '#999' }}>
-          暂无成就，快去完成任务解锁吧！
-        </div>
-
-        {/* 功能入口 */}
-        <div className="section-header">
-          <div className="section-title">
-            <span className="section-icon">🎯</span>
-            快捷入口
-          </div>
-          <div className="section-subtitle">常用功能都在这里</div>
-        </div>
-        <div className="menu-grid-new">
-          {menuItems.map((item) => (
-            <div
-              key={item.path}
-              className="menu-card-new"
-              style={{ backgroundColor: item.bgColor }}
-              onClick={() => navigate(item.path)}
-            >
-              <div className="menu-icon-big" style={{ color: item.color }}>{item.icon}</div>
-              <div className="menu-title-new">{item.title}</div>
-              <div className="menu-desc-new">{item.desc}</div>
+        {/* 更多功能 */}
+        <div className="more-functions">
+          <div className="function-row" onClick={() => navigate('/messages')}>
+            <div className="function-icon">📬</div>
+            <div className="function-text">
+              <div className="function-title">消息中心</div>
+              <div className="function-desc">查看系统消息通知</div>
             </div>
-          ))}
+            <div className="function-arrow">→</div>
+          </div>
+          <div className="function-row" onClick={() => navigate('/warm-house')}>
+            <div className="function-icon">💝</div>
+            <div className="function-text">
+              <div className="function-title">温暖小屋</div>
+              <div className="function-desc">情感陪伴与心灵关怀</div>
+            </div>
+            <div className="function-arrow">→</div>
+          </div>
+          <div className="function-row" onClick={() => navigate('/my-works')}>
+            <div className="function-icon">📁</div>
+            <div className="function-text">
+              <div className="function-title">我的作品</div>
+              <div className="function-desc">查看创作的内容</div>
+            </div>
+            <div className="function-arrow">→</div>
+          </div>
+          <div className="function-row" onClick={() => navigate('/favorites')}>
+            <div className="function-icon">❤️</div>
+            <div className="function-text">
+              <div className="function-title">我的收藏</div>
+              <div className="function-desc">喜欢的作品集合</div>
+            </div>
+            <div className="function-arrow">→</div>
+          </div>
+          <div className="function-row" onClick={() => navigate('/checkin-achievements')}>
+            <div className="function-icon">🏅</div>
+            <div className="function-text">
+              <div className="function-title">成就中心</div>
+              <div className="function-desc">查看学习成就</div>
+            </div>
+            <div className="function-arrow">→</div>
+          </div>
         </div>
       </div>
     </Layout>
