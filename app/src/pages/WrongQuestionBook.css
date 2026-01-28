@@ -462,3 +462,50 @@
     width: 100%;
   }
 }
+
+/* AI诊断Banner */
+.ai-diagnosis-banner {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  background: linear-gradient(135deg, rgba(255, 159, 67, 0.1) 0%, rgba(255, 185, 88, 0.1) 100%);
+  border: 2px solid #ff9f43;
+  border-radius: 16px;
+  margin-bottom: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.ai-diagnosis-banner:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(255, 159, 67, 0.3);
+}
+
+.ai-diagnosis-banner .banner-icon {
+  font-size: 48px;
+  flex-shrink: 0;
+}
+
+.ai-diagnosis-banner .banner-content {
+  flex: 1;
+}
+
+.ai-diagnosis-banner .banner-content h3 {
+  font-size: 18px;
+  color: #333;
+  margin: 0 0 5px 0;
+}
+
+.ai-diagnosis-banner .banner-content p {
+  font-size: 14px;
+  color: #666;
+  margin: 0;
+}
+
+.ai-diagnosis-banner .banner-arrow {
+  font-size: 24px;
+  color: #ff9f43;
+  font-weight: bold;
+  flex-shrink: 0;
+}

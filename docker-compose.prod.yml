@@ -1,0 +1,363 @@
+# ============================================================
+# Docker Compose 生产环境配置 - 完整版
+# 项目：启蒙之光 (QMZG)
+# 包含：PostgreSQL + 后端API + 前端Nginx + Nginx反向代理
+# ============================================================
+
+version: '3.8'
+
+services:
+  # ==================== PostgreSQL 数据库 ====================
+  postgres:
+    image: postgres:15-alpine
+    container_name: qmzg-postgres
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_DB: ${DB_NAME:-qmzg_prod}
+      POSTGRES_USER: ${DB_USER:-qmzg_admin}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?数据库密码未设置，请在.env文件中配置DB_PASSWORD}
+      # PostgreSQL 性能优化
+      POSTGRES_INITDB_ARGS: "-E UTF8 --locale=C"
+
+    # 仅内部访问，不对外暴露端口
+    expose:
+      - "5432"
+
+    volumes:
+      # 数据持久化
+      - postgres-data:/var/lib/postgresql/data
+      # 自动备份脚本（可选）
+      - ./backups:/backups
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-qmzg_admin} -d ${DB_NAME:-qmzg_prod}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+    # 资源限制（根据服务器调整）
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+
+    networks:
+      - backend
+
+    # 日志配置
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ==================== 后端 API 服务 ====================
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+      target: production
+      args:
+        NODE_VERSION: 18-alpine
+
+    image: qmzg-server:${VERSION:-latest}
+    container_name: qmzg-server
+    restart: unless-stopped
+
+    environment:
+      # Node.js 环境
+      NODE_ENV: production
+      PORT: 3000
+
+      # 数据库连接
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-qmzg_prod}
+      DB_USER: ${DB_USER:-qmzg_admin}
+      DB_PASSWORD: ${DB_PASSWORD:?数据库密码未设置}
+
+      # JWT 密钥
+      JWT_SECRET: ${JWT_SECRET:?JWT密钥未设置，请在.env文件中配置}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-7d}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:?JWT刷新密钥未设置}
+      JWT_REFRESH_EXPIRES_IN: ${JWT_REFRESH_EXPIRES_IN:-30d}
+
+      # CORS 配置
+      CORS_ORIGIN: ${CORS_ORIGIN:-https://example.com}
+
+      # Dify AI 配置
+      DIFY_API_URL: ${DIFY_API_URL}
+      DIFY_API_KEY: ${DIFY_API_KEY}
+      DIFY_CHAT_APP_KEY: ${DIFY_CHAT_APP_KEY}
+      DIFY_STORY_APP_KEY: ${DIFY_STORY_APP_KEY}
+      DIFY_EMOTION_APP_KEY: ${DIFY_EMOTION_APP_KEY}
+      DIFY_TUTORING_APP_KEY: ${DIFY_TUTORING_APP_KEY}
+      DIFY_TIMEOUT: ${DIFY_TIMEOUT:-30000}
+
+      # DeepSeek AI 配置
+      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY}
+      DEEPSEEK_API_URL: ${DEEPSEEK_API_URL:-https://api.deepseek.com}
+
+      # 智谱 AI 配置
+      ZHIPU_API_KEY: ${ZHIPU_API_KEY}
+
+      # 腾讯云 OCR 配置
+      TENCENT_SECRET_ID: ${TENCENT_SECRET_ID}
+      TENCENT_SECRET_KEY: ${TENCENT_SECRET_KEY}
+      TENCENT_OCR_REGION: ${TENCENT_OCR_REGION:-ap-beijing}
+
+      # 邮件配置
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USER: ${SMTP_USER}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
+      SMTP_FROM: ${SMTP_FROM}
+
+    # 仅内部网络访问
+    expose:
+      - "3000"
+
+    volumes:
+      # 上传文件持久化
+      - uploads-data:/app/uploads
+      # 日志文件（可选）
+      - ./logs/server:/app/logs
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 256M
+      # 可扩展副本
+      replicas: 1
+
+    networks:
+      - backend
+      - frontend
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ==================== Nginx 反向代理（统一入口） ====================
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile.nginx
+      args:
+        NGINX_VERSION: 1.25-alpine
+
+    image: qmzg-nginx:${VERSION:-latest}
+    container_name: qmzg-nginx
+    restart: unless-stopped
+
+    # 对外暴露端口
+    ports:
+      - "${HTTP_PORT:-80}:80"
+      - "${HTTPS_PORT:-443}:443"
+
+    volumes:
+      # Nginx 主配置
+      - ./nginx/nginx.conf:/etc/nginx/sites-available/qmzg:ro
+      - ./nginx/nginx-main.conf:/etc/nginx/nginx.conf:ro
+
+      # 前端静态文件（从构建阶段复制）
+      - frontend-dist:/usr/share/nginx/html:ro
+
+      # 上传文件访问
+      - uploads-data:/var/www/qmzg/server/uploads:ro
+
+      # SSL 证书
+      - ${SSL_CERT_PATH:-./ssl}:/etc/nginx/ssl:ro
+
+      # 日志
+      - ./logs/nginx:/var/log/nginx
+
+    environment:
+      # 用于配置中的变量替换
+      - DOMAIN=${DOMAIN:-example.com}
+      - BACKEND_HOST=server
+      - BACKEND_PORT=3000
+
+    depends_on:
+      server:
+        condition: service_healthy
+
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 256M
+        reservations:
+          cpus: '0.1'
+          memory: 64M
+
+    networks:
+      - frontend
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ==================== 前端构建器（一次性任务） ====================
+  frontend-builder:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+      target: builder
+      args:
+        NODE_VERSION: 20-alpine
+
+    image: qmzg-frontend-builder:${VERSION:-latest}
+    container_name: qmzg-frontend-builder
+
+    environment:
+      NODE_ENV: production
+      VITE_API_URL: ${VITE_API_URL:-/api}
+
+    volumes:
+      # 将构建产物输出到命名卷
+      - frontend-dist:/app/dist
+
+    # 构建完成后自动退出
+    command: sh -c "npm run build && cp -r /app/dist/* /app/dist/ && echo '前端构建完成'"
+
+    networks:
+      - frontend
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "1"
+
+# ==================== 网络配置 ====================
+networks:
+  # 前端网络（Nginx <-> Server）
+  frontend:
+    driver: bridge
+    name: qmzg-frontend
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+  # 后端网络（Server <-> PostgreSQL）
+  backend:
+    driver: bridge
+    name: qmzg-backend
+    internal: false
+    ipam:
+      config:
+        - subnet: 172.21.0.0/16
+
+# ==================== 数据卷配置 ====================
+volumes:
+  # PostgreSQL 数据
+  postgres-data:
+    name: qmzg-postgres-data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${DATA_PATH:-./data}/postgres
+
+  # 上传文件
+  uploads-data:
+    name: qmzg-uploads-data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${DATA_PATH:-./data}/uploads
+
+  # 前端构建产物
+  frontend-dist:
+    name: qmzg-frontend-dist
+    driver: local
+
+# ============================================================
+# 使用说明
+# ============================================================
+#
+# 1. 创建 .env 文件（必须）：
+#    cp .env.example .env.production
+#    编辑 .env.production，填写所有必需的环境变量
+#
+# 2. 创建数据目录：
+#    mkdir -p data/postgres data/uploads logs/nginx logs/server ssl
+#
+# 3. 放置 SSL 证书（HTTPS）：
+#    cp your-cert.pem ssl/fullchain.pem
+#    cp your-key.pem ssl/privkey.pem
+#    cp your-chain.pem ssl/chain.pem
+#
+# 4. 构建并启动所有服务：
+#    docker-compose -f docker-compose.prod.yml up -d --build
+#
+# 5. 查看日志：
+#    docker-compose -f docker-compose.prod.yml logs -f
+#    docker-compose -f docker-compose.prod.yml logs -f nginx
+#    docker-compose -f docker-compose.prod.yml logs -f server
+#
+# 6. 执行数据库迁移：
+#    docker-compose -f docker-compose.prod.yml exec server npm run migrate
+#
+# 7. 停止服务：
+#    docker-compose -f docker-compose.prod.yml down
+#
+# 8. 停止并删除所有数据（危险！）：
+#    docker-compose -f docker-compose.prod.yml down -v
+#
+# 9. 重启单个服务：
+#    docker-compose -f docker-compose.prod.yml restart nginx
+#
+# 10. 查看资源使用：
+#     docker stats
+#
+# 11. 数据库备份：
+#     docker-compose -f docker-compose.prod.yml exec postgres \
+#       pg_dump -U qmzg_admin qmzg_prod > backup-$(date +%Y%m%d).sql
+#
+# 12. 数据库恢复：
+#     docker-compose -f docker-compose.prod.yml exec -T postgres \
+#       psql -U qmzg_admin qmzg_prod < backup-20260128.sql
+#
+# 13. 扩展后端服务（负载均衡）：
+#     docker-compose -f docker-compose.prod.yml up -d --scale server=3
+#
+# 14. 更新应用（零停机）：
+#     docker-compose -f docker-compose.prod.yml pull
+#     docker-compose -f docker-compose.prod.yml up -d --no-deps --build server
+#
+# ============================================================

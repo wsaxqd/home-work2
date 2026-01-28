@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Layout, Header } from '../components/layout'
-import AIChatbot from '../components/AIChatbot'
-import PetCompanion from '../components/PetCompanion'
+import VoiceInput from '../components/VoiceInput'
+import LearningDashboard from '../components/LearningDashboard'
 import './Home.css'
 
 // 学习功能区 - 按重要性和使用频率排序
@@ -30,18 +30,39 @@ export default function Home() {
   const navigate = useNavigate()
   const userProfile = JSON.parse(localStorage.getItem('userProfile') || '{}')
   const [aiQuestion, setAiQuestion] = useState('')
+  const [showFullChat, setShowFullChat] = useState(false)
   const [aiMessages, setAiMessages] = useState<Array<{role: 'user' | 'assistant', content: string}>>([
     { role: 'assistant', content: '你好！我是AI助手启启，有什么问题我可以帮你解答吗？' }
   ])
   const [isThinking, setIsThinking] = useState(false)
+  const [voiceError, setVoiceError] = useState<string | null>(null)
 
-  const handleAskQuestion = async () => {
-    if (!aiQuestion.trim()) return
+  // 常见问题快捷标签
+  const commonQuestions = ['数学', '语文', '英语', '科学']
 
-    const newMessages = [...aiMessages, { role: 'user' as const, content: aiQuestion }]
+  // 处理语音识别结果
+  const handleVoiceTranscript = (text: string) => {
+    setAiQuestion(text)
+    setVoiceError(null)
+    // 自动发送语音识别的问题
+    handleAskQuestion(text)
+  }
+
+  // 处理语音识别错误
+  const handleVoiceError = (error: string) => {
+    setVoiceError(error)
+    setTimeout(() => setVoiceError(null), 3000) // 3秒后自动清除错误提示
+  }
+
+  const handleAskQuestion = async (question?: string) => {
+    const questionText = question || aiQuestion.trim()
+    if (!questionText) return
+
+    const newMessages = [...aiMessages, { role: 'user' as const, content: questionText }]
     setAiMessages(newMessages)
     setAiQuestion('')
     setIsThinking(true)
+    setShowFullChat(true) // 发送问题后展开完整对话
 
     try {
       // 调用后端API
@@ -68,86 +89,26 @@ export default function Home() {
     }
   }
 
+  // 获取当前时间段问候语
+  const getGreeting = () => {
+    const hour = new Date().getHours()
+    if (hour < 6) return '深夜好'
+    if (hour < 12) return '早上好'
+    if (hour < 14) return '中午好'
+    if (hour < 18) return '下午好'
+    return '晚上好'
+  }
+
   return (
     <Layout>
       <Header
         title="启蒙之光"
-        subtitle="普及贫困地区AI教育 · 让每个孩子都能拥抱智能时代"
+        subtitle="让每个孩子都能拥抱智能时代"
         showBack={false}
       />
       <div className="main-content">
-        {/* AI对话窗口 - DeepSeek风格 */}
-        <div className="ai-chat-window">
-          <div className="chat-header">
-            <div className="chat-title">
-              <span className="chat-icon">🤖</span>
-              <span>AI智能助手</span>
-            </div>
-            <div className="chat-status">在线</div>
-          </div>
-
-          <div className="chat-messages">
-            {aiMessages.map((msg, idx) => (
-              <div key={idx} className={`chat-message ${msg.role}`}>
-                <div className="message-avatar">
-                  {msg.role === 'user' ? (userProfile.avatar || '👤') : '🤖'}
-                </div>
-                <div className="message-content">{msg.content}</div>
-              </div>
-            ))}
-            {isThinking && (
-              <div className="chat-message assistant">
-                <div className="message-avatar">🤖</div>
-                <div className="message-content typing">正在思考...</div>
-              </div>
-            )}
-          </div>
-
-          <div className="chat-input-area">
-            <input
-              type="text"
-              className="chat-input"
-              placeholder="问我任何问题..."
-              value={aiQuestion}
-              onChange={(e) => setAiQuestion(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && handleAskQuestion()}
-            />
-            <button className="chat-send-btn" onClick={handleAskQuestion} disabled={isThinking}>
-              {isThinking ? '⏳' : '📤'}
-            </button>
-          </div>
-        </div>
-
-        {/* 学习功能区 */}
-        <div className="section-header">
-          <div className="section-title">
-            <span className="section-icon">📚</span>
-            趣味学习
-          </div>
-          <div className="section-subtitle">在玩中学，在学中玩</div>
-        </div>
-
-        <div className="learning-grid">
-          {learningFeatures.map((feature) => (
-            <div
-              key={feature.path}
-              className="learning-card-v2"
-              style={{ background: feature.bgColor }}
-              onClick={() => navigate(feature.path)}
-            >
-              <div className="learning-card-emoji">{feature.emoji}</div>
-              <div className="learning-card-icon">{feature.icon}</div>
-              <div className="learning-card-content">
-                <div className="learning-card-title">{feature.title}</div>
-                <div className="learning-card-desc">{feature.desc}</div>
-              </div>
-              <div className="learning-card-action">
-                <span className="action-text">开始学习</span>
-                <span className="action-arrow">→</span>
-              </div>
-            </div>
-          ))}
-        </div>
+        {/* 学习仪表盘 */}
+        <LearningDashboard />
 
         {/* 全局搜索入口 */}
         <div className="search-entry" onClick={() => navigate('/search')}>
@@ -155,42 +116,156 @@ export default function Home() {
           <span className="search-entry-text">搜索游戏、故事、创作工具...</span>
         </div>
 
-        {/* 学习伙伴 */}
+        {/* 今日推荐模块 */}
         <div className="section-header">
           <div className="section-title">
-            <span className="section-icon">🐾</span>
-            学习伙伴
+            <span className="section-icon">⭐</span>
+            今日推荐
           </div>
-          <div className="section-subtitle">陪你一起成长</div>
+          <div className="section-subtitle">基于你的学习进度</div>
         </div>
-        <PetCompanion onInteraction={(type) => {
-          console.log('宠物互动:', type)
-        }} />
 
-        {/* 数据统计卡片 */}
-        <div className="stats-card">
-          <div className="stats-header">
-            <span className="stats-icon">📈</span>
-            <span className="stats-title">我的成长数据</span>
-          </div>
-          <div className="stats-grid">
-            <div className="stat-item">
-              <div className="stat-value">0</div>
-              <div className="stat-label">创作作品</div>
-            </div>
-            <div className="stat-item">
-              <div className="stat-value">0</div>
-              <div className="stat-label">游戏次数</div>
-            </div>
-            <div className="stat-item">
-              <div className="stat-value">0</div>
-              <div className="stat-label">连续天数</div>
-            </div>
+        <div className="hero-card" onClick={() => navigate('/learning-map')}>
+          <div className="hero-card-bg">🗺️</div>
+          <div className="hero-card-content">
+            <div className="hero-card-badge">继续闯关</div>
+            <div className="hero-card-title">学习地图</div>
+            <div className="hero-card-desc">数学王国 - 第3关正在等你！</div>
+            <button className="hero-card-cta">开始闯关 →</button>
           </div>
         </div>
 
-        {/* AI客服机器人 */}
-        <AIChatbot />
+        {/* 快速入口网格 */}
+        <div className="section-header">
+          <div className="section-title">
+            <span className="section-icon">📚</span>
+            快速入口
+          </div>
+        </div>
+
+        <div className="quick-entry-grid">
+          <div className="quick-entry-card" onClick={() => navigate('/homework')}>
+            <div className="quick-entry-icon">📝</div>
+            <div className="quick-entry-title">作业助手</div>
+          </div>
+          <div className="quick-entry-card" onClick={() => navigate('/ai-encyclopedia')}>
+            <div className="quick-entry-icon">💡</div>
+            <div className="quick-entry-title">AI百科</div>
+          </div>
+          <div className="quick-entry-card" onClick={() => navigate('/picture-book')}>
+            <div className="quick-entry-icon">📖</div>
+            <div className="quick-entry-title">绘本阅读</div>
+          </div>
+          <div className="quick-entry-card" onClick={() => navigate('/children-songs')}>
+            <div className="quick-entry-icon">🎵</div>
+            <div className="quick-entry-title">儿歌大全</div>
+          </div>
+          <div className="quick-entry-card" onClick={() => navigate('/wrong-questions')}>
+            <div className="quick-entry-icon">📕</div>
+            <div className="quick-entry-title">错题本</div>
+          </div>
+        </div>
+
+        {/* AI助手快捷咨询（紧凑型） */}
+        <div className="section-header">
+          <div className="section-title">
+            <span className="section-icon">🤖</span>
+            AI助手快捷咨询
+          </div>
+        </div>
+
+        <div className="ai-quick-chat">
+          {voiceError && (
+            <div className="voice-error-message">
+              ⚠️ {voiceError}
+            </div>
+          )}
+          <div className="ai-input-row">
+            <input
+              type="text"
+              className="ai-input-compact"
+              placeholder="问我任何学习问题..."
+              value={aiQuestion}
+              onChange={(e) => setAiQuestion(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && handleAskQuestion()}
+            />
+            <VoiceInput
+              onTranscript={handleVoiceTranscript}
+              onError={handleVoiceError}
+              placeholder="点击麦克风开始语音输入"
+            />
+            <button
+              className="ai-send-btn-compact"
+              onClick={() => handleAskQuestion()}
+              disabled={isThinking}
+            >
+              {isThinking ? '⏳' : '📤'}
+            </button>
+          </div>
+          <div className="common-questions">
+            {commonQuestions.map((q) => (
+              <button
+                key={q}
+                className="question-tag"
+                onClick={() => handleAskQuestion(`帮我学习${q}`)}
+              >
+                {q}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* 完整对话窗口（可展开） */}
+        {showFullChat && (
+          <div className="full-chat-modal">
+            <div className="chat-modal-overlay" onClick={() => setShowFullChat(false)}></div>
+            <div className="chat-modal-content">
+              <div className="chat-modal-header">
+                <div className="chat-title">
+                  <span className="chat-icon">🤖</span>
+                  <span>AI智能助手</span>
+                </div>
+                <button className="chat-close-btn" onClick={() => setShowFullChat(false)}>✕</button>
+              </div>
+
+              <div className="chat-messages">
+                {aiMessages.map((msg, idx) => (
+                  <div key={idx} className={`chat-message ${msg.role}`}>
+                    <div className="message-avatar">
+                      {msg.role === 'user' ? (userProfile.avatar || '👤') : '🤖'}
+                    </div>
+                    <div className="message-content">{msg.content}</div>
+                  </div>
+                ))}
+                {isThinking && (
+                  <div className="chat-message assistant">
+                    <div className="message-avatar">🤖</div>
+                    <div className="message-content typing">正在思考...</div>
+                  </div>
+                )}
+              </div>
+
+              <div className="chat-input-area">
+                <input
+                  type="text"
+                  className="chat-input"
+                  placeholder="问我任何问题..."
+                  value={aiQuestion}
+                  onChange={(e) => setAiQuestion(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && handleAskQuestion()}
+                />
+                <VoiceInput
+                  onTranscript={handleVoiceTranscript}
+                  onError={handleVoiceError}
+                  placeholder="语音输入"
+                />
+                <button className="chat-send-btn" onClick={() => handleAskQuestion()} disabled={isThinking}>
+                  {isThinking ? '⏳' : '📤'}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </Layout>
   )

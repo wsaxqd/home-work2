@@ -2,6 +2,8 @@ import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Layout, Header } from '../components/layout'
 import { aiApi, type ChatMessage } from '../services/api/ai'
+import VoiceInput from '../components/VoiceInput'
+import TextToSpeech from '../components/TextToSpeech'
 import './AICompanion.css'
 
 interface Message {
@@ -37,6 +39,8 @@ export default function AICompanion() {
   const [showCompanionSelect, setShowCompanionSelect] = useState(false)
   const [conversationHistory, setConversationHistory] = useState<ChatMessage[]>([])
   const [error, setError] = useState<string>('')
+  const [voiceError, setVoiceError] = useState<string>('')
+  const [currentSpeakingMessageId, setCurrentSpeakingMessageId] = useState<string>('')
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   // 自动滚动到底部
@@ -128,6 +132,18 @@ export default function AICompanion() {
     setInputText(topic)
   }
 
+  // 处理语音输入
+  const handleVoiceTranscript = (text: string) => {
+    setInputText(text)
+    setVoiceError('')
+  }
+
+  // 处理语音输入错误
+  const handleVoiceError = (error: string) => {
+    setVoiceError(error)
+    setTimeout(() => setVoiceError(''), 3000)
+  }
+
   return (
     <Layout>
       <Header
@@ -160,6 +176,16 @@ export default function AICompanion() {
                   minute: '2-digit'
                 })}
               </div>
+              {message.type === 'ai' && (
+                <div className="message-actions">
+                  <TextToSpeech
+                    text={message.content}
+                    onStart={() => setCurrentSpeakingMessageId(message.id)}
+                    onEnd={() => setCurrentSpeakingMessageId('')}
+                    onError={(err) => setVoiceError(err)}
+                  />
+                </div>
+              )}
             </div>
             {message.type === 'user' && (
               <div className="message-avatar">👤</div>
@@ -204,6 +230,14 @@ export default function AICompanion() {
 
       {/* 输入区域 */}
       <div className="input-container">
+        {voiceError && (
+          <div className="voice-error-toast">{voiceError}</div>
+        )}
+        <VoiceInput
+          onTranscript={handleVoiceTranscript}
+          onError={handleVoiceError}
+          placeholder="点击麦克风开始语音输入"
+        />
         <input
           type="text"
           className="message-input"

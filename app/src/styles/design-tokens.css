@@ -1,0 +1,341 @@
+/* ==========================================
+   设计令牌系统 (Design Tokens)
+   全民智高 - 统一设计语言
+   ========================================== */
+
+:root {
+  /* ==========================================
+     颜色系统 (Color System)
+     ========================================== */
+
+  /* 主品牌色 - 紫色系（智慧、创新） */
+  --primary-50: #f5f3ff;
+  --primary-100: #ede9fe;
+  --primary-200: #ddd6fe;
+  --primary-300: #c4b5fd;
+  --primary-400: #a78bfa;
+  --primary-500: #667eea;
+  --primary-600: #5568d3;
+  --primary-700: #4c51bf;
+  --primary-800: #434190;
+  --primary-900: #3c366b;
+
+  /* 辅助色 - 绿色系（成长、活力） */
+  --success-50: #f0fdf4;
+  --success-100: #dcfce7;
+  --success-200: #bbf7d0;
+  --success-300: #86efac;
+  --success-400: #4ade80;
+  --success-500: #48bb78;
+  --success-600: #38a169;
+  --success-700: #2f855a;
+  --success-800: #276749;
+  --success-900: #22543d;
+
+  /* 警告色 */
+  --warning-50: #fffbeb;
+  --warning-100: #fef3c7;
+  --warning-200: #fde68a;
+  --warning-300: #fcd34d;
+  --warning-400: #fbbf24;
+  --warning-500: #f59e0b;
+  --warning-600: #d97706;
+  --warning-700: #b45309;
+  --warning-800: #92400e;
+  --warning-900: #78350f;
+
+  /* 错误色 */
+  --error-50: #fef2f2;
+  --error-100: #fee2e2;
+  --error-200: #fecaca;
+  --error-300: #fca5a5;
+  --error-400: #f87171;
+  --error-500: #ef4444;
+  --error-600: #dc2626;
+  --error-700: #b91c1c;
+  --error-800: #991b1b;
+  --error-900: #7f1d1d;
+
+  /* 功能色渐变 */
+  --learning-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  --creation-gradient: linear-gradient(135deg, #ffa726 0%, #fb8c00 100%);
+  --game-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+  --warm-gradient: linear-gradient(135deg, #ff7043 0%, #f4511e 100%);
+  --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --success-gradient: linear-gradient(135deg, #81fbb8 0%, #28c76f 100%);
+  --gold-gradient: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+
+  /* 语义化颜色 */
+  --text-primary: #2d3748;
+  --text-secondary: #64748b;
+  --text-tertiary: #94a3b8;
+  --text-disabled: #cbd5e0;
+
+  --bg-primary: #ffffff;
+  --bg-secondary: #f7fafc;
+  --bg-tertiary: #edf2f7;
+  --bg-overlay: rgba(0, 0, 0, 0.5);
+
+  --border-primary: #e2e8f0;
+  --border-secondary: #cbd5e0;
+  --border-focus: #667eea;
+
+  /* ==========================================
+     排版系统 (Typography)
+     ========================================== */
+
+  /* 字体大小阶梯 */
+  --text-h1: 28px;
+  --text-h2: 24px;
+  --text-h3: 20px;
+  --text-h4: 18px;
+  --text-h5: 16px;
+
+  --text-body-lg: 16px;
+  --text-body: 15px;
+  --text-body-sm: 14px;
+  --text-caption: 13px;
+  --text-caption-sm: 12px;
+  --text-tiny: 11px;
+
+  /* 字重 */
+  --font-black: 900;
+  --font-extrabold: 800;
+  --font-bold: 700;
+  --font-semibold: 600;
+  --font-medium: 500;
+  --font-regular: 400;
+  --font-light: 300;
+
+  /* 行高 */
+  --line-tight: 1.2;
+  --line-snug: 1.375;
+  --line-normal: 1.5;
+  --line-relaxed: 1.625;
+  --line-loose: 1.8;
+
+  /* 字母间距 */
+  --tracking-tighter: -0.05em;
+  --tracking-tight: -0.025em;
+  --tracking-normal: 0;
+  --tracking-wide: 0.025em;
+  --tracking-wider: 0.05em;
+
+  /* ==========================================
+     间距系统 (Spacing)
+     基于4px网格系统
+     ========================================== */
+
+  --space-0: 0;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 28px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-14: 56px;
+  --space-16: 64px;
+  --space-20: 80px;
+  --space-24: 96px;
+
+  /* 组件内边距 */
+  --card-padding-sm: var(--space-4);
+  --card-padding-md: var(--space-5);
+  --card-padding-lg: var(--space-6);
+
+  /* 页面边距 */
+  --page-padding-x: var(--space-5);
+  --page-padding-y: var(--space-5);
+
+  /* 组件间距 */
+  --gap-xs: var(--space-2);
+  --gap-sm: var(--space-3);
+  --gap-md: var(--space-4);
+  --gap-lg: var(--space-6);
+  --gap-xl: var(--space-8);
+
+  /* ==========================================
+     圆角系统 (Border Radius)
+     ========================================== */
+
+  --radius-none: 0;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-2xl: 24px;
+  --radius-full: 9999px;
+
+  /* 组件圆角 */
+  --button-radius: var(--radius-md);
+  --card-radius: var(--radius-lg);
+  --modal-radius: var(--radius-xl);
+  --input-radius: var(--radius-md);
+
+  /* ==========================================
+     阴影系统 (Shadows)
+     ========================================== */
+
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+  --shadow-xl: 0 12px 32px rgba(0, 0, 0, 0.16);
+  --shadow-2xl: 0 20px 60px rgba(0, 0, 0, 0.3);
+
+  /* 彩色阴影 */
+  --shadow-primary: 0 8px 24px rgba(102, 126, 234, 0.3);
+  --shadow-success: 0 8px 24px rgba(72, 187, 120, 0.3);
+  --shadow-warning: 0 8px 24px rgba(245, 158, 11, 0.3);
+  --shadow-error: 0 8px 24px rgba(239, 68, 68, 0.3);
+
+  /* 内阴影 */
+  --shadow-inner: inset 0 2px 4px rgba(0, 0, 0, 0.06);
+
+  /* ==========================================
+     动画系统 (Animation)
+     ========================================== */
+
+  /* 过渡时长 */
+  --duration-instant: 100ms;
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+  --duration-slow: 400ms;
+  --duration-slower: 600ms;
+
+  /* 缓动函数 */
+  --ease-linear: linear;
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+  /* ==========================================
+     Z-index 层级系统
+     ========================================== */
+
+  --z-dropdown: 1000;
+  --z-sticky: 1100;
+  --z-fixed: 1200;
+  --z-modal-backdrop: 1300;
+  --z-modal: 1400;
+  --z-popover: 1500;
+  --z-tooltip: 1600;
+  --z-toast: 1700;
+
+  /* ==========================================
+     尺寸系统 (Sizing)
+     ========================================== */
+
+  /* 最小触摸热区（移动端） */
+  --touch-target-min: 44px;
+  --touch-target-recommended: 48px;
+
+  /* 容器宽度 */
+  --container-sm: 640px;
+  --container-md: 768px;
+  --container-lg: 1024px;
+  --container-xl: 1280px;
+
+  /* 图标尺寸 */
+  --icon-xs: 16px;
+  --icon-sm: 20px;
+  --icon-md: 24px;
+  --icon-lg: 32px;
+  --icon-xl: 48px;
+
+  /* 头像尺寸 */
+  --avatar-xs: 32px;
+  --avatar-sm: 40px;
+  --avatar-md: 48px;
+  --avatar-lg: 56px;
+  --avatar-xl: 64px;
+
+  /* ==========================================
+     断点系统 (Breakpoints)
+     移动端优先
+     ========================================== */
+
+  --breakpoint-sm: 375px;
+  --breakpoint-md: 414px;
+  --breakpoint-lg: 480px;
+  --breakpoint-tablet: 768px;
+  --breakpoint-desktop: 1024px;
+
+  /* ==========================================
+     模糊效果 (Backdrop Blur)
+     ========================================== */
+
+  --blur-sm: blur(4px);
+  --blur-md: blur(8px);
+  --blur-lg: blur(16px);
+  --blur-xl: blur(24px);
+}
+
+/* ==========================================
+   暗色模式（预留）
+   ========================================== */
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* 未来实现暗色模式时使用 */
+  }
+}
+
+/* ==========================================
+   响应式断点辅助类
+   ========================================== */
+
+@media (max-width: 375px) {
+  :root {
+    /* 小屏幕调整 */
+    --text-h1: 24px;
+    --text-h2: 20px;
+    --text-h3: 18px;
+    --page-padding-x: var(--space-4);
+  }
+}
+
+@media (min-width: 768px) {
+  :root {
+    /* 平板及以上设备调整 */
+    --text-h1: 32px;
+    --text-h2: 28px;
+    --text-h3: 24px;
+    --page-padding-x: var(--space-8);
+  }
+}
+
+/* ==========================================
+   工具类（基于设计令牌）
+   ========================================== */
+
+/* 文本颜色 */
+.text-primary { color: var(--text-primary); }
+.text-secondary { color: var(--text-secondary); }
+.text-tertiary { color: var(--text-tertiary); }
+
+/* 背景颜色 */
+.bg-primary { background: var(--bg-primary); }
+.bg-secondary { background: var(--bg-secondary); }
+.bg-tertiary { background: var(--bg-tertiary); }
+
+/* 阴影 */
+.shadow-sm { box-shadow: var(--shadow-sm); }
+.shadow-md { box-shadow: var(--shadow-md); }
+.shadow-lg { box-shadow: var(--shadow-lg); }
+
+/* 圆角 */
+.rounded-sm { border-radius: var(--radius-sm); }
+.rounded-md { border-radius: var(--radius-md); }
+.rounded-lg { border-radius: var(--radius-lg); }
+.rounded-full { border-radius: var(--radius-full); }
+
+/* 过渡 */
+.transition-fast { transition: all var(--duration-fast) var(--ease-out); }
+.transition-normal { transition: all var(--duration-normal) var(--ease-in-out); }
+.transition-slow { transition: all var(--duration-slow) var(--ease-in-out); }

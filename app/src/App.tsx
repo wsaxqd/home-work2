@@ -58,16 +58,22 @@ import {
   HabitTracker,
   CheckinAchievements,
   GameLeaderboard,
-  PetAdopt,
-  PetDetail,
-  // PetShop,
-  // PetInventory,
   ExpressionGame,
   ImageRecognitionGame,
   Explore,
   Garden,
   PictureBookReader,
-  LevelDetail
+  LevelDetail,
+  Messages,
+  DailyTasks,
+  CoinsDetail,
+  CoinsRanking,
+  ShopMall,
+  ShopHistory,
+  WeakPointDiagnosis,
+  PersonalizedLearningPath,
+  KnowledgePointDetail,
+  Practice
 } from './pages'
 import TimeLockModal from './components/TimeLockModal'
 import ContentProtectedRoute from './components/ContentProtectedRoute'
@@ -204,6 +210,18 @@ function App() {
         <Route path="/my-works" element={<ProtectedRoute><MyWorks /></ProtectedRoute>} />
         <Route path="/favorites" element={<ProtectedRoute><Favorites /></ProtectedRoute>} />
 
+        {/* 消息中心 */}
+        <Route path="/messages" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
+
+        {/* 每日任务 */}
+        <Route path="/daily-tasks" element={<ProtectedRoute><DailyTasks /></ProtectedRoute>} />
+
+        {/* 积分系统 */}
+        <Route path="/coins-detail" element={<ProtectedRoute><CoinsDetail /></ProtectedRoute>} />
+        <Route path="/coins-ranking" element={<ProtectedRoute><CoinsRanking /></ProtectedRoute>} />
+        <Route path="/shop-mall" element={<ProtectedRoute><ShopMall /></ProtectedRoute>} />
+        <Route path="/shop-history" element={<ProtectedRoute><ShopHistory /></ProtectedRoute>} />
+
         {/* 创作工具子页面 - 受内容访问控制 */}
         <Route path="/art-creator" element={<ProtectedRoute><ContentProtectedRoute contentType="creation"><ArtCreator /></ContentProtectedRoute></ProtectedRoute>} />
         <Route path="/music-creator" element={<ProtectedRoute><ContentProtectedRoute contentType="creation"><MusicCreator /></ContentProtectedRoute></ProtectedRoute>} />
@@ -252,6 +270,12 @@ function App() {
         <Route path="/learning-map" element={<ProtectedRoute><LearningMap /></ProtectedRoute>} />
         <Route path="/learning/stage/:stageId" element={<ProtectedRoute><LevelDetail /></ProtectedRoute>} />
 
+        {/* 个性化学习引擎 */}
+        <Route path="/weak-point-diagnosis" element={<ProtectedRoute><WeakPointDiagnosis /></ProtectedRoute>} />
+        <Route path="/learning-path/:pathId" element={<ProtectedRoute><PersonalizedLearningPath /></ProtectedRoute>} />
+        <Route path="/knowledge-point/:id" element={<ProtectedRoute><KnowledgePointDetail /></ProtectedRoute>} />
+        <Route path="/practice" element={<ProtectedRoute><Practice /></ProtectedRoute>} />
+
         {/* 签到系统 */}
         <Route path="/checkin" element={<ProtectedRoute><Checkin /></ProtectedRoute>} />
         <Route path="/habit-tracker" element={<ProtectedRoute><HabitTracker /></ProtectedRoute>} />
@@ -264,11 +288,6 @@ function App() {
         {/* 游戏排行榜 */}
         <Route path="/game-leaderboard" element={<ProtectedRoute><GameLeaderboard /></ProtectedRoute>} />
 
-        {/* 宠物系统 */}
-        <Route path="/pet-adopt" element={<ProtectedRoute><PetAdopt /></ProtectedRoute>} />
-        <Route path="/pet-detail" element={<ProtectedRoute><PetDetail /></ProtectedRoute>} />
-        {/* <Route path="/pet-shop" element={<ProtectedRoute><PetShop /></ProtectedRoute>} /> */}
-        {/* <Route path="/pet-inventory" element={<ProtectedRoute><PetInventory /></ProtectedRoute>} /> */}
 
         {/* 家长端路由 */}
         <Route path="/parent/login" element={<ParentLogin />} />

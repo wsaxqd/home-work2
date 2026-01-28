@@ -257,6 +257,16 @@ export default function WrongQuestionBook() {
           </div>
         ) : activeTab === 'weakness' ? (
           <div className="weakness-analysis">
+            {/* AI薄弱点诊断入口 */}
+            <div className="ai-diagnosis-banner" onClick={() => navigate('/weak-point-diagnosis')}>
+              <div className="banner-icon">🎯</div>
+              <div className="banner-content">
+                <h3>AI薄弱点诊断</h3>
+                <p>智能分析学习数据,生成个性化学习路径</p>
+              </div>
+              <div className="banner-arrow">→</div>
+            </div>
+
             {weakness.length === 0 ? (
               <div className="empty-state">
                 <div className="empty-icon">💪</div>

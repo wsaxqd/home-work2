@@ -157,6 +157,17 @@ export default function LearningMap() {
             </div>
             <div className="tool-arrow">→</div>
           </div>
+          <div
+            className="tool-card weak-point"
+            onClick={() => navigate('/weak-point-diagnosis')}
+          >
+            <div className="tool-icon">🎯</div>
+            <div className="tool-info">
+              <div className="tool-title">薄弱点诊断</div>
+              <div className="tool-desc">AI分析·个性学习</div>
+            </div>
+            <div className="tool-arrow">→</div>
+          </div>
         </div>
 
         {/* 统计卡片 */}

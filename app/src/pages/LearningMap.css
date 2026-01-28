@@ -9,7 +9,7 @@
 /* 学习工具快捷入口 */
 .learning-tools {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 16px;
   margin-bottom: 24px;
 }
@@ -47,6 +47,15 @@
 
 .tool-card.wrong-questions:hover {
   box-shadow: 0 8px 24px rgba(234, 84, 85, 0.3);
+}
+
+.tool-card.weak-point {
+  border-color: #ff9f43;
+  background: linear-gradient(135deg, rgba(255, 159, 67, 0.05) 0%, rgba(255, 185, 88, 0.05) 100%);
+}
+
+.tool-card.weak-point:hover {
+  box-shadow: 0 8px 24px rgba(255, 159, 67, 0.3);
 }
 
 .tool-icon {

@@ -3,6 +3,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Layout, Header } from '../components/layout';
 import { UsageTracker } from '../services/usageTracking';
+import VoiceInput from '../components/VoiceInput';
+import TextToSpeech from '../components/TextToSpeech';
 import './AIEncyclopedia.css';
 
 interface Question {
@@ -108,6 +110,7 @@ const AIEncyclopedia: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [showVoiceAssistant, setShowVoiceAssistant] = useState<boolean>(false);
   const [currentVoiceQuestion, setCurrentVoiceQuestion] = useState<string>('');
+  const [voiceError, setVoiceError] = useState<string>('');
 
   const categories = ['全部', '基础', '技术', '应用', '未来', '趣味'];
   const difficulties = ['全部', '简单', '中等', '挑战'];
@@ -135,6 +138,18 @@ const AIEncyclopedia: React.FC = () => {
   const askQuestionToAI = () => {
     setShowVoiceAssistant(true);
     // 这里可以集成语音识别API
+  };
+
+  // 处理语音输入
+  const handleVoiceTranscript = (text: string) => {
+    setSearchTerm(text);
+    setVoiceError('');
+  };
+
+  // 处理语音输入错误
+  const handleVoiceError = (error: string) => {
+    setVoiceError(error);
+    setTimeout(() => setVoiceError(''), 3000);
   };
 
   const difficultyColors = {
@@ -225,6 +240,9 @@ const AIEncyclopedia: React.FC = () => {
       {/* 搜索和筛选 */}
       <div className="filter-section">
         <div className="search-box">
+          {voiceError && (
+            <div className="voice-error-toast">{voiceError}</div>
+          )}
           <span className="search-icon">🔍</span>
           <input
             type="text"
@@ -238,6 +256,11 @@ const AIEncyclopedia: React.FC = () => {
               ✕
             </button>
           )}
+          <VoiceInput
+            onTranscript={handleVoiceTranscript}
+            onError={handleVoiceError}
+            placeholder="点击麦克风语音搜索"
+          />
         </div>
 
         <div className="filter-controls">
@@ -339,13 +362,12 @@ const AIEncyclopedia: React.FC = () => {
                 <div className="answer-text">
                   <span className="a-mark">启启说：</span> {question.answer}
                 </div>
-                
+
                 <div className="answer-actions">
-                  {question.voiceExplanation && (
-                    <button className="voice-btn">
-                      <span className="icon">🔊</span> 听语音讲解
-                    </button>
-                  )}
+                  <TextToSpeech
+                    text={`${question.question}。${question.answer}`}
+                    onError={(err) => setVoiceError(err)}
+                  />
                   <button className="related-btn">
                     <span className="icon">🎮</span> 玩相关游戏
                   </button>
@@ -353,7 +375,7 @@ const AIEncyclopedia: React.FC = () => {
                     <span className="icon">💭</span> 继续提问
                   </button>
                 </div>
-                
+
                 <div className="fun-fact">
                   <span className="icon">💡</span>
                   <strong>你知道吗？</strong> 这个问题被 {Math.floor(Math.random() * 100) + 1} 个小朋友问过！

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Layout, Header } from '../components/layout'
+import VoiceInput from '../components/VoiceInput'
 import './Search.css'
 
 interface SearchResult {
@@ -20,6 +21,7 @@ export default function Search() {
   const [activeCategory, setActiveCategory] = useState('全部')
   const [results, setResults] = useState<SearchResult[]>([])
   const [isSearching, setIsSearching] = useState(false)
+  const [voiceError, setVoiceError] = useState<string | null>(null)
 
   // 所有可搜索的内容数据
   const allContent: SearchResult[] = [
@@ -91,6 +93,18 @@ export default function Search() {
     navigate(path)
   }
 
+  // 处理语音识别结果
+  const handleVoiceTranscript = (text: string) => {
+    setSearchTerm(text)
+    setVoiceError(null)
+  }
+
+  // 处理语音识别错误
+  const handleVoiceError = (error: string) => {
+    setVoiceError(error)
+    setTimeout(() => setVoiceError(null), 3000)
+  }
+
   return (
     <Layout>
       <Header
@@ -100,6 +114,11 @@ export default function Search() {
       />
       <div className="main-content">
         {/* 搜索框 */}
+        {voiceError && (
+          <div className="voice-error-message">
+            ⚠️ {voiceError}
+          </div>
+        )}
         <form className="search-form" onSubmit={handleSearch}>
           <div className="search-input-wrapper">
             <span className="search-icon">🔍</span>
@@ -120,6 +139,11 @@ export default function Search() {
                 ✕
               </button>
             )}
+            <VoiceInput
+              onTranscript={handleVoiceTranscript}
+              onError={handleVoiceError}
+              placeholder="语音搜索"
+            />
           </div>
         </form>
 

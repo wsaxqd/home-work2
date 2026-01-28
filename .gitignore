@@ -2,10 +2,13 @@
 node_modules/
 */node_modules/
 
-# Environment variables
+# Environment variables (重要：不要上传到 GitHub！)
 .env
 .env.local
 .env.*.local
+.env.production
+.env.development
+*.env
 
 # IDE
 .vscode/
@@ -43,3 +46,22 @@ coverage/
 
 # Trae workspace
 .trae/
+
+# Docker volumes and data (不要上传数据文件)
+data/
+logs/
+backups/
+ssl/*.pem
+ssl/*.key
+ssl/*.crt
+
+# Uploads (用户上传的文件)
+server/uploads/*
+!server/uploads/.gitkeep
+
+# Database dumps
+*.sql
+*.dump
+
+# Lock files (package-lock.json 可选择性上传)
+# package-lock.json  # 如果需要精确版本控制，可以注释掉这行

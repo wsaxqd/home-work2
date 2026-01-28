@@ -1,0 +1,72 @@
+# ============================================================
+# Nginx 反向代理 Dockerfile
+# 用途：生产环境的 Nginx 容器，整合前端静态文件和反向代理
+# ============================================================
+
+ARG NGINX_VERSION=1.25-alpine
+
+FROM nginx:${NGINX_VERSION}
+
+# 维护者信息
+LABEL maintainer="qmzg-team"
+LABEL description="启蒙之光 Nginx 反向代理服务器"
+
+# 安装必要工具
+RUN apk add --no-cache \
+    bash \
+    curl \
+    tzdata \
+    && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
+    && echo "Asia/Shanghai" > /etc/timezone \
+    && apk del tzdata
+
+# 创建必要的目录
+RUN mkdir -p /var/www/qmzg/app/dist \
+    && mkdir -p /var/www/qmzg/server/uploads \
+    && mkdir -p /etc/nginx/sites-available \
+    && mkdir -p /etc/nginx/sites-enabled \
+    && mkdir -p /etc/nginx/ssl
+
+# 删除默认配置
+RUN rm -f /etc/nginx/conf.d/default.conf
+
+# 创建非 root 用户（安全）
+RUN addgroup -g 101 -S nginx-runner 2>/dev/null || true \
+    && adduser -S -D -H -u 101 -h /var/cache/nginx -s /sbin/nologin -G nginx-runner -g nginx-runner nginx-runner 2>/dev/null || true
+
+# 设置权限
+RUN chown -R nginx-runner:nginx-runner /var/www/qmzg \
+    && chown -R nginx-runner:nginx-runner /var/cache/nginx \
+    && chown -R nginx-runner:nginx-runner /var/log/nginx \
+    && chown -R nginx-runner:nginx-runner /etc/nginx/conf.d \
+    && chown -R nginx-runner:nginx-runner /etc/nginx/sites-available \
+    && chown -R nginx-runner:nginx-runner /etc/nginx/sites-enabled \
+    && touch /var/run/nginx.pid \
+    && chown -R nginx-runner:nginx-runner /var/run/nginx.pid
+
+# 复制自定义的 Nginx 主配置（可选）
+# COPY nginx-main.conf /etc/nginx/nginx.conf
+
+# 暴露端口
+EXPOSE 80 443
+
+# 健康检查
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost/health || exit 1
+
+# 切换到非 root 用户
+USER nginx-runner
+
+# 启动 Nginx
+CMD ["nginx", "-g", "daemon off;"]
+
+# ============================================================
+# 构建命令：
+#   docker build -f nginx/Dockerfile.nginx -t qmzg-nginx:latest ./nginx
+#
+# 运行命令：
+#   docker run -d -p 80:80 -p 443:443 \
+#     -v $(pwd)/nginx/nginx.conf:/etc/nginx/sites-available/qmzg:ro \
+#     -v $(pwd)/app/dist:/var/www/qmzg/app/dist:ro \
+#     qmzg-nginx:latest
+# ============================================================

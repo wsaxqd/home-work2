@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { Layout, Header } from '../components/layout'
 import { UsageTracker } from '../services/usageTracking'
+import TextToSpeech from '../components/TextToSpeech'
 import './PictureBookReader.css'
 
 interface BookPage {
@@ -220,6 +221,12 @@ export default function PictureBookReader() {
             {currentPageData.content.split('\n').map((line, idx) => (
               <p key={idx}>{line}</p>
             ))}
+          </div>
+          <div className="page-voice-controls">
+            <TextToSpeech
+              text={currentPageData.content}
+              autoPlay={false}
+            />
           </div>
           <div className="page-number">— {currentPageData.pageNumber} —</div>
         </div>
