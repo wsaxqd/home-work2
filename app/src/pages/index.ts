@@ -107,5 +107,9 @@ export { default as SkillTree } from './SkillTree'
 export { default as Settings } from './Settings'
 export { default as AccountSecurity } from './AccountSecurity'
 export { default as PasswordReset } from './PasswordReset'
+export { default as HelpCenter } from './HelpCenter'
+export { default as Feedback } from './Feedback'
+export { default as About } from './About'
+export { default as PrivacyPolicy } from './PrivacyPolicy'
 
 

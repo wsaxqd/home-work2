@@ -78,7 +78,11 @@ import {
   TodayTasks,
   Settings,
   AccountSecurity,
-  PasswordReset
+  PasswordReset,
+  HelpCenter,
+  Feedback,
+  About,
+  PrivacyPolicy
 } from './pages'
 import TimeLockModal from './components/TimeLockModal'
 import ContentProtectedRoute from './components/ContentProtectedRoute'
@@ -305,6 +309,18 @@ function App() {
 
         {/* 账户安全页面 */}
         <Route path="/account-security" element={<ProtectedRoute><AccountSecurity /></ProtectedRoute>} />
+
+        {/* 帮助中心 */}
+        <Route path="/help-center" element={<ProtectedRoute><HelpCenter /></ProtectedRoute>} />
+
+        {/* 用户反馈 */}
+        <Route path="/feedback" element={<ProtectedRoute><Feedback /></ProtectedRoute>} />
+
+        {/* 关于页面 */}
+        <Route path="/about" element={<ProtectedRoute><About /></ProtectedRoute>} />
+
+        {/* 隐私政策 */}
+        <Route path="/privacy-policy" element={<ProtectedRoute><PrivacyPolicy /></ProtectedRoute>} />
 
         {/* 家长端路由 */}
         <Route path="/parent/login" element={<ParentLogin />} />
