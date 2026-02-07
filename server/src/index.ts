@@ -3,6 +3,7 @@ import cors from 'cors';
 import path from 'path';
 import config from './config';
 import { errorHandler, notFoundHandler } from './utils/errorHandler';
+import { moderateRateLimit } from './middleware/rateLimit';
 
 // 导入路由
 import authRoutes from './routes/auth';
@@ -59,6 +60,9 @@ app.use(cors({
 }));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// 全局限流中间件
+app.use('/api', moderateRateLimit);
 
 // 静态文件服务（上传的文件）
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
