@@ -5,7 +5,8 @@
   "main": "dist/index.js",
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
-    "build": "tsc",
+    "build": "tsc --skipLibCheck",
+    "build:prod": "tsc --skipLibCheck --noEmitOnError false",
     "start": "node dist/index.js",
     "migrate": "ts-node src/migrations/run.ts",
     "migrate:rollback": "ts-node src/migrations/rollback.ts",

@@ -9,7 +9,7 @@ const router = express.Router();
 router.post('/create', authenticateToken, async (req, res) => {
   try {
     const userId = req.user?.userId;
-    const plan = await learningPlanService.createPlan(userId, req.body);
+    const plan = await learningPlanService.createPlan(String(userId), req.body);
 
     res.json({ success: true, data: plan });
   } catch (error: any) {
@@ -31,7 +31,7 @@ router.post('/generate', authenticateToken, async (req, res) => {
       });
     }
 
-    const plan = await learningPlanService.generateAIPlan(userId, {
+    const plan = await learningPlanService.generateAIPlan(String(userId), {
       subjects,
       daily_time,
       difficulty_level: difficulty_level || 3,
@@ -52,7 +52,7 @@ router.get('/my-plans', authenticateToken, async (req, res) => {
     const userId = req.user?.userId;
     const status = req.query.status as string | undefined;
 
-    const plans = await learningPlanService.getUserPlans(userId, status);
+    const plans = await learningPlanService.getUserPlans(String(userId), status);
 
     res.json({ success: true, data: plans });
   } catch (error: any) {
@@ -67,7 +67,7 @@ router.get('/plan/:planId', authenticateToken, async (req, res) => {
     const userId = req.user?.userId;
     const { planId } = req.params;
 
-    const plan = await learningPlanService.getPlanDetail(planId, userId);
+    const plan = await learningPlanService.getPlanDetail(planId, String(userId));
 
     res.json({ success: true, data: plan });
   } catch (error: any) {
@@ -83,7 +83,7 @@ router.get('/plan/:planId/tasks', authenticateToken, async (req, res) => {
     const { planId } = req.params;
     const date = req.query.date as string | undefined;
 
-    const tasks = await learningPlanService.getPlanTasks(planId, userId, date);
+    const tasks = await learningPlanService.getPlanTasks(planId, String(userId), date);
 
     res.json({ success: true, data: tasks });
   } catch (error: any) {
@@ -98,7 +98,7 @@ router.post('/plan/:planId/task', authenticateToken, async (req, res) => {
     const userId = req.user?.userId;
     const { planId } = req.params;
 
-    const task = await learningPlanService.addPlanTask(planId, userId, req.body);
+    const task = await learningPlanService.addPlanTask(planId, String(userId), req.body);
 
     res.json({ success: true, data: task });
   } catch (error: any) {
@@ -112,7 +112,7 @@ router.get('/today-tasks', authenticateToken, async (req, res) => {
   try {
     const userId = req.user?.userId;
 
-    const tasks = await learningPlanService.getTodayTasks(userId);
+    const tasks = await learningPlanService.getTodayTasks(String(userId));
 
     res.json({ success: true, data: tasks });
   } catch (error: any) {
@@ -127,7 +127,7 @@ router.post('/task/:taskId/complete', authenticateToken, async (req, res) => {
     const userId = req.user?.userId;
     const { taskId } = req.params;
 
-    const task = await learningPlanService.completeTask(taskId, userId, req.body);
+    const task = await learningPlanService.completeTask(taskId, String(userId), req.body);
 
     res.json({ success: true, data: task });
   } catch (error: any) {
@@ -142,7 +142,7 @@ router.get('/ability-assessment', authenticateToken, async (req, res) => {
     const userId = req.user?.userId;
     const subject = req.query.subject as string | undefined;
 
-    const assessment = await learningPlanService.getAbilityAssessment(userId, subject);
+    const assessment = await learningPlanService.getAbilityAssessment(String(userId), subject);
 
     res.json({ success: true, data: assessment });
   } catch (error: any) {
@@ -165,7 +165,7 @@ router.post('/ability-assessment', authenticateToken, async (req, res) => {
     }
 
     const assessment = await learningPlanService.updateAbilityAssessment(
-      userId,
+      String(userId),
       subject,
       skill_name,
       assessmentData
@@ -184,7 +184,7 @@ router.delete('/plan/:planId', authenticateToken, async (req, res) => {
     const userId = req.user?.userId;
     const { planId } = req.params;
 
-    await learningPlanService.deletePlan(planId, userId);
+    await learningPlanService.deletePlan(planId, String(userId));
 
     res.json({ success: true, message: '计划已删除' });
   } catch (error: any) {
@@ -199,7 +199,7 @@ router.post('/plan/:planId/toggle', authenticateToken, async (req, res) => {
     const userId = req.user?.userId;
     const { planId } = req.params;
 
-    const plan = await learningPlanService.togglePlanStatus(planId, userId);
+    const plan = await learningPlanService.togglePlanStatus(planId, String(userId));
 
     res.json({ success: true, data: plan });
   } catch (error: any) {

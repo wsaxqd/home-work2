@@ -1,0 +1,256 @@
+# ============================================================
+# Docker Compose 生产环境配置 - 纯镜像部署版
+# 项目：启蒙之光 (QMZG)
+# 特点：只拉取镜像，不包含源码，不在服务器构建
+# ============================================================
+
+version: '3.8'
+
+services:
+  # ==================== PostgreSQL 数据库 ====================
+  postgres:
+    image: postgres:15-alpine
+    container_name: qmzg-postgres
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_DB: ${DB_NAME:-qmzg_prod}
+      POSTGRES_USER: ${DB_USER:-qmzg_admin}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?数据库密码未设置，请在.env文件中配置DB_PASSWORD}
+      POSTGRES_INITDB_ARGS: "-E UTF8 --locale=C"
+
+    expose:
+      - "5432"
+
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./backups:/backups
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-qmzg_admin} -d ${DB_NAME:-qmzg_prod}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+
+    networks:
+      - backend
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ==================== 后端 API 服务 ====================
+  server:
+    # 从镜像仓库拉取预构建的镜像
+    image: ${REGISTRY_URL:-ccr.ccs.tencentyun.com}/${REGISTRY_NAMESPACE:-qmzg-ai-edu}/qmzg-server:${VERSION:-v1.0.0}
+    container_name: qmzg-server
+    restart: unless-stopped
+
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+
+      # 数据库连接
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-qmzg_prod}
+      DB_USER: ${DB_USER:-qmzg_admin}
+      DB_PASSWORD: ${DB_PASSWORD:?数据库密码未设置}
+
+      # JWT 密钥
+      JWT_SECRET: ${JWT_SECRET:?JWT密钥未设置}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-7d}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:?JWT刷新密钥未设置}
+      JWT_REFRESH_EXPIRES_IN: ${JWT_REFRESH_EXPIRES_IN:-30d}
+
+      # CORS 配置
+      CORS_ORIGIN: ${CORS_ORIGIN:-https://qmzgai.com}
+
+      # Dify AI 配置
+      DIFY_API_URL: ${DIFY_API_URL}
+      DIFY_API_KEY: ${DIFY_API_KEY}
+      DIFY_CHAT_APP_KEY: ${DIFY_CHAT_APP_KEY}
+      DIFY_STORY_APP_KEY: ${DIFY_STORY_APP_KEY}
+      DIFY_EMOTION_APP_KEY: ${DIFY_EMOTION_APP_KEY}
+      DIFY_TUTORING_APP_KEY: ${DIFY_TUTORING_APP_KEY}
+      DIFY_TIMEOUT: ${DIFY_TIMEOUT:-30000}
+
+      # DeepSeek AI 配置
+      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY}
+      DEEPSEEK_API_URL: ${DEEPSEEK_API_URL:-https://api.deepseek.com}
+
+      # 智谱 AI 配置
+      ZHIPU_API_KEY: ${ZHIPU_API_KEY}
+
+      # 腾讯云 OCR 配置
+      TENCENT_SECRET_ID: ${TENCENT_SECRET_ID}
+      TENCENT_SECRET_KEY: ${TENCENT_SECRET_KEY}
+      TENCENT_OCR_REGION: ${TENCENT_OCR_REGION:-ap-beijing}
+
+      # 邮件配置
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USER: ${SMTP_USER}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
+      SMTP_FROM: ${SMTP_FROM}
+
+    expose:
+      - "3000"
+
+    volumes:
+      - uploads-data:/app/uploads
+      - ./logs/server:/app/logs
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 256M
+
+    networks:
+      - backend
+      - frontend
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ==================== Nginx 反向代理 ====================
+  nginx:
+    # 从镜像仓库拉取预构建的 Nginx 镜像
+    image: ${REGISTRY_URL:-ccr.ccs.tencentyun.com}/${REGISTRY_NAMESPACE:-qmzg-ai-edu}/qmzg-app:${VERSION:-v1.0.0}
+    container_name: qmzg-nginx
+    restart: unless-stopped
+
+    ports:
+      - "80:80"
+      - "443:443"
+
+    volumes:
+      # 上传文件访问
+      - uploads-data:/var/www/qmzg/server/uploads:ro
+
+      # SSL 证书（从宿主机挂载）
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+
+      # 日志
+      - ./logs/nginx:/var/log/nginx
+
+    environment:
+      - DOMAIN=${DOMAIN:-qmzgai.com}
+      - BACKEND_HOST=server
+      - BACKEND_PORT=3000
+
+    depends_on:
+      server:
+        condition: service_healthy
+
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 256M
+        reservations:
+          cpus: '0.1'
+          memory: 64M
+
+    networks:
+      - frontend
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+# ==================== 网络配置 ====================
+networks:
+  frontend:
+    driver: bridge
+    name: qmzg-frontend
+
+  backend:
+    driver: bridge
+    name: qmzg-backend
+
+# ==================== 数据卷配置 ====================
+volumes:
+  postgres-data:
+    name: qmzg-postgres-data
+    driver: local
+
+  uploads-data:
+    name: qmzg-uploads-data
+    driver: local
+
+# ============================================================
+# 使用说明
+# ============================================================
+#
+# 【重要】此配置文件不包含构建指令，只拉取预构建的镜像
+#
+# 部署流程：
+#
+# 1. 在开发机/CI服务器构建镜像：
+#    ./build-and-push.sh v1.0.0
+#
+# 2. 在生产服务器拉取最新镜像：
+#    docker-compose -f docker-compose.prod-image.yml pull
+#
+# 3. 启动服务：
+#    docker-compose -f docker-compose.prod-image.yml up -d
+#
+# 4. 查看日志：
+#    docker-compose -f docker-compose.prod-image.yml logs -f
+#
+# 5. 执行数据库迁移：
+#    docker-compose -f docker-compose.prod-image.yml exec server npm run migrate
+#
+# 6. 回滚到旧版本：
+#    VERSION=v1.0.0 docker-compose -f docker-compose.prod-image.yml up -d
+#
+# 7. 零停机更新：
+#    docker-compose -f docker-compose.prod-image.yml pull
+#    docker-compose -f docker-compose.prod-image.yml up -d --no-deps server
+#
+# 环境变量说明：
+#   REGISTRY_URL        - 镜像仓库地址（如：ccr.ccs.tencentyun.com）
+#   REGISTRY_NAMESPACE  - 命名空间（如：qmzg）
+#   VERSION             - 镜像版本（如：v1.0.0）
+#
+# ============================================================

@@ -9,7 +9,7 @@ const router = express.Router();
 router.get('/dashboard', authenticateToken, async (req, res) => {
   try {
     const userId = req.user?.userId;
-    const data = await learningAnalyticsService.getDashboardData(userId);
+    const data = await learningAnalyticsService.getDashboardData(String(userId));
 
     res.json({ success: true, data });
   } catch (error: any) {
@@ -24,7 +24,7 @@ router.get('/overview', authenticateToken, async (req, res) => {
     const userId = req.user?.userId;
     const days = Number(req.query.days) || 7;
 
-    const data = await learningAnalyticsService.getUserLearningOverview(userId, days);
+    const data = await learningAnalyticsService.getUserLearningOverview(String(userId), days);
 
     res.json({ success: true, data });
   } catch (error: any) {
@@ -37,7 +37,7 @@ router.get('/overview', authenticateToken, async (req, res) => {
 router.get('/today', authenticateToken, async (req, res) => {
   try {
     const userId = req.user?.userId;
-    const data = await learningAnalyticsService.getTodayStatistics(userId);
+    const data = await learningAnalyticsService.getTodayStatistics(String(userId));
 
     res.json({ success: true, data });
   } catch (error: any) {
@@ -52,12 +52,12 @@ router.post('/log', authenticateToken, async (req, res) => {
     const userId = req.user?.userId;
     const behaviorData = req.body;
 
-    await learningAnalyticsService.logBehavior(userId, behaviorData);
+    await learningAnalyticsService.logBehavior(String(userId), behaviorData);
 
     // 如果有时长,同时更新统计
     if (behaviorData.duration) {
       await learningAnalyticsService.updateLearningTime(
-        userId,
+        String(userId),
         behaviorData.behavior_type,
         behaviorData.duration
       );
@@ -84,7 +84,7 @@ router.get('/report', authenticateToken, async (req, res) => {
     }
 
     const report = await learningAnalyticsService.getLearningReport(
-      userId,
+      String(userId),
       startDate as string,
       endDate as string
     );

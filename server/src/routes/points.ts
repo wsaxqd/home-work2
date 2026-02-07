@@ -1,15 +1,16 @@
 // 积分系统路由
-import express from 'express';
+import express, { Response } from 'express';
 import { authenticateToken } from '../middlewares/auth';
 import { pointsService } from '../services/pointsService';
 import { shopService } from '../services/shopService';
+import { AuthRequest } from '../types/express';
 
 const router = express.Router();
 
 // ===== 积分管理 =====
 
 // 1. 获取用户积分信息
-router.get('/info', authenticateToken, async (req, res) => {
+router.get('/info', authenticateToken, async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.user?.userId;
     const info = await pointsService.getUserPoints(userId);
@@ -28,7 +29,7 @@ router.get('/info', authenticateToken, async (req, res) => {
 });
 
 // 2. 获取积分记录
-router.get('/records', authenticateToken, async (req, res) => {
+router.get('/records', authenticateToken, async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.user?.userId;
     const { filter, limit = 50, offset = 0 } = req.query;
@@ -54,7 +55,7 @@ router.get('/records', authenticateToken, async (req, res) => {
 });
 
 // 3. 获取等级配置
-router.get('/levels', authenticateToken, async (req, res) => {
+router.get('/levels', authenticateToken, async (req: AuthRequest, res: Response) => {
   try {
     const levels = await pointsService.getLevelConfigs();
 
@@ -74,7 +75,7 @@ router.get('/levels', authenticateToken, async (req, res) => {
 // ===== 积分商城 =====
 
 // 4. 获取商城商品列表
-router.get('/shop/items', authenticateToken, async (req, res) => {
+router.get('/shop/items', authenticateToken, async (req: AuthRequest, res: Response) => {
   try {
     const { category } = req.query;
 
@@ -94,7 +95,7 @@ router.get('/shop/items', authenticateToken, async (req, res) => {
 });
 
 // 5. 获取商品详情
-router.get('/shop/items/:itemId', authenticateToken, async (req, res) => {
+router.get('/shop/items/:itemId', authenticateToken, async (req: AuthRequest, res: Response) => {
   try {
     const { itemId } = req.params;
 
@@ -114,7 +115,7 @@ router.get('/shop/items/:itemId', authenticateToken, async (req, res) => {
 });
 
 // 6. 兑换商品
-router.post('/shop/exchange', authenticateToken, async (req, res) => {
+router.post('/shop/exchange', authenticateToken, async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.user?.userId;
     const { itemId, quantity = 1 } = req.body;
@@ -143,7 +144,7 @@ router.post('/shop/exchange', authenticateToken, async (req, res) => {
 });
 
 // 7. 获取用户兑换记录
-router.get('/shop/exchanges', authenticateToken, async (req, res) => {
+router.get('/shop/exchanges', authenticateToken, async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.user?.userId;
     const { limit = 20, offset = 0 } = req.query;
@@ -168,7 +169,7 @@ router.get('/shop/exchanges', authenticateToken, async (req, res) => {
 });
 
 // 8. 使用道具
-router.post('/shop/use/:exchangeId', authenticateToken, async (req, res) => {
+router.post('/shop/use/:exchangeId', authenticateToken, async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.user?.userId;
     const { exchangeId } = req.params;
@@ -190,7 +191,7 @@ router.post('/shop/use/:exchangeId', authenticateToken, async (req, res) => {
 });
 
 // 9. 获取商城统计
-router.get('/shop/stats', authenticateToken, async (req, res) => {
+router.get('/shop/stats', authenticateToken, async (req: AuthRequest, res: Response) => {
   try {
     const stats = await shopService.getShopStats();
 
@@ -208,7 +209,7 @@ router.get('/shop/stats', authenticateToken, async (req, res) => {
 });
 
 // 10. 获取热门商品
-router.get('/shop/hot', authenticateToken, async (req, res) => {
+router.get('/shop/hot', authenticateToken, async (req: AuthRequest, res: Response) => {
   try {
     const { limit = 10 } = req.query;
 
@@ -228,7 +229,7 @@ router.get('/shop/hot', authenticateToken, async (req, res) => {
 });
 
 // 11. 获取新品推荐
-router.get('/shop/new', authenticateToken, async (req, res) => {
+router.get('/shop/new', authenticateToken, async (req: AuthRequest, res: Response) => {
   try {
     const { limit = 10 } = req.query;
 

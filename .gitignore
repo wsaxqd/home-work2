@@ -63,5 +63,9 @@ server/uploads/*
 *.sql
 *.dump
 
+# Security keys backup (重要：不要上传到 GitHub！)
+.security-keys-backup.txt
+*.security-keys-backup.txt
+
 # Lock files (package-lock.json 可选择性上传)
 # package-lock.json  # 如果需要精确版本控制，可以注释掉这行
