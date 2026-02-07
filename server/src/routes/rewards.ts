@@ -27,7 +27,7 @@ router.get('/achievements/my', authenticateToken, async (req, res) => {
     const userId = req.user?.userId;
     const { category } = req.query;
 
-    const achievements = await achievementService.getUserAchievements(userId, category as string);
+    const achievements = await achievementService.getUserAchievements(String(userId), category as string);
 
     res.json({ success: true, data: achievements });
   } catch (error: any) {
@@ -40,7 +40,7 @@ router.get('/achievements/my', authenticateToken, async (req, res) => {
 router.get('/achievements/stats', authenticateToken, async (req, res) => {
   try {
     const userId = req.user?.userId;
-    const stats = await achievementService.getUserAchievementStats(userId);
+    const stats = await achievementService.getUserAchievementStats(String(userId));
 
     res.json({ success: true, data: stats });
   } catch (error: any) {
@@ -55,7 +55,7 @@ router.get('/achievements/stats', authenticateToken, async (req, res) => {
 router.get('/daily-tasks', authenticateToken, async (req, res) => {
   try {
     const userId = req.user?.userId;
-    const tasks = await dailyTaskService.getUserDailyTasks(userId);
+    const tasks = await dailyTaskService.getUserDailyTasks(String(userId));
 
     res.json({ success: true, data: tasks });
   } catch (error: any) {
@@ -70,7 +70,7 @@ router.post('/daily-tasks/progress', authenticateToken, async (req, res) => {
     const userId = req.user?.userId;
     const { taskId, progress } = req.body;
 
-    const result = await dailyTaskService.updateTaskProgress(userId, taskId, progress);
+    const result = await dailyTaskService.updateTaskProgress(String(userId), taskId, progress);
 
     res.json({
       success: true,
@@ -87,7 +87,7 @@ router.post('/daily-tasks/progress', authenticateToken, async (req, res) => {
 router.get('/daily-tasks/stats', authenticateToken, async (req, res) => {
   try {
     const userId = req.user?.userId;
-    const stats = await dailyTaskService.getUserTaskStats(userId);
+    const stats = await dailyTaskService.getUserTaskStats(String(userId));
 
     res.json({ success: true, data: stats });
   } catch (error: any) {

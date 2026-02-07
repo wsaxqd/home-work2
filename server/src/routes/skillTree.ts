@@ -40,7 +40,7 @@ router.get('/my-progress', authenticateToken, async (req, res) => {
     const userId = req.user?.userId;
     const subject = req.query.subject as string | undefined;
 
-    const progress = await skillTreeService.getUserProgress(userId, subject);
+    const progress = await skillTreeService.getUserProgress(String(userId), subject);
 
     res.json({ success: true, data: progress });
   } catch (error: any) {
@@ -55,7 +55,7 @@ router.get('/node/:nodeId/can-unlock', authenticateToken, async (req, res) => {
     const userId = req.user?.userId;
     const { nodeId } = req.params;
 
-    const canUnlock = await skillTreeService.canUnlockNode(userId, nodeId);
+    const canUnlock = await skillTreeService.canUnlockNode(String(userId), nodeId);
 
     res.json({ success: true, data: { can_unlock: canUnlock } });
   } catch (error: any) {
@@ -70,7 +70,7 @@ router.post('/node/:nodeId/unlock', authenticateToken, async (req, res) => {
     const userId = req.user?.userId;
     const { nodeId } = req.params;
 
-    const progress = await skillTreeService.unlockNode(userId, nodeId);
+    const progress = await skillTreeService.unlockNode(String(userId), nodeId);
 
     res.json({ success: true, data: progress });
   } catch (error: any) {
@@ -85,7 +85,7 @@ router.post('/node/:nodeId/progress', authenticateToken, async (req, res) => {
     const userId = req.user?.userId;
     const { nodeId } = req.params;
 
-    const progress = await skillTreeService.updateNodeProgress(userId, nodeId, req.body);
+    const progress = await skillTreeService.updateNodeProgress(String(userId), nodeId, req.body);
 
     res.json({ success: true, data: progress });
   } catch (error: any) {
@@ -108,7 +108,7 @@ router.post('/node/:nodeId/rate', authenticateToken, async (req, res) => {
       });
     }
 
-    const progress = await skillTreeService.rateNode(userId, nodeId, rating);
+    const progress = await skillTreeService.rateNode(String(userId), nodeId, rating);
 
     res.json({ success: true, data: progress });
   } catch (error: any) {
@@ -123,7 +123,7 @@ router.get('/paths/recommended', authenticateToken, async (req, res) => {
     const userId = req.user?.userId;
     const subject = req.query.subject as string | undefined;
 
-    const paths = await skillTreeService.getRecommendedPaths(userId, subject);
+    const paths = await skillTreeService.getRecommendedPaths(String(userId), subject);
 
     res.json({ success: true, data: paths });
   } catch (error: any) {
@@ -138,7 +138,7 @@ router.post('/path/:pathId/start', authenticateToken, async (req, res) => {
     const userId = req.user?.userId;
     const { pathId } = req.params;
 
-    const progress = await skillTreeService.startLearningPath(userId, pathId);
+    const progress = await skillTreeService.startLearningPath(String(userId), pathId);
 
     res.json({ success: true, data: progress });
   } catch (error: any) {
@@ -152,7 +152,7 @@ router.get('/my-paths', authenticateToken, async (req, res) => {
   try {
     const userId = req.user?.userId;
 
-    const paths = await skillTreeService.getUserPathProgress(userId);
+    const paths = await skillTreeService.getUserPathProgress(String(userId));
 
     res.json({ success: true, data: paths });
   } catch (error: any) {
@@ -175,7 +175,7 @@ router.post('/path/:pathId/progress', authenticateToken, async (req, res) => {
       });
     }
 
-    const progress = await skillTreeService.updatePathProgress(userId, pathId, node_index);
+    const progress = await skillTreeService.updatePathProgress(String(userId), pathId, node_index);
 
     res.json({ success: true, data: progress });
   } catch (error: any) {
@@ -189,7 +189,7 @@ router.get('/stats', authenticateToken, async (req, res) => {
   try {
     const userId = req.user?.userId;
 
-    const stats = await skillTreeService.getSkillTreeStats(userId);
+    const stats = await skillTreeService.getSkillTreeStats(String(userId));
 
     res.json({ success: true, data: stats });
   } catch (error: any) {

@@ -1,12 +1,9 @@
-import express, { Request, Response } from 'express'
+import express, { Response } from 'express'
 import { pool } from '../config/database'
 import { authenticateToken } from '../middleware/auth'
+import { AuthRequest } from '../types/express'
 
 const router = express.Router()
-
-interface AuthRequest extends Request {
-  userId?: string
-}
 
 /**
  * 获取我的错题本
@@ -198,6 +195,7 @@ router.post('/:id/review', authenticateToken, async (req: AuthRequest, res: Resp
   try {
     const userId = req.user?.userId
     const { id } = req.params
+    const questionId = parseInt(id) // 转换为数字
     const { result, timeSpent, confidenceLevel, notes } = req.body
 
     const client = await pool.connect()
@@ -209,7 +207,7 @@ router.post('/:id/review', authenticateToken, async (req: AuthRequest, res: Resp
         `INSERT INTO wrong_question_reviews
          (wrong_question_id, review_result, time_spent, confidence_level, notes)
          VALUES ($1, $2, $3, $4, $5)`,
-        [id, result, timeSpent, confidenceLevel, notes]
+        [questionId, result, timeSpent, confidenceLevel, notes]
       )
 
       // 更新错题记录
@@ -221,9 +219,9 @@ router.post('/:id/review', authenticateToken, async (req: AuthRequest, res: Resp
 
       if (result === 'correct') {
         // 答对了，延长复习间隔
-        updateQuery += `, next_review_at = NOW() + INTERVAL '${Math.pow(2, await getReviewCount(id))} days'`
+        updateQuery += `, next_review_at = NOW() + INTERVAL '${Math.pow(2, await getReviewCount(questionId))} days'`
         // 如果连续答对3次，标记为已掌握
-        if (await getCorrectReviewStreak(id) >= 2) {
+        if (await getCorrectReviewStreak(questionId) >= 2) {
           updateQuery += `, is_mastered = true`
         }
       } else if (result === 'wrong') {
@@ -232,7 +230,7 @@ router.post('/:id/review', authenticateToken, async (req: AuthRequest, res: Resp
       }
 
       updateQuery += ` WHERE id = $1 AND user_id = $2`
-      await client.query(updateQuery, [id, userId])
+      await client.query(updateQuery, [questionId, userId])
 
       await client.query('COMMIT')
 
