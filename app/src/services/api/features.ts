@@ -71,3 +71,78 @@ export const userApi = {
   getFollowing: (page: number = 1, pageSize: number = 20) =>
     api.get(`/users/following?page=${page}&pageSize=${pageSize}`)
 };
+
+// 书签相关API
+export const bookmarkApi = {
+  // 添加书签
+  createBookmark: (data: {
+    resourceType: 'story' | 'article' | 'video' | 'knowledge';
+    resourceId: string;
+    resourceTitle?: string;
+    position?: number;
+    notes?: string;
+  }) => api.post('/bookmarks', data),
+
+  // 获取书签列表
+  getBookmarks: (resourceType?: string, page: number = 1, limit: number = 20) =>
+    api.get(`/bookmarks?${resourceType ? `resourceType=${resourceType}&` : ''}page=${page}&limit=${limit}`),
+
+  // 检查书签是否存在
+  checkBookmark: (resourceType: string, resourceId: string) =>
+    api.get(`/bookmarks/check?resourceType=${resourceType}&resourceId=${resourceId}`),
+
+  // 更新书签
+  updateBookmark: (id: number, data: { position?: number; notes?: string }) =>
+    api.put(`/bookmarks/${id}`, data),
+
+  // 删除书签
+  deleteBookmark: (id: number) => api.delete(`/bookmarks/${id}`)
+};
+
+// 笔记相关API
+export const noteApi = {
+  // 创建笔记
+  createNote: (data: {
+    title: string;
+    content: string;
+    resourceType?: string;
+    resourceId?: string;
+    tags?: string[];
+  }) => api.post('/notes', data),
+
+  // 获取笔记列表
+  getNotes: (options?: {
+    search?: string;
+    tags?: string[];
+    isFavorite?: boolean;
+    page?: number;
+    limit?: number;
+  }) => {
+    const params = new URLSearchParams();
+    if (options?.search) params.append('search', options.search);
+    if (options?.tags) params.append('tags', options.tags.join(','));
+    if (options?.isFavorite) params.append('isFavorite', 'true');
+    params.append('page', String(options?.page || 1));
+    params.append('limit', String(options?.limit || 20));
+    return api.get(`/notes?${params.toString()}`);
+  },
+
+  // 获取笔记详情
+  getNoteDetail: (id: number) => api.get(`/notes/${id}`),
+
+  // 更新笔记
+  updateNote: (id: number, data: {
+    title?: string;
+    content?: string;
+    resourceType?: string;
+    resourceId?: string;
+    tags?: string[];
+    isFavorite?: boolean;
+  }) => api.put(`/notes/${id}`, data),
+
+  // 删除笔记
+  deleteNote: (id: number) => api.delete(`/notes/${id}`),
+
+  // 获取所有标签
+  getAllTags: () => api.get('/notes/tags')
+};
