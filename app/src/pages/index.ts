@@ -113,5 +113,6 @@ export { default as About } from './About'
 export { default as PrivacyPolicy } from './PrivacyPolicy'
 export { default as ShopItemDetail } from './ShopItemDetail'
 export { default as MyItems } from './MyItems'
+export { default as UserProfile } from './UserProfile'
 
 
