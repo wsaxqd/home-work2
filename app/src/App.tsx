@@ -62,6 +62,9 @@ import {
   ExpressionGame,
   ImageRecognitionGame,
   MathSpeedGame,
+  IdiomChainGame,
+  EnglishSpellingGame,
+  ScienceQuizGame,
   Explore,
   Garden,
   PictureBookReader,
@@ -246,6 +249,9 @@ function App() {
         <Route path="/expression-game" element={<ProtectedRoute><ContentProtectedRoute contentType="games"><ExpressionGame /></ContentProtectedRoute></ProtectedRoute>} />
         <Route path="/image-recognition-game" element={<ProtectedRoute><ContentProtectedRoute contentType="games"><ImageRecognitionGame /></ContentProtectedRoute></ProtectedRoute>} />
         <Route path="/math-speed-game" element={<ProtectedRoute><ContentProtectedRoute contentType="games"><MathSpeedGame /></ContentProtectedRoute></ProtectedRoute>} />
+        <Route path="/idiom-chain-game" element={<ProtectedRoute><ContentProtectedRoute contentType="games"><IdiomChainGame /></ContentProtectedRoute></ProtectedRoute>} />
+        <Route path="/english-spelling-game" element={<ProtectedRoute><ContentProtectedRoute contentType="games"><EnglishSpellingGame /></ContentProtectedRoute></ProtectedRoute>} />
+        <Route path="/science-quiz-game" element={<ProtectedRoute><ContentProtectedRoute contentType="games"><ScienceQuizGame /></ContentProtectedRoute></ProtectedRoute>} />
         <Route path="/tank-battle" element={<ProtectedRoute><ContentProtectedRoute contentType="games"><TankBattle /></ContentProtectedRoute></ProtectedRoute>} />
         <Route path="/chess-game" element={<ProtectedRoute><ContentProtectedRoute contentType="games"><ChessGame /></ContentProtectedRoute></ProtectedRoute>} />
         <Route path="/chinese-chess" element={<ProtectedRoute><ContentProtectedRoute contentType="games"><ChineseChess /></ContentProtectedRoute></ProtectedRoute>} />
