@@ -5,6 +5,7 @@ import './Games.css'
 
 const gameItems = [
   { icon: '⚔️', title: '多人竞技PK', desc: '1v1实时答题对战，挑战全国玩家', path: '/pk-battle', color: '#f5576c', bgColor: '#ffe5f0', difficulty: '热门', tips: '段位系统，排行榜争霸', category: '竞技' },
+  { icon: '🔢', title: '数学速算挑战', desc: '60秒极速计算，挑战你的数学能力', path: '/math-speed-game', color: '#667eea', bgColor: '#e8e4ff', difficulty: '简单', tips: '三种难度，连击加分', category: '学习' },
   { icon: '🍎', title: '水果连连看', desc: '萌萌哒水果配对，锻炼记忆力', path: '/fruit-match', color: '#ff6b6b', bgColor: '#ffe5e5', difficulty: '简单', tips: '8种可爱水果等你来配对', category: '益智' },
   { icon: '💎', title: '水晶消消乐', desc: '晶莹剔透的消除游戏', path: '/crystal-match', color: '#667eea', bgColor: '#e8e4ff', difficulty: '中等', tips: '连击消除，挑战高分', category: '益智' },
   { icon: '🚀', title: '坦克大战', desc: '经典坦克射击，挑战反应速度', path: '/tank-battle', color: '#5f27cd', bgColor: '#e8e3f3', difficulty: '中等', tips: '键盘操控，激情对战', category: '动作' },
@@ -13,14 +14,13 @@ const gameItems = [
   { icon: '🎯', title: '打地鼠', desc: '快速反应，打击地鼠', path: '/whack-a-mole', color: '#f093fb', bgColor: '#fce4ff', difficulty: '简单', tips: '锻炼反应速度和手眼协调', category: '动作' },
   { icon: '🔢', title: '数字华容道', desc: '移动数字方块，按顺序排列', path: '/number-puzzle', color: '#4facfe', bgColor: '#e3f5ff', difficulty: '中等', tips: '挑战逻辑思维能力', category: '益智' },
   { icon: '🧩', title: '拼图游戏', desc: '拼接图案，完成挑战', path: '/jigsaw-puzzle', color: '#28c76f', bgColor: '#d4f4e2', difficulty: '简单', tips: '培养空间想象力', category: '益智' },
-  { icon: '🎮', title: '更多游戏', desc: '更多有趣的AI游戏即将上线', path: '/games', color: '#ff6348', bgColor: '#ffe5e1', difficulty: '敬请期待', tips: '持续更新中...', category: '其他' },
 ]
 
 export default function Games() {
   const navigate = useNavigate()
   const [selectedCategory, setSelectedCategory] = useState('全部')
 
-  const categories = ['全部', '竞技', '益智', '动作', '策略']
+  const categories = ['全部', '竞技', '学习', '益智', '动作', '策略']
 
   const filteredGames = selectedCategory === '全部'
     ? gameItems

@@ -74,6 +74,9 @@ export { default as RankingLeaderboard } from './RankingLeaderboard'
 export { default as ExpressionGame } from './ExpressionGame'
 export { default as ImageRecognitionGame } from './ImageRecognitionGame'
 
+// 教育游戏
+export { default as MathSpeedGame } from './MathSpeedGame'
+
 // 探索发现
 export { default as Explore } from './Explore'
 export { default as Garden } from './Garden'

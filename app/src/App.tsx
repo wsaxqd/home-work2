@@ -61,6 +61,7 @@ import {
   RankingLeaderboard,
   ExpressionGame,
   ImageRecognitionGame,
+  MathSpeedGame,
   Explore,
   Garden,
   PictureBookReader,
@@ -244,6 +245,7 @@ function App() {
         <Route path="/fruit-match" element={<ProtectedRoute><ContentProtectedRoute contentType="games"><FruitMatch /></ContentProtectedRoute></ProtectedRoute>} />
         <Route path="/expression-game" element={<ProtectedRoute><ContentProtectedRoute contentType="games"><ExpressionGame /></ContentProtectedRoute></ProtectedRoute>} />
         <Route path="/image-recognition-game" element={<ProtectedRoute><ContentProtectedRoute contentType="games"><ImageRecognitionGame /></ContentProtectedRoute></ProtectedRoute>} />
+        <Route path="/math-speed-game" element={<ProtectedRoute><ContentProtectedRoute contentType="games"><MathSpeedGame /></ContentProtectedRoute></ProtectedRoute>} />
         <Route path="/tank-battle" element={<ProtectedRoute><ContentProtectedRoute contentType="games"><TankBattle /></ContentProtectedRoute></ProtectedRoute>} />
         <Route path="/chess-game" element={<ProtectedRoute><ContentProtectedRoute contentType="games"><ChessGame /></ContentProtectedRoute></ProtectedRoute>} />
         <Route path="/chinese-chess" element={<ProtectedRoute><ContentProtectedRoute contentType="games"><ChineseChess /></ContentProtectedRoute></ProtectedRoute>} />
