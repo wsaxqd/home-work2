@@ -186,6 +186,27 @@ export class ShopService {
 
     return result.rows;
   }
+
+  // 9. 获取用户的物品列表
+  async getUserItems(userId: string, category?: string) {
+    let sql = `
+      SELECT ui.*, si.name, si.icon, si.category, si.description
+      FROM user_items ui
+      JOIN shop_items si ON ui.item_id = si.id
+      WHERE ui.user_id = $1
+    `;
+    const params: any[] = [userId];
+
+    if (category && category !== 'all') {
+      sql += ' AND si.category = $2';
+      params.push(category);
+    }
+
+    sql += ' ORDER BY ui.obtained_at DESC';
+
+    const result = await query(sql, params);
+    return result.rows;
+  }
 }
 
 export const shopService = new ShopService();

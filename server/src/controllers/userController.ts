@@ -43,3 +43,18 @@ export const bindEmail = asyncHandler(async (req: AuthRequest, res: Response) =>
   await userService.bindEmail(userId, email, code);
   sendSuccess(res, null, '邮箱绑定成功');
 });
+
+export const followUser = asyncHandler(async (req: AuthRequest, res: Response) => {
+  const userId = req.userId!;
+  const { targetUserId } = req.body;
+  await userService.followUser(userId, targetUserId);
+  sendSuccess(res, null, '关注成功');
+});
+
+export const unfollowUser = asyncHandler(async (req: AuthRequest, res: Response) => {
+  const userId = req.userId!;
+  const { targetUserId } = req.body;
+  await userService.unfollowUser(userId, targetUserId);
+  sendSuccess(res, null, '取消关注成功');
+});
+

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { Layout, Header } from '../components/layout'
+import { userApi } from '../services/api/features'
 import './UserProfile.css'
 
 interface UserInfo {
@@ -30,16 +31,8 @@ export default function UserProfile() {
   const loadUserProfile = async () => {
     setLoading(true)
     try {
-      // TODO: 调用API获取用户信息
-      const mockUser: UserInfo = {
-        id: id || '1',
-        nickname: '小明同学',
-        avatar: '👦',
-        bio: '热爱学习,喜欢创作',
-        stats: { works: 12, followers: 156, following: 89 },
-        isFollowing: false
-      }
-      setUser(mockUser)
+      const response = await userApi.getUserInfo(id!)
+      setUser(response.data)
     } catch (error) {
       console.error('加载用户信息失败:', error)
     } finally {
@@ -50,10 +43,14 @@ export default function UserProfile() {
   const handleFollow = async () => {
     if (!user) return
     try {
-      // TODO: 调用关注/取消关注API
+      if (user.isFollowing) {
+        await userApi.unfollowUser(user.id)
+      } else {
+        await userApi.followUser(user.id)
+      }
       setUser({ ...user, isFollowing: !user.isFollowing })
-    } catch (error) {
-      alert('操作失败')
+    } catch (error: any) {
+      alert(error.response?.data?.message || '操作失败')
     }
   }
 

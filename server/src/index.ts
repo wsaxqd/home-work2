@@ -42,6 +42,8 @@ import rewardsRoutes from './routes/rewards';
 import learningAnalyticsRoutes from './routes/learningAnalytics';
 import learningPlanRoutes from './routes/learningPlan';
 import skillTreeRoutes from './routes/skillTree';
+import feedbackRoutes from './routes/feedback';
+import shopRoutes from './routes/shop';
 
 const app = express();
 
@@ -110,6 +112,8 @@ app.use('/api/rewards', rewardsRoutes);
 app.use('/api/learning-analytics', learningAnalyticsRoutes);
 app.use('/api/learning-plan', learningPlanRoutes);
 app.use('/api/skill-tree', skillTreeRoutes);
+app.use('/api/feedback', feedbackRoutes);
+app.use('/api/shop', shopRoutes);
 app.use('/api', homeRoutes);
 
 // 404处理
