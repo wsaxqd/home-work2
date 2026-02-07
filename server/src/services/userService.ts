@@ -171,6 +171,92 @@ export class UserService {
       gamePlays: parseInt(stats.game_plays),
     };
   }
+
+  // 绑定手机号
+  async bindPhone(userId: string, phone: string, code: string) {
+    // 验证手机号格式
+    if (!/^1[3-9]\d{9}$/.test(phone)) {
+      throw new AppError('手机号格式不正确', 400);
+    }
+
+    // 验证验证码
+    const codeResult = await query(
+      `SELECT * FROM sms_verify_codes
+       WHERE phone = $1 AND code = $2 AND type = 'bind'
+       AND used = false AND expires_at > NOW()
+       ORDER BY created_at DESC LIMIT 1`,
+      [phone, code]
+    );
+
+    if (codeResult.rows.length === 0) {
+      throw new AppError('验证码无效或已过期', 400);
+    }
+
+    // 检查手机号是否已被其他用户绑定
+    const existingUser = await query(
+      'SELECT id FROM users WHERE phone = $1 AND id != $2',
+      [phone, userId]
+    );
+
+    if (existingUser.rows.length > 0) {
+      throw new AppError('该手机号已被其他用户绑定', 400);
+    }
+
+    // 标记验证码为已使用
+    await query(
+      'UPDATE sms_verify_codes SET used = true WHERE id = $1',
+      [codeResult.rows[0].id]
+    );
+
+    // 更新用户手机号
+    await query(
+      'UPDATE users SET phone = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2',
+      [phone, userId]
+    );
+  }
+
+  // 绑定邮箱
+  async bindEmail(userId: string, email: string, code: string) {
+    // 验证邮箱格式
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      throw new AppError('邮箱格式不正确', 400);
+    }
+
+    // 验证验证码
+    const codeResult = await query(
+      `SELECT * FROM email_verify_codes
+       WHERE email = $1 AND code = $2 AND type = 'bind'
+       AND used = false AND expires_at > NOW()
+       ORDER BY created_at DESC LIMIT 1`,
+      [email, code]
+    );
+
+    if (codeResult.rows.length === 0) {
+      throw new AppError('验证码无效或已过期', 400);
+    }
+
+    // 检查邮箱是否已被其他用户绑定
+    const existingUser = await query(
+      'SELECT id FROM users WHERE email = $1 AND id != $2',
+      [email, userId]
+    );
+
+    if (existingUser.rows.length > 0) {
+      throw new AppError('该邮箱已被其他用户绑定', 400);
+    }
+
+    // 标记验证码为已使用
+    await query(
+      'UPDATE email_verify_codes SET used = true WHERE id = $1',
+      [codeResult.rows[0].id]
+    );
+
+    // 更新用户邮箱
+    await query(
+      'UPDATE users SET email = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2',
+      [email, userId]
+    );
+  }
 }
 
 export const userService = new UserService();

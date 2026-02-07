@@ -315,6 +315,134 @@ export class AuthService {
       ...tokens,
     };
   }
+
+  // 手机号验证码登录(如果手机号不存在则自动注册)
+  async loginByPhone(phone: string) {
+    // 验证手机号格式
+    if (!this.validatePhone(phone)) {
+      throw new AppError('手机号格式不正确', 400);
+    }
+
+    // 查找用户
+    let result = await query(
+      'SELECT * FROM users WHERE phone = $1',
+      [phone]
+    );
+
+    let user;
+
+    // 如果用户不存在,自动注册
+    if (result.rows.length === 0) {
+      const username = `user_${phone.slice(-4)}`;
+      const nickname = `用户${phone.slice(-4)}`;
+      // 手机号登录用户使用随机密码(不会被使用)
+      const randomPassword = Math.random().toString(36).substring(2, 15);
+      const passwordHash = await bcrypt.hash(randomPassword, 10);
+
+      const registerResult = await query(
+        `INSERT INTO users (username, phone, nickname, password_hash)
+         VALUES ($1, $2, $3, $4)
+         RETURNING id, username, phone, email, nickname, avatar, bio, created_at`,
+        [username, phone, nickname, passwordHash]
+      );
+      user = registerResult.rows[0];
+    } else {
+      user = result.rows[0];
+
+      // 更新最后登录时间
+      await query(
+        'UPDATE users SET last_login_at = CURRENT_TIMESTAMP WHERE id = $1',
+        [user.id]
+      );
+    }
+
+    const tokens = this.generateTokens(user.id);
+
+    return {
+      user: {
+        id: user.id,
+        phone: user.phone,
+        email: user.email,
+        nickname: user.nickname,
+        avatar: user.avatar,
+        bio: user.bio,
+        createdAt: user.created_at,
+      },
+      ...tokens,
+    };
+  }
+
+  // 生成密码重置令牌
+  async generateResetToken(contact: string, method: 'phone' | 'email') {
+    // 查找用户
+    let result;
+    if (method === 'phone') {
+      result = await query('SELECT id FROM users WHERE phone = $1', [contact]);
+    } else {
+      result = await query('SELECT id FROM users WHERE email = $1', [contact]);
+    }
+
+    if (result.rows.length === 0) {
+      throw new AppError('用户不存在', 404);
+    }
+
+    const userId = result.rows[0].id;
+
+    // 生成重置令牌(包含用户ID和过期时间)
+    const resetToken = jwt.sign(
+      { userId, contact, method, purpose: 'reset' },
+      config.jwt.secret,
+      { expiresIn: '15m' } // 15分钟有效期
+    );
+
+    return resetToken;
+  }
+
+  // 重置密码
+  async resetPassword(resetToken: string, newPassword: string) {
+    // 验证新密码
+    if (newPassword.length < 8) {
+      throw new AppError('密码至少需要8位', 400);
+    }
+
+    // 验证重置令牌
+    let decoded;
+    try {
+      decoded = jwt.verify(resetToken, config.jwt.secret) as {
+        userId: string;
+        contact: string;
+        method: string;
+        purpose: string;
+      };
+
+      if (decoded.purpose !== 'reset') {
+        throw new AppError('无效的重置令牌', 400);
+      }
+    } catch (error) {
+      if (error instanceof jwt.JsonWebTokenError) {
+        throw new AppError('无效的重置令牌', 400);
+      }
+      if (error instanceof jwt.TokenExpiredError) {
+        throw new AppError('重置令牌已过期，请重新发起找回', 400);
+      }
+      throw error;
+    }
+
+    // 验证用户是否存在
+    const result = await query('SELECT id FROM users WHERE id = $1', [decoded.userId]);
+
+    if (result.rows.length === 0) {
+      throw new AppError('用户不存在', 404);
+    }
+
+    // 更新密码
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    await query(
+      'UPDATE users SET password = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2',
+      [hashedPassword, decoded.userId]
+    );
+  }
 }
 
 export const authService = new AuthService();

@@ -29,3 +29,17 @@ export const getUserStats = asyncHandler(async (req: AuthRequest, res: Response)
   const stats = await userService.getUserStats(userId);
   sendSuccess(res, stats);
 });
+
+export const bindPhone = asyncHandler(async (req: AuthRequest, res: Response) => {
+  const userId = req.userId!;
+  const { phone, code } = req.body;
+  await userService.bindPhone(userId, phone, code);
+  sendSuccess(res, null, '手机号绑定成功');
+});
+
+export const bindEmail = asyncHandler(async (req: AuthRequest, res: Response) => {
+  const userId = req.userId!;
+  const { email, code } = req.body;
+  await userService.bindEmail(userId, email, code);
+  sendSuccess(res, null, '邮箱绑定成功');
+});
