@@ -185,3 +185,29 @@ export const rankingApi = {
   // 获取段位配置
   getRankTiers: () => api.get('/ranking/tiers')
 };
+
+// 推荐系统API
+export const recommendationApi = {
+  // 获取个性化推荐
+  getPersonalizedRecommendations: (limit?: number) =>
+    api.get(`/recommendations/personalized${limit ? `?limit=${limit}` : ''}`),
+
+  // 获取用户画像
+  getUserProfile: () => api.get('/recommendations/profile'),
+
+  // 协同过滤推荐
+  getCollaborativeRecommendations: (limit?: number) =>
+    api.get(`/recommendations/collaborative${limit ? `?limit=${limit}` : ''}`),
+
+  // 基于内容的推荐
+  getContentBasedRecommendations: (limit?: number) =>
+    api.get(`/recommendations/content-based${limit ? `?limit=${limit}` : ''}`),
+
+  // 学习路径推荐
+  getLearningPathRecommendations: () =>
+    api.get('/recommendations/learning-path'),
+
+  // 首页推荐
+  getHomeRecommendations: () =>
+    api.get('/recommendations/home')
+};
