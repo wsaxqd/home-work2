@@ -47,6 +47,7 @@ import shopRoutes from './routes/shop';
 import bookmarksRoutes from './routes/bookmarks';
 import notesRoutes from './routes/notes';
 import achievementsRoutes from './routes/achievements';
+import rankingRoutes from './routes/ranking';
 
 const app = express();
 
@@ -120,6 +121,7 @@ app.use('/api/shop', shopRoutes);
 app.use('/api/bookmarks', bookmarksRoutes);
 app.use('/api/notes', notesRoutes);
 app.use('/api/achievements', achievementsRoutes);
+app.use('/api/ranking', rankingRoutes);
 app.use('/api', homeRoutes);
 
 // 404处理
