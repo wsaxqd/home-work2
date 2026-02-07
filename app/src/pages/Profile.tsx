@@ -15,6 +15,7 @@ const menuItems = [
   { icon: '📁', title: '我的作品', desc: '查看创作的内容', path: '/my-works', color: '#f093fb', bgColor: '#ffeef5' },
   { icon: '❤️', title: '我的收藏', desc: '喜欢的作品集合', path: '/favorites', color: '#fdcb6e', bgColor: '#fff8e1' },
   { icon: '🏅', title: '成就中心', desc: '查看学习成就', path: '/checkin-achievements', color: '#4facfe', bgColor: '#e8f4ff' },
+  { icon: '⚙️', title: '设置', desc: '账户与偏好设置', path: '/settings', color: '#95a5a6', bgColor: '#ecf0f1' },
 ]
 
 export default function Profile() {

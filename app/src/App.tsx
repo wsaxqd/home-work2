@@ -73,7 +73,12 @@ import {
   WeakPointDiagnosis,
   PersonalizedLearningPath,
   KnowledgePointDetail,
-  Practice
+  Practice,
+  SkillTree,
+  TodayTasks,
+  Settings,
+  AccountSecurity,
+  PasswordReset
 } from './pages'
 import TimeLockModal from './components/TimeLockModal'
 import ContentProtectedRoute from './components/ContentProtectedRoute'
@@ -185,6 +190,7 @@ function App() {
         <Route path="/" element={<InitialRoute />} />
         <Route path="/splash" element={<Splash />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/password-reset" element={<PasswordReset />} />
 
         {/* 4个主导航页面 */}
         <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
@@ -288,6 +294,17 @@ function App() {
         {/* 游戏排行榜 */}
         <Route path="/game-leaderboard" element={<ProtectedRoute><GameLeaderboard /></ProtectedRoute>} />
 
+        {/* 技能树系统 */}
+        <Route path="/skill-tree" element={<ProtectedRoute><SkillTree /></ProtectedRoute>} />
+
+        {/* 今日任务 */}
+        <Route path="/today-tasks" element={<ProtectedRoute><TodayTasks /></ProtectedRoute>} />
+
+        {/* 设置页面 */}
+        <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+
+        {/* 账户安全页面 */}
+        <Route path="/account-security" element={<ProtectedRoute><AccountSecurity /></ProtectedRoute>} />
 
         {/* 家长端路由 */}
         <Route path="/parent/login" element={<ParentLogin />} />

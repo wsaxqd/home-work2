@@ -25,4 +25,15 @@ router.post('/send-email-code', authController.sendEmailVerifyCode);
 // 邮箱验证码登录
 router.post('/email-login', authController.emailLogin);
 
+// 发送短信验证码
+router.post('/send-sms-code', authController.sendSMSVerifyCode);
+
+// 手机号验证码登录
+router.post('/phone-login', authController.phoneLogin);
+
+// 密码找回相关
+router.post('/forgot-password', authController.forgotPassword);
+router.post('/verify-reset-code', authController.verifyResetCode);
+router.post('/reset-password', authController.resetPassword);
+
 export default router;

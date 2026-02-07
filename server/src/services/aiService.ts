@@ -3,6 +3,9 @@ import { AppError } from '../utils/errorHandler';
 import { difyAdapter } from './difyAdapter';
 import { zhipuAdapter } from './zhipuAdapter';
 import { deepseekAdapter } from './deepseekAdapter';
+import { getTencentVoiceService } from './tencentVoiceService';
+import path from 'path';
+import fs from 'fs';
 
 export type AITaskType = 'story' | 'chat' | 'voice' | 'image_recognition' | 'emotion_analysis';
 
@@ -252,22 +255,42 @@ export class AIService {
   /**
    * 语音转文字
    * @param userId 用户ID
-   * @param voiceUrl 语音文件URL
+   * @param voiceUrl 语音文件URL或Base64编码
+   * @param format 音频格式(mp3/wav/m4a等)
    */
-  async speechToText(userId: string, voiceUrl: string) {
+  async speechToText(userId: string, voiceUrl: string, format: string = 'mp3') {
     try {
-      // TODO: 对接语音识别服务（如百度语音、讯飞等）
-      // Dify可能不支持语音识别，需要单独对接
+      // 使用腾讯云语音识别服务
+      const voiceService = getTencentVoiceService();
 
-      const response = {
-        text: '语音识别功能开发中，敬请期待',
-        duration: 5,
+      let result;
+      // 判断是URL还是Base64
+      if (voiceUrl.startsWith('http://') || voiceUrl.startsWith('https://')) {
+        // 从URL识别
+        result = await voiceService.speechToTextFromUrl(voiceUrl, format);
+      } else {
+        // Base64编码
+        result = await voiceService.speechToText(voiceUrl, format);
+      }
+
+      if (!result.success) {
+        throw new AppError(result.error || '语音识别失败', 500);
+      }
+
+      // 记录到数据库
+      await query(
+        `INSERT INTO ai_generations (user_id, generation_type, prompt, result, created_at)
+         VALUES ($1, $2, $3, $4, NOW())`,
+        [userId, 'voice', voiceUrl.substring(0, 100), result.text]
+      );
+
+      return {
+        text: result.text,
+        duration: result.duration || 0,
       };
-
-      return response;
     } catch (error: any) {
       console.error('Speech to text error:', error);
-      throw new AppError('语音识别失败，请稍后再试', 500);
+      throw new AppError(error.message || '语音识别失败，请稍后再试', 500);
     }
   }
 
@@ -275,21 +298,77 @@ export class AIService {
    * 文字转语音
    * @param userId 用户ID
    * @param text 文本内容
-   * @param voice 语音类型
+   * @param voiceType 语音类型(0-女声,1-男声,10-智瑜,11-智聆等)
+   * @param saveToFile 是否保存为文件
    */
-  async textToSpeech(userId: string, text: string, voice?: string) {
+  async textToSpeech(userId: string, text: string, voiceType: number = 10, saveToFile: boolean = true) {
     try {
-      // TODO: 对接语音合成服务（如百度TTS、讯飞等）
+      // 使用腾讯云语音合成服务
+      const voiceService = getTencentVoiceService();
 
-      const response = {
-        audioUrl: '/audio/generated.mp3',
-        duration: 3,
-      };
+      let result;
+      if (saveToFile) {
+        // 保存为文件
+        const uploadDir = process.env.UPLOAD_DIR || './uploads';
+        const audioDir = path.join(uploadDir, 'audio');
 
-      return response;
+        // 确保目录存在
+        if (!fs.existsSync(audioDir)) {
+          fs.mkdirSync(audioDir, { recursive: true });
+        }
+
+        const filename = `tts_${userId}_${Date.now()}.mp3`;
+        const filepath = path.join(audioDir, filename);
+
+        result = await voiceService.textToSpeechFile(text, filepath, voiceType);
+
+        if (!result.success) {
+          throw new AppError(result.error || '语音合成失败', 500);
+        }
+
+        // 返回相对URL
+        const audioUrl = `/uploads/audio/${filename}`;
+
+        // 记录到数据库
+        await query(
+          `INSERT INTO ai_generations (user_id, generation_type, prompt, result, created_at)
+           VALUES ($1, $2, $3, $4, NOW())`,
+          [userId, 'voice', text, audioUrl]
+        );
+
+        return {
+          audioUrl,
+          duration: result.duration || 0,
+        };
+      } else {
+        // 返回Base64
+        result = await voiceService.textToSpeech(text, voiceType);
+
+        if (!result.success) {
+          throw new AppError(result.error || '语音合成失败', 500);
+        }
+
+        return {
+          audioBase64: result.audioBase64,
+          duration: result.duration || 0,
+        };
+      }
     } catch (error: any) {
       console.error('Text to speech error:', error);
-      throw new AppError('语音合成失败，请稍后再试', 500);
+      throw new AppError(error.message || '语音合成失败，请稍后再试', 500);
+    }
+  }
+
+  /**
+   * 获取可用的语音类型列表
+   */
+  getVoiceTypes() {
+    try {
+      const voiceService = getTencentVoiceService();
+      return voiceService.getVoiceTypes();
+    } catch (error: any) {
+      console.error('Get voice types error:', error);
+      return [];
     }
   }
 

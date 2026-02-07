@@ -38,4 +38,32 @@ export const authApi = {
   // 邮箱验证码登录
   emailLogin: (data: { email: string; code: string }) =>
     api.post<AuthResponse>('/auth/email-login', data),
+
+  // 发送短信验证码
+  sendSMSCode: (phone: string, purpose: string = 'login') =>
+    api.post('/auth/send-sms-code', { phone, purpose }),
+
+  // 手机号验证码登录
+  phoneLogin: (data: { phone: string; code: string }) =>
+    api.post<AuthResponse>('/auth/phone-login', data),
+
+  // 发起密码找回
+  forgotPassword: (contact: string, method: 'phone' | 'email') =>
+    api.post('/auth/forgot-password', { contact, method }),
+
+  // 验证重置码
+  verifyResetCode: (contact: string, code: string, method: 'phone' | 'email') =>
+    api.post<{ resetToken: string }>('/auth/verify-reset-code', { contact, code, method }),
+
+  // 重置密码
+  resetPassword: (resetToken: string, newPassword: string) =>
+    api.post('/auth/reset-password', { resetToken, newPassword }),
+
+  // 绑定手机号
+  bindPhone: (phone: string, code: string) =>
+    api.post('/users/bind-phone', { phone, code }),
+
+  // 绑定邮箱
+  bindEmail: (email: string, code: string) =>
+    api.post('/users/bind-email', { email, code }),
 }

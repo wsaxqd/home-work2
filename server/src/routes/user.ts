@@ -54,4 +54,10 @@ router.delete('/:id/follow', authMiddleware, asyncHandler(async (req: AuthReques
   sendSuccess(res, null, result.message);
 }));
 
+// 绑定手机号
+router.post('/bind-phone', authMiddleware, userController.bindPhone);
+
+// 绑定邮箱
+router.post('/bind-email', authMiddleware, userController.bindEmail);
+
 export default router;
