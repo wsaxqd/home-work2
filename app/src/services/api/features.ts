@@ -163,3 +163,25 @@ export const achievementApi = {
   // 获取成就进度
   getAchievementProgress: () => api.get('/achievements/progress')
 };
+
+// 排位系统API
+export const rankingApi = {
+  // 获取用户段位信息
+  getUserRank: (gameType: string, season?: string) =>
+    api.get(`/ranking/rank/${gameType}${season ? `?season=${season}` : ''}`),
+
+  // 获取排行榜
+  getLeaderboard: (gameType: string, season?: string, limit?: number) =>
+    api.get(`/ranking/leaderboard/${gameType}?${season ? `season=${season}&` : ''}${limit ? `limit=${limit}` : ''}`),
+
+  // 获取段位分布
+  getRankDistribution: (gameType: string, season?: string) =>
+    api.get(`/ranking/distribution/${gameType}${season ? `?season=${season}` : ''}`),
+
+  // 快速匹配
+  quickMatch: (gameType: string) =>
+    api.post('/ranking/quick-match', { gameType }),
+
+  // 获取段位配置
+  getRankTiers: () => api.get('/ranking/tiers')
+};

@@ -67,6 +67,8 @@ export { default as CheckinAchievements } from './CheckinAchievements'
 // 游戏排行榜
 export { default as GameLeaderboard } from './GameLeaderboard'
 
+// PK排位系统
+export { default as RankingLeaderboard } from './RankingLeaderboard'
 
 // AI游戏
 export { default as ExpressionGame } from './ExpressionGame'

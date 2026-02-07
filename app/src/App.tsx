@@ -58,6 +58,7 @@ import {
   HabitTracker,
   CheckinAchievements,
   GameLeaderboard,
+  RankingLeaderboard,
   ExpressionGame,
   ImageRecognitionGame,
   Explore,
@@ -298,6 +299,9 @@ function App() {
 
         {/* 游戏排行榜 */}
         <Route path="/game-leaderboard" element={<ProtectedRoute><GameLeaderboard /></ProtectedRoute>} />
+
+        {/* PK排位排行榜 */}
+        <Route path="/ranking-leaderboard" element={<ProtectedRoute><RankingLeaderboard /></ProtectedRoute>} />
 
         {/* 技能树系统 */}
         <Route path="/skill-tree" element={<ProtectedRoute><SkillTree /></ProtectedRoute>} />
