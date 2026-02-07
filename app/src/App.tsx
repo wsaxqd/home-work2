@@ -85,6 +85,9 @@ import {
   Practice,
   SkillTree,
   TodayTasks,
+  LearningDashboard,
+  LearningCalendar,
+  LearningReport,
   Achievements,
   Settings,
   AccountSecurity,
@@ -321,6 +324,11 @@ function App() {
 
         {/* 技能树系统 */}
         <Route path="/skill-tree" element={<ProtectedRoute><SkillTree /></ProtectedRoute>} />
+
+        {/* 学习进度可视化 */}
+        <Route path="/learning-dashboard" element={<ProtectedRoute><LearningDashboard /></ProtectedRoute>} />
+        <Route path="/learning-calendar" element={<ProtectedRoute><LearningCalendar /></ProtectedRoute>} />
+        <Route path="/learning-report" element={<ProtectedRoute><LearningReport /></ProtectedRoute>} />
 
         {/* 成就系统 */}
         <Route path="/achievements" element={<ProtectedRoute><Achievements /></ProtectedRoute>} />
