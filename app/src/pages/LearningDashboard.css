@@ -1,0 +1,335 @@
+.learning-dashboard {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
+.loading-container,
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  color: #666;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(102, 126, 234, 0.3);
+  border-top-color: #667eea;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* 总览卡片 */
+.overview-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.overview-card {
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s;
+}
+
+.overview-card:hover {
+  transform: translateY(-5px);
+}
+
+.card-icon {
+  font-size: 2.5rem;
+}
+
+.card-content {
+  flex: 1;
+}
+
+.card-label {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 5px;
+}
+
+.card-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #333;
+}
+
+/* 仪表盘区块 */
+.dashboard-section {
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.section-header {
+  margin-bottom: 20px;
+}
+
+.section-header h3 {
+  font-size: 1.2rem;
+  color: #333;
+  margin: 0;
+}
+
+/* 科目分布 */
+.subject-distribution {
+  display: flex;
+  gap: 30px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.pie-chart {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  position: relative;
+  background: #f0f0f0;
+}
+
+.pie-slice {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+}
+
+.distribution-legend {
+  flex: 1;
+  min-width: 200px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.legend-item:last-child {
+  border-bottom: none;
+}
+
+.legend-color {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.legend-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+}
+
+.legend-subject {
+  font-weight: 600;
+  color: #333;
+  min-width: 60px;
+}
+
+.legend-time {
+  color: #666;
+  font-size: 0.9rem;
+  flex: 1;
+}
+
+.legend-percentage {
+  color: #999;
+  font-size: 0.9rem;
+}
+
+/* 学习效率趋势 */
+.efficiency-chart {
+  display: flex;
+  gap: 15px;
+  align-items: flex-end;
+  height: 250px;
+  padding: 20px 0;
+}
+
+.chart-bar {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.bar-container {
+  width: 100%;
+  height: 200px;
+  background: #f0f0f0;
+  border-radius: 8px;
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+}
+
+.bar-fill {
+  width: 100%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 8px 8px 0 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 10px;
+  transition: height 0.5s ease;
+}
+
+.bar-value {
+  color: white;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.bar-label {
+  font-size: 0.9rem;
+  color: #666;
+  font-weight: 500;
+}
+
+/* 知识点掌握度 */
+.mastery-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.mastery-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.mastery-label {
+  min-width: 80px;
+  font-weight: 600;
+  color: #333;
+}
+
+.mastery-bar {
+  flex: 1;
+  height: 30px;
+  background: #f0f0f0;
+  border-radius: 15px;
+  overflow: hidden;
+  position: relative;
+}
+
+.mastery-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #43e97b 0%, #38f9d7 100%);
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 15px;
+  transition: width 0.5s ease;
+}
+
+.mastery-value {
+  color: white;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+/* 快捷入口 */
+.quick-actions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.action-btn {
+  background: white;
+  border: 2px solid #667eea;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.action-btn:hover {
+  background: #667eea;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+}
+
+.action-btn:hover .btn-icon {
+  transform: scale(1.2);
+}
+
+.action-btn:hover .btn-text {
+  color: white;
+}
+
+.btn-icon {
+  font-size: 2rem;
+  transition: transform 0.3s;
+}
+
+.btn-text {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #667eea;
+  transition: color 0.3s;
+}
+
+@media (max-width: 768px) {
+  .overview-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .subject-distribution {
+    flex-direction: column;
+  }
+
+  .pie-chart {
+    width: 150px;
+    height: 150px;
+  }
+
+  .efficiency-chart {
+    gap: 8px;
+    height: 200px;
+  }
+
+  .bar-container {
+    height: 150px;
+  }
+
+  .mastery-label {
+    min-width: 60px;
+    font-size: 0.9rem;
+  }
+}

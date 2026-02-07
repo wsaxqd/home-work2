@@ -1,0 +1,404 @@
+.learning-report {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
+.loading-container,
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  color: #666;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(102, 126, 234, 0.3);
+  border-top-color: #667eea;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* 周期选择器 */
+.period-selector {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  background: white;
+  padding: 5px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.period-btn {
+  flex: 1;
+  padding: 12px 20px;
+  border: none;
+  background: transparent;
+  color: #666;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.period-btn.active {
+  background: #667eea;
+  color: white;
+}
+
+/* 报告标题 */
+.report-header {
+  background: white;
+  border-radius: 16px;
+  padding: 30px;
+  text-align: center;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.report-header h2 {
+  color: #333;
+  margin: 0 0 10px 0;
+  font-size: 1.8rem;
+}
+
+.report-date {
+  color: #999;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+/* 报告区块 */
+.report-section {
+  background: white;
+  border-radius: 16px;
+  padding: 25px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.section-title {
+  font-size: 1.3rem;
+  color: #333;
+  margin: 0 0 20px 0;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+/* 总览网格 */
+.overview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 20px;
+}
+
+.overview-item {
+  text-align: center;
+  padding: 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 12px;
+  color: white;
+}
+
+.overview-label {
+  font-size: 0.9rem;
+  opacity: 0.9;
+  margin-bottom: 10px;
+}
+
+.overview-value {
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+/* 科目列表 */
+.subjects-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.subject-card {
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 12px;
+  transition: transform 0.3s;
+}
+
+.subject-card:hover {
+  transform: translateX(5px);
+}
+
+.subject-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.subject-name {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #333;
+}
+
+.subject-time {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.subject-progress {
+  margin-bottom: 10px;
+}
+
+.progress-bar {
+  height: 30px;
+  background: #e0e0e0;
+  border-radius: 15px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 15px;
+  transition: width 0.5s ease;
+}
+
+.progress-text {
+  color: white;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.subject-improvement {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.improvement {
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.improvement.positive {
+  color: #43e97b;
+}
+
+.improvement.negative {
+  color: #f5576c;
+}
+
+.improvement-label {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+/* 成就列表 */
+.achievements-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 15px;
+}
+
+.achievement-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 15px;
+  background: #f8f9fa;
+  border-radius: 12px;
+  border-left: 4px solid #43e97b;
+}
+
+.achievement-icon {
+  width: 30px;
+  height: 30px;
+  background: #43e97b;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.achievement-text {
+  color: #333;
+  font-size: 0.95rem;
+}
+
+/* 优势与不足 */
+.strengths-weaknesses {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.sw-column {
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 12px;
+}
+
+.sw-title {
+  color: #333;
+  margin: 0 0 15px 0;
+  font-size: 1.1rem;
+}
+
+.sw-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sw-item {
+  padding: 10px 0;
+  padding-left: 25px;
+  position: relative;
+  color: #555;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.sw-item:last-child {
+  border-bottom: none;
+}
+
+.sw-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.sw-item.positive::before {
+  background: #43e97b;
+}
+
+.sw-item.negative::before {
+  background: #f5576c;
+}
+
+/* 建议列表 */
+.suggestions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.suggestion-item {
+  display: flex;
+  gap: 15px;
+  padding: 15px;
+  background: #f8f9fa;
+  border-radius: 12px;
+}
+
+.suggestion-number {
+  width: 30px;
+  height: 30px;
+  background: #667eea;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.suggestion-text {
+  color: #333;
+  line-height: 1.6;
+}
+
+/* 操作按钮 */
+.report-actions {
+  display: flex;
+  gap: 15px;
+  margin-top: 30px;
+}
+
+.action-button {
+  flex: 1;
+  padding: 15px 30px;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.action-button.primary {
+  background: #667eea;
+  color: white;
+}
+
+.action-button.primary:hover {
+  background: #5568d3;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+}
+
+.action-button.secondary {
+  background: white;
+  color: #667eea;
+  border: 2px solid #667eea;
+}
+
+.action-button.secondary:hover {
+  background: #f0f4ff;
+  transform: translateY(-2px);
+}
+
+/* 打印样式 */
+@media print {
+  .period-selector,
+  .report-actions {
+    display: none;
+  }
+
+  .report-section {
+    page-break-inside: avoid;
+  }
+}
+
+@media (max-width: 768px) {
+  .overview-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .achievements-list {
+    grid-template-columns: 1fr;
+  }
+
+  .strengths-weaknesses {
+    grid-template-columns: 1fr;
+  }
+
+  .report-actions {
+    flex-direction: column;
+  }
+}

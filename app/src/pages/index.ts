@@ -114,6 +114,11 @@ export { default as Practice } from './Practice'
 export { default as LearningPlan } from './LearningPlan'
 export { default as TodayTasks } from './TodayTasks'
 
+// 学习进度可视化
+export { default as LearningDashboard } from './LearningDashboard'
+export { default as LearningCalendar } from './LearningCalendar'
+export { default as LearningReport } from './LearningReport'
+
 // 技能树系统
 export { default as SkillTree } from './SkillTree'
 
