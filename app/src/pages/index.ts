@@ -80,6 +80,12 @@ export { default as IdiomChainGame } from './IdiomChainGame'
 export { default as EnglishSpellingGame } from './EnglishSpellingGame'
 export { default as ScienceQuizGame } from './ScienceQuizGame'
 
+// 休闲益智游戏
+export { default as MemoryCardGame } from './MemoryCardGame'
+export { default as TetrisGame } from './TetrisGame'
+export { default as SnakeGame } from './SnakeGame'
+export { default as Game2048 } from './Game2048'
+
 // 探索发现
 export { default as Explore } from './Explore'
 export { default as Garden } from './Garden'
