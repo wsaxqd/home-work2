@@ -76,6 +76,7 @@ import {
   Practice,
   SkillTree,
   TodayTasks,
+  Achievements,
   Settings,
   AccountSecurity,
   PasswordReset,
@@ -300,6 +301,9 @@ function App() {
 
         {/* 技能树系统 */}
         <Route path="/skill-tree" element={<ProtectedRoute><SkillTree /></ProtectedRoute>} />
+
+        {/* 成就系统 */}
+        <Route path="/achievements" element={<ProtectedRoute><Achievements /></ProtectedRoute>} />
 
         {/* 今日任务 */}
         <Route path="/today-tasks" element={<ProtectedRoute><TodayTasks /></ProtectedRoute>} />

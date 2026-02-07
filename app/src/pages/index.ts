@@ -103,6 +103,9 @@ export { default as TodayTasks } from './TodayTasks'
 // 技能树系统
 export { default as SkillTree } from './SkillTree'
 
+// 成就系统
+export { default as Achievements } from './Achievements'
+
 // 设置页面
 export { default as Settings } from './Settings'
 export { default as AccountSecurity } from './AccountSecurity'

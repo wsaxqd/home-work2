@@ -146,3 +146,20 @@ export const noteApi = {
   // 获取所有标签
   getAllTags: () => api.get('/notes/tags')
 };
+
+// 成就相关API
+export const achievementApi = {
+  // 获取所有成就
+  getAllAchievements: (category?: string) =>
+    api.get(`/achievements${category ? `?category=${category}` : ''}`),
+
+  // 获取用户成就
+  getUserAchievements: (category?: string) =>
+    api.get(`/achievements/user${category ? `?category=${category}` : ''}`),
+
+  // 获取成就统计
+  getAchievementStats: () => api.get('/achievements/stats'),
+
+  // 获取成就进度
+  getAchievementProgress: () => api.get('/achievements/progress')
+};
