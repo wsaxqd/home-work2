@@ -6,6 +6,9 @@ import './Games.css'
 const gameItems = [
   { icon: '⚔️', title: '多人竞技PK', desc: '1v1实时答题对战，挑战全国玩家', path: '/pk-battle', color: '#f5576c', bgColor: '#ffe5f0', difficulty: '热门', tips: '段位系统，排行榜争霸', category: '竞技' },
   { icon: '🔢', title: '数学速算挑战', desc: '60秒极速计算，挑战你的数学能力', path: '/math-speed-game', color: '#667eea', bgColor: '#e8e4ff', difficulty: '简单', tips: '三种难度，连击加分', category: '学习' },
+  { icon: '📚', title: '成语接龙挑战', desc: '根据成语接龙，学习中华文化', path: '/idiom-chain-game', color: '#f093fb', bgColor: '#ffeef8', difficulty: '中等', tips: '三种难度，成语解释', category: '学习' },
+  { icon: '📝', title: '单词拼写大师', desc: '根据释义拼写英文单词', path: '/english-spelling-game', color: '#4facfe', bgColor: '#e3f5ff', difficulty: '中等', tips: '提示功能，词汇积累', category: '学习' },
+  { icon: '🔬', title: '科学知识问答', desc: '探索科学世界，学习科学知识', path: '/science-quiz-game', color: '#a8edea', bgColor: '#e3f9f8', difficulty: '中等', tips: '答案解析，知识拓展', category: '学习' },
   { icon: '🍎', title: '水果连连看', desc: '萌萌哒水果配对，锻炼记忆力', path: '/fruit-match', color: '#ff6b6b', bgColor: '#ffe5e5', difficulty: '简单', tips: '8种可爱水果等你来配对', category: '益智' },
   { icon: '💎', title: '水晶消消乐', desc: '晶莹剔透的消除游戏', path: '/crystal-match', color: '#667eea', bgColor: '#e8e4ff', difficulty: '中等', tips: '连击消除，挑战高分', category: '益智' },
   { icon: '🚀', title: '坦克大战', desc: '经典坦克射击，挑战反应速度', path: '/tank-battle', color: '#5f27cd', bgColor: '#e8e3f3', difficulty: '中等', tips: '键盘操控，激情对战', category: '动作' },
