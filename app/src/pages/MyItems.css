@@ -1,0 +1,80 @@
+.my-items-page {
+  padding-bottom: 20px;
+}
+
+.category-tabs {
+  display: flex;
+  gap: 10px;
+  padding: 20px;
+  background: white;
+  margin-bottom: 10px;
+  overflow-x: auto;
+}
+
+.category-tab {
+  padding: 8px 16px;
+  border: 2px solid #e0e0e0;
+  border-radius: 20px;
+  background: white;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.3s;
+}
+
+.category-tab.active {
+  border-color: #667eea;
+  background: #667eea;
+  color: white;
+}
+
+.items-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  padding: 20px;
+}
+
+.item-card {
+  padding: 20px;
+  background: white;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  text-align: center;
+  transition: all 0.3s;
+}
+
+.item-card:hover {
+  border-color: #667eea;
+  transform: translateY(-2px);
+}
+
+.item-icon {
+  font-size: 48px;
+  margin-bottom: 8px;
+}
+
+.item-name {
+  font-size: 14px;
+  color: #333;
+  margin-bottom: 4px;
+}
+
+.item-quantity {
+  font-size: 12px;
+  color: #999;
+}
+
+.loading-state, .empty-state {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.empty-icon {
+  font-size: 64px;
+  margin-bottom: 16px;
+}
+
+.empty-text {
+  font-size: 16px;
+  color: #666;
+}

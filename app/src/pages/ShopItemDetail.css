@@ -1,0 +1,157 @@
+.shop-item-detail-page {
+  padding-bottom: 80px;
+}
+
+.item-image-section {
+  position: relative;
+  padding: 40px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  text-align: center;
+}
+
+.item-image {
+  font-size: 120px;
+  margin-bottom: 16px;
+}
+
+.item-tags {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.item-tag {
+  padding: 4px 12px;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.item-info-section {
+  padding: 20px;
+  background: white;
+  margin-bottom: 10px;
+}
+
+.item-name {
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 8px;
+}
+
+.item-category {
+  display: inline-block;
+  padding: 4px 12px;
+  background: #f0f0f0;
+  color: #666;
+  border-radius: 12px;
+  font-size: 12px;
+  margin-bottom: 16px;
+}
+
+.item-price-box {
+  padding: 16px;
+  background: #fff3e0;
+  border-radius: 12px;
+  margin-bottom: 12px;
+}
+
+.price-label {
+  font-size: 12px;
+  color: #999;
+  margin-bottom: 8px;
+}
+
+.price-value {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.price-icon {
+  font-size: 24px;
+}
+
+.price-amount {
+  font-size: 32px;
+  font-weight: 600;
+  color: #ff9800;
+}
+
+.price-unit {
+  font-size: 14px;
+  color: #999;
+}
+
+.item-stock {
+  font-size: 14px;
+  color: #666;
+}
+
+.in-stock {
+  color: #4caf50;
+  font-weight: 500;
+}
+
+.out-of-stock {
+  color: #f44336;
+  font-weight: 500;
+}
+
+.item-description-section {
+  padding: 20px;
+  background: white;
+  margin-bottom: 10px;
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 12px;
+}
+
+.item-description {
+  font-size: 14px;
+  color: #666;
+  line-height: 1.8;
+  text-align: justify;
+}
+
+.purchase-section {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 12px 20px;
+  background: white;
+  border-top: 1px solid #e0e0e0;
+  z-index: 100;
+}
+
+.purchase-button {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.purchase-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.purchase-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}

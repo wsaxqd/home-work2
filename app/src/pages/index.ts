@@ -111,5 +111,7 @@ export { default as HelpCenter } from './HelpCenter'
 export { default as Feedback } from './Feedback'
 export { default as About } from './About'
 export { default as PrivacyPolicy } from './PrivacyPolicy'
+export { default as ShopItemDetail } from './ShopItemDetail'
+export { default as MyItems } from './MyItems'
 
 
