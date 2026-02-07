@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Layout, Header } from '../components/layout'
+import { shopApi } from '../services/api/features'
 import './MyItems.css'
 
 interface MyItem {
@@ -25,13 +26,8 @@ export default function MyItems() {
   const loadMyItems = async () => {
     setLoading(true)
     try {
-      // TODO: 调用API获取我的物品
-      const mockItems: MyItem[] = [
-        { id: '1', name: '学习加速卡', icon: '🎴', quantity: 3, category: '道具', obtainedAt: '2026-02-05' },
-        { id: '2', name: '经验加倍卡', icon: '⭐', quantity: 5, category: '道具', obtainedAt: '2026-02-06' },
-        { id: '3', name: '可爱头像框', icon: '🖼️', quantity: 1, category: '装饰', obtainedAt: '2026-02-07' }
-      ]
-      setItems(mockItems)
+      const response = await shopApi.getMyItems(activeCategory === 'all' ? undefined : activeCategory)
+      setItems(response.data)
     } catch (error) {
       console.error('加载物品失败:', error)
     } finally {

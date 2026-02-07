@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Layout, Header } from '../components/layout'
+import { feedbackApi } from '../services/api/features'
 import './Feedback.css'
 
 type FeedbackType = 'bug' | 'feature' | 'other'
@@ -65,11 +66,7 @@ export default function Feedback() {
 
     setSubmitting(true)
     try {
-      // TODO: 调用提交反馈API
-      // await feedbackApi.submit({ type, content, contact, images })
-
-      // 模拟提交
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      await feedbackApi.submitFeedback({ type, content, contact, images })
 
       alert('反馈提交成功,感谢您的反馈!')
 

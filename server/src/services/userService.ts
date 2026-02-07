@@ -257,6 +257,52 @@ export class UserService {
       [email, userId]
     );
   }
+
+  // 关注用户
+  async followUser(userId: string, targetUserId: string) {
+    // 不能关注自己
+    if (userId === targetUserId) {
+      throw new AppError('不能关注自己', 400);
+    }
+
+    // 检查目标用户是否存在
+    const targetUser = await query(
+      'SELECT id FROM users WHERE id = $1',
+      [targetUserId]
+    );
+
+    if (targetUser.rows.length === 0) {
+      throw new AppError('目标用户不存在', 404);
+    }
+
+    // 检查是否已关注
+    const existing = await query(
+      'SELECT id FROM follows WHERE follower_id = $1 AND following_id = $2',
+      [userId, targetUserId]
+    );
+
+    if (existing.rows.length > 0) {
+      throw new AppError('已经关注过该用户', 400);
+    }
+
+    // 添加关注记录
+    await query(
+      'INSERT INTO follows (follower_id, following_id) VALUES ($1, $2)',
+      [userId, targetUserId]
+    );
+  }
+
+  // 取消关注
+  async unfollowUser(userId: string, targetUserId: string) {
+    const result = await query(
+      'DELETE FROM follows WHERE follower_id = $1 AND following_id = $2 RETURNING id',
+      [userId, targetUserId]
+    );
+
+    if (result.rows.length === 0) {
+      throw new AppError('未关注该用户', 400);
+    }
+  }
 }
 
 export const userService = new UserService();

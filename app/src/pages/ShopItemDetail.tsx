@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { Layout, Header } from '../components/layout'
+import { shopApi } from '../services/api/features'
 import './ShopItemDetail.css'
 
 interface ShopItem {
@@ -28,24 +29,11 @@ export default function ShopItemDetail() {
   const loadItemDetail = async () => {
     setLoading(true)
     try {
-      // TODO: 调用API获取商品详情
-      // const response = await shopApi.getItemDetail(id)
-
-      // 模拟数据
-      const mockItem: ShopItem = {
-        id: id || '1',
-        name: '学习加速卡',
-        description: '使用后可获得2倍学习经验加成,持续24小时。适合想要快速提升等级的学习者使用。',
-        price: 500,
-        stock: 99,
-        category: '道具',
-        image: '🎴',
-        tags: ['热门', '限时']
-      }
-
-      setItem(mockItem)
+      const response = await shopApi.getItemDetail(id!)
+      setItem(response.data)
     } catch (error) {
       console.error('加载商品详情失败:', error)
+      alert('加载商品详情失败')
     } finally {
       setLoading(false)
     }
@@ -56,13 +44,11 @@ export default function ShopItemDetail() {
 
     setPurchasing(true)
     try {
-      // TODO: 调用购买API
-      // await shopApi.purchaseItem(item.id)
-
+      await shopApi.purchaseItem(item.id)
       alert('购买成功!')
       navigate('/shop-mall')
-    } catch (error) {
-      alert('购买失败,请重试')
+    } catch (error: any) {
+      alert(error.response?.data?.message || '购买失败,请重试')
     } finally {
       setPurchasing(false)
     }
