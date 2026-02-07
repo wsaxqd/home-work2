@@ -48,6 +48,7 @@ import bookmarksRoutes from './routes/bookmarks';
 import notesRoutes from './routes/notes';
 import achievementsRoutes from './routes/achievements';
 import rankingRoutes from './routes/ranking';
+import gameRecordsRoutes from './routes/gameRecords';
 
 const app = express();
 
@@ -122,6 +123,7 @@ app.use('/api/bookmarks', bookmarksRoutes);
 app.use('/api/notes', notesRoutes);
 app.use('/api/achievements', achievementsRoutes);
 app.use('/api/ranking', rankingRoutes);
+app.use('/api/game-records', gameRecordsRoutes);
 app.use('/api', homeRoutes);
 
 // 404处理
