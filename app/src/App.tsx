@@ -44,6 +44,8 @@ import {
   UsageControl,
   GrowthReport,
   ParentSettings,
+  ParentMonitor,
+  ParentReminders,
   ChildrenSongs,
   EnglishBook,
   WhyQuestions,
@@ -364,6 +366,10 @@ function App() {
           <Route path="report" element={<GrowthReport />} />
           <Route path="settings" element={<ParentSettings />} />
         </Route>
+
+        {/* 家长端新增功能 */}
+        <Route path="/parent/monitor" element={<ParentProtectedRoute><ParentMonitor /></ParentProtectedRoute>} />
+        <Route path="/parent/child/:childId/reminders" element={<ParentProtectedRoute><ParentReminders /></ParentProtectedRoute>} />
 
         {/* 未匹配的路由重定向到首页 */}
         <Route path="*" element={<Navigate to="/home" replace />} />
