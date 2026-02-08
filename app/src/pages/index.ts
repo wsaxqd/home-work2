@@ -47,6 +47,8 @@ export { default as LearningData } from './LearningData'
 export { default as UsageControl } from './UsageControl'
 export { default as GrowthReport } from './GrowthReport'
 export { default as ParentSettings } from './ParentSettings'
+export { default as ParentMonitor } from './ParentMonitor'
+export { default as ParentReminders } from './ParentReminders'
 
 // AI作业助手组件
 export { default as HomeworkHelper } from './HomeworkHelper'
