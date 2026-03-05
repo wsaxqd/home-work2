@@ -1,312 +1,325 @@
 import { query } from '../config/database';
-
-export interface Question {
-  id: string;
-  subject: string;
-  grade: string;
-  knowledge_point_id: string;
-  question_type: 'single_choice' | 'multiple_choice' | 'fill_blank' | 'true_false' | 'subjective';
-  question_text: string;
-  question_image?: string;
-  correct_answer: string;
-  explanation: string;
-  difficulty: number;
-  tags?: string[];
-  created_at: Date;
-  updated_at: Date;
-}
-
-export interface QuestionOption {
-  id: string;
-  question_id: string;
-  option_label: string;
-  option_text: string;
-  option_image?: string;
-}
-
-export interface QuestionWithOptions extends Question {
-  options?: QuestionOption[];
-}
+import { AppError } from '../utils/errorHandler';
 
 /**
- * 根据知识点获取题目列表
+ * 学习题目服务
+ * 提供学习题目的查询、获取、统计等功能
  */
-export async function getQuestionsByKnowledgePoint(
-  knowledgePointId: string,
-  options?: {
-    difficulty?: number;
-    questionType?: string;
-    limit?: number;
-    offset?: number;
-  }
-): Promise<QuestionWithOptions[]> {
-  let sql = `
-    SELECT * FROM questions
-    WHERE knowledge_point_id = $1
-  `;
-  const params: any[] = [knowledgePointId];
-  let paramIndex = 2;
+export class LearningQuestionService {
+  /**
+   * 根据知识点查询题目
+   * @param knowledgePointId 知识点ID
+   * @param options 查询选项
+   */
+  async getQuestionsByKnowledgePoint(
+    knowledgePointId: string,
+    options: {
+      count?: number;
+      difficulty?: number;
+      questionType?: string;
+      excludeIds?: number[];
+      orderBy?: 'random' | 'difficulty' | 'accuracy';
+    } = {}
+  ) {
+    const {
+      count = 10,
+      difficulty,
+      questionType,
+      excludeIds = [],
+      orderBy = 'random',
+    } = options;
 
-  if (options?.difficulty) {
-    sql += ` AND difficulty = $${paramIndex}`;
-    params.push(options.difficulty);
-    paramIndex++;
-  }
+    // 构建查询条件
+    let whereClause = 'WHERE knowledge_point_id = $1 AND is_active = true';
+    const params: any[] = [knowledgePointId];
+    let paramIndex = 2;
 
-  if (options?.questionType) {
-    sql += ` AND question_type = $${paramIndex}`;
-    params.push(options.questionType);
-    paramIndex++;
-  }
-
-  sql += ` ORDER BY difficulty ASC, created_at DESC`;
-
-  if (options?.limit) {
-    sql += ` LIMIT $${paramIndex}`;
-    params.push(options.limit);
-    paramIndex++;
-  }
-
-  if (options?.offset) {
-    sql += ` OFFSET $${paramIndex}`;
-    params.push(options.offset);
-  }
-
-  const result = await query(sql, params);
-  const questions: QuestionWithOptions[] = result.rows;
-
-  // 获取选择题的选项
-  for (const question of questions) {
-    if (question.question_type === 'single_choice' || question.question_type === 'multiple_choice') {
-      const optionsResult = await query(
-        'SELECT * FROM question_options WHERE question_id = $1 ORDER BY option_label',
-        [question.id]
-      );
-      question.options = optionsResult.rows;
+    if (difficulty) {
+      whereClause += ` AND difficulty = $${paramIndex}`;
+      params.push(difficulty);
+      paramIndex++;
     }
-  }
 
-  return questions;
-}
-
-/**
- * 根据多个条件获取题目
- */
-export async function getQuestions(params: {
-  subject?: string;
-  grade?: string;
-  knowledgePointIds?: string[];
-  difficulty?: number;
-  questionType?: string;
-  tags?: string[];
-  limit?: number;
-  offset?: number;
-}): Promise<QuestionWithOptions[]> {
-  let sql = 'SELECT * FROM questions WHERE 1=1';
-  const sqlParams: any[] = [];
-  let paramIndex = 1;
-
-  if (params.subject) {
-    sql += ` AND subject = $${paramIndex}`;
-    sqlParams.push(params.subject);
-    paramIndex++;
-  }
-
-  if (params.grade) {
-    sql += ` AND grade = $${paramIndex}`;
-    sqlParams.push(params.grade);
-    paramIndex++;
-  }
-
-  if (params.knowledgePointIds && params.knowledgePointIds.length > 0) {
-    sql += ` AND knowledge_point_id = ANY($${paramIndex})`;
-    sqlParams.push(params.knowledgePointIds);
-    paramIndex++;
-  }
-
-  if (params.difficulty) {
-    sql += ` AND difficulty = $${paramIndex}`;
-    sqlParams.push(params.difficulty);
-    paramIndex++;
-  }
-
-  if (params.questionType) {
-    sql += ` AND question_type = $${paramIndex}`;
-    sqlParams.push(params.questionType);
-    paramIndex++;
-  }
-
-  if (params.tags && params.tags.length > 0) {
-    sql += ` AND tags && $${paramIndex}`;
-    sqlParams.push(params.tags);
-    paramIndex++;
-  }
-
-  sql += ' ORDER BY difficulty ASC, created_at DESC';
-
-  if (params.limit) {
-    sql += ` LIMIT $${paramIndex}`;
-    sqlParams.push(params.limit);
-    paramIndex++;
-  }
-
-  if (params.offset) {
-    sql += ` OFFSET $${paramIndex}`;
-    sqlParams.push(params.offset);
-  }
-
-  const result = await query(sql, sqlParams);
-  const questions: QuestionWithOptions[] = result.rows;
-
-  // 获取选择题的选项
-  for (const question of questions) {
-    if (question.question_type === 'single_choice' || question.question_type === 'multiple_choice') {
-      const optionsResult = await query(
-        'SELECT * FROM question_options WHERE question_id = $1 ORDER BY option_label',
-        [question.id]
-      );
-      question.options = optionsResult.rows;
+    if (questionType) {
+      whereClause += ` AND question_type = $${paramIndex}`;
+      params.push(questionType);
+      paramIndex++;
     }
-  }
 
-  return questions;
-}
-
-/**
- * 根据用户学习情况推荐题目
- */
-export async function getRecommendedQuestions(
-  userId: string,
-  knowledgePointId: string,
-  count: number = 5
-): Promise<QuestionWithOptions[]> {
-  // 获取用户在该知识点的学习情况
-  const behaviorResult = await query(
-    `SELECT mastery_level, accuracy_rate, average_difficulty
-     FROM learning_behaviors
-     WHERE user_id = $1 AND knowledge_point_id = $2
-     ORDER BY updated_at DESC
-     LIMIT 1`,
-    [userId, knowledgePointId]
-  );
-
-  let recommendedDifficulty = 1;
-
-  if (behaviorResult.rows.length > 0) {
-    const behavior = behaviorResult.rows[0];
-    const masteryLevel = behavior.mastery_level || 0;
-    const accuracyRate = behavior.accuracy_rate || 0;
-
-    // 根据掌握程度推荐难度
-    if (masteryLevel >= 80 && accuracyRate >= 0.8) {
-      recommendedDifficulty = 4; // 推荐较难题目
-    } else if (masteryLevel >= 60 && accuracyRate >= 0.7) {
-      recommendedDifficulty = 3; // 推荐中等题目
-    } else if (masteryLevel >= 40) {
-      recommendedDifficulty = 2; // 推荐简单偏中等题目
-    } else {
-      recommendedDifficulty = 1; // 推荐简单题目
+    if (excludeIds.length > 0) {
+      whereClause += ` AND id NOT IN (${excludeIds.join(',')})`;
     }
+
+    // 构建排序条件
+    let orderClause = '';
+    switch (orderBy) {
+      case 'difficulty':
+        orderClause = 'ORDER BY difficulty ASC, RANDOM()';
+        break;
+      case 'accuracy':
+        orderClause = `ORDER BY
+          CASE
+            WHEN total_attempts > 0 THEN (correct_attempts::float / total_attempts)
+            ELSE 0.5
+          END ASC,
+          RANDOM()`;
+        break;
+      case 'random':
+      default:
+        orderClause = 'ORDER BY RANDOM()';
+        break;
+    }
+
+    const result = await query(
+      `SELECT * FROM questions
+       ${whereClause}
+       ${orderClause}
+       LIMIT $${paramIndex}`,
+      [...params, count]
+    );
+
+    return result.rows;
   }
 
-  // 获取用户已经做过的题目ID
-  const attemptedResult = await query(
-    `SELECT DISTINCT question_id
-     FROM question_attempts
-     WHERE user_id = $1 AND knowledge_point_id = $2`,
-    [userId, knowledgePointId]
-  );
-  const attemptedIds = attemptedResult.rows.map((row: any) => row.question_id);
-
-  // 推荐题目:主要是推荐难度,混合一些其他难度
-  const questions: QuestionWithOptions[] = [];
-
-  // 60% 推荐难度的题目
-  const mainCount = Math.ceil(count * 0.6);
-  let mainQuestions = await getQuestionsByKnowledgePoint(knowledgePointId, {
-    difficulty: recommendedDifficulty,
-    limit: mainCount * 2 // 多获取一些,以便过滤
-  });
-
-  // 过滤已做过的题目
-  mainQuestions = mainQuestions.filter(q => !attemptedIds.includes(q.id));
-  questions.push(...mainQuestions.slice(0, mainCount));
-
-  // 40% 其他难度的题目
-  const remainCount = count - questions.length;
-  if (remainCount > 0) {
-    const otherDifficulty = recommendedDifficulty > 1 ? recommendedDifficulty - 1 : recommendedDifficulty + 1;
-    let otherQuestions = await getQuestionsByKnowledgePoint(knowledgePointId, {
-      difficulty: otherDifficulty,
-      limit: remainCount * 2
-    });
-
-    otherQuestions = otherQuestions.filter(q => !attemptedIds.includes(q.id));
-    questions.push(...otherQuestions.slice(0, remainCount));
-  }
-
-  // 如果还不够,补充任意难度的题目
-  if (questions.length < count) {
-    const remainCount = count - questions.length;
-    const existingIds = questions.map(q => q.id);
-    let moreQuestions = await getQuestionsByKnowledgePoint(knowledgePointId, {
-      limit: remainCount * 2
-    });
-
-    moreQuestions = moreQuestions.filter(q => !attemptedIds.includes(q.id) && !existingIds.includes(q.id));
-    questions.push(...moreQuestions.slice(0, remainCount));
-  }
-
-  return questions;
-}
-
-/**
- * 获取题目详情
- */
-export async function getQuestionById(questionId: string): Promise<QuestionWithOptions | null> {
-  const result = await query('SELECT * FROM questions WHERE id = $1', [questionId]);
-
-  if (result.rows.length === 0) {
-    return null;
-  }
-
-  const question: QuestionWithOptions = result.rows[0];
-
-  // 如果是选择题,获取选项
-  if (question.question_type === 'single_choice' || question.question_type === 'multiple_choice') {
-    const optionsResult = await query(
-      'SELECT * FROM question_options WHERE question_id = $1 ORDER BY option_label',
+  /**
+   * 根据ID获取题目详情
+   */
+  async getQuestionById(questionId: number) {
+    const result = await query(
+      'SELECT * FROM questions WHERE id = $1',
       [questionId]
     );
-    question.options = optionsResult.rows;
+
+    if (result.rows.length === 0) {
+      throw new AppError('题目不存在', 404);
+    }
+
+    return result.rows[0];
   }
 
-  return question;
-}
+  /**
+   * 批量获取题目
+   */
+  async getQuestionsByIds(questionIds: number[]) {
+    if (questionIds.length === 0) {
+      return [];
+    }
 
-/**
- * 统计知识点下的题目数量
- */
-export async function countQuestionsByKnowledgePoint(
-  knowledgePointId: string,
-  difficulty?: number
-): Promise<number> {
-  let sql = 'SELECT COUNT(*) as count FROM questions WHERE knowledge_point_id = $1';
-  const params: any[] = [knowledgePointId];
+    const result = await query(
+      `SELECT * FROM questions WHERE id = ANY($1) ORDER BY id`,
+      [questionIds]
+    );
 
-  if (difficulty) {
-    sql += ' AND difficulty = $2';
-    params.push(difficulty);
+    return result.rows;
   }
 
-  const result = await query(sql, params);
-  return parseInt(result.rows[0].count);
+  /**
+   * 记录用户答题
+   */
+  async recordUserAnswer(data: {
+    userId: string;
+    questionId: number;
+    knowledgePointId: string;
+    userAnswer: string;
+    isCorrect: boolean;
+    timeSpent?: number;
+    source?: string;
+    sessionId?: string;
+  }) {
+    const {
+      userId,
+      questionId,
+      knowledgePointId,
+      userAnswer,
+      isCorrect,
+      timeSpent,
+      source = 'practice',
+      sessionId,
+    } = data;
+
+    // 插入答题记录
+    await query(
+      `INSERT INTO user_question_records
+       (user_id, question_id, knowledge_point_id, user_answer, is_correct, time_spent, source, session_id)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+      [userId, questionId, knowledgePointId, userAnswer, isCorrect, timeSpent, source, sessionId]
+    );
+
+    // 更新题目统计
+    await query(
+      `UPDATE questions
+       SET total_attempts = total_attempts + 1,
+           correct_attempts = correct_attempts + ${isCorrect ? 1 : 0},
+           average_time = CASE
+             WHEN total_attempts > 0 THEN
+               (average_time * total_attempts + ${timeSpent || 0}) / (total_attempts + 1)
+             ELSE ${timeSpent || 0}
+           END
+       WHERE id = $1`,
+      [questionId]
+    );
+
+    // 更新用户知识点掌握度
+    await this.updateUserKnowledgeMastery(userId, knowledgePointId, isCorrect);
+  }
+
+  /**
+   * 更新用户知识点掌握度
+   */
+  private async updateUserKnowledgeMastery(
+    userId: string,
+    knowledgePointId: string,
+    isCorrect: boolean
+  ) {
+    // 获取知识点信息
+    const kpResult = await query(
+      'SELECT subject, grade FROM knowledge_points WHERE id = $1',
+      [knowledgePointId]
+    );
+
+    if (kpResult.rows.length === 0) {
+      return;
+    }
+
+    const { subject, grade } = kpResult.rows[0];
+
+    // 检查是否已有记录
+    const existingResult = await query(
+      'SELECT * FROM user_knowledge_mastery WHERE user_id = $1 AND knowledge_point_id = $2',
+      [userId, knowledgePointId]
+    );
+
+    if (existingResult.rows.length === 0) {
+      // 创建新记录
+      await query(
+        `INSERT INTO user_knowledge_mastery
+         (user_id, knowledge_point_id, subject, grade, mastery_level, total_questions, correct_questions, accuracy_rate, consecutive_correct, last_practiced_at, practice_count)
+         VALUES ($1, $2, $3, $4, $5, 1, $6, $7, $8, CURRENT_TIMESTAMP, 1)`,
+        [
+          userId,
+          knowledgePointId,
+          subject,
+          grade,
+          isCorrect ? 1 : 0,
+          isCorrect ? 1 : 0,
+          isCorrect ? 100 : 0,
+          isCorrect ? 1 : 0,
+        ]
+      );
+    } else {
+      // 更新现有记录
+      const current = existingResult.rows[0];
+      const newTotalQuestions = current.total_questions + 1;
+      const newCorrectQuestions = current.correct_questions + (isCorrect ? 1 : 0);
+      const newAccuracyRate = (newCorrectQuestions / newTotalQuestions) * 100;
+      const newConsecutiveCorrect = isCorrect ? current.consecutive_correct + 1 : 0;
+
+      // 根据正确率和连续正确次数计算掌握度
+      let newMasteryLevel = current.mastery_level;
+      if (newAccuracyRate >= 90 && newConsecutiveCorrect >= 5) {
+        newMasteryLevel = Math.min(5, current.mastery_level + 1);
+      } else if (newAccuracyRate < 60) {
+        newMasteryLevel = Math.max(0, current.mastery_level - 1);
+      }
+
+      await query(
+        `UPDATE user_knowledge_mastery
+         SET total_questions = $1,
+             correct_questions = $2,
+             accuracy_rate = $3,
+             consecutive_correct = $4,
+             mastery_level = $5,
+             last_practiced_at = CURRENT_TIMESTAMP,
+             practice_count = practice_count + 1,
+             updated_at = CURRENT_TIMESTAMP
+         WHERE user_id = $6 AND knowledge_point_id = $7`,
+        [
+          newTotalQuestions,
+          newCorrectQuestions,
+          newAccuracyRate,
+          newConsecutiveCorrect,
+          newMasteryLevel,
+          userId,
+          knowledgePointId,
+        ]
+      );
+    }
+  }
+
+  /**
+   * 获取用户知识点掌握度
+   */
+  async getUserKnowledgeMastery(userId: string, knowledgePointId: string) {
+    const result = await query(
+      'SELECT * FROM user_knowledge_mastery WHERE user_id = $1 AND knowledge_point_id = $2',
+      [userId, knowledgePointId]
+    );
+
+    if (result.rows.length === 0) {
+      return null;
+    }
+
+    return result.rows[0];
+  }
+
+  /**
+   * 获取用户所有知识点掌握度
+   */
+  async getUserAllKnowledgeMastery(userId: string, subject?: string, grade?: string) {
+    let whereClause = 'WHERE user_id = $1';
+    const params: any[] = [userId];
+    let paramIndex = 2;
+
+    if (subject) {
+      whereClause += ` AND subject = $${paramIndex}`;
+      params.push(subject);
+      paramIndex++;
+    }
+
+    if (grade) {
+      whereClause += ` AND grade = $${paramIndex}`;
+      params.push(grade);
+      paramIndex++;
+    }
+
+    const result = await query(
+      `SELECT * FROM user_knowledge_mastery ${whereClause} ORDER BY last_practiced_at DESC`,
+      params
+    );
+
+    return result.rows;
+  }
+
+  /**
+   * 获取题目统计信息
+   */
+  async getQuestionStats(knowledgePointId?: string) {
+    let whereClause = 'WHERE is_active = true';
+    const params: any[] = [];
+
+    if (knowledgePointId) {
+      whereClause += ' AND knowledge_point_id = $1';
+      params.push(knowledgePointId);
+    }
+
+    const result = await query(
+      `SELECT
+         COUNT(*) as total_questions,
+         AVG(difficulty) as avg_difficulty,
+         SUM(total_attempts) as total_attempts,
+         SUM(correct_attempts) as total_correct,
+         CASE
+           WHEN SUM(total_attempts) > 0
+           THEN (SUM(correct_attempts)::float / SUM(total_attempts)) * 100
+           ELSE 0
+         END as overall_accuracy
+       FROM questions
+       ${whereClause}`,
+      params
+    );
+
+    return result.rows[0];
+  }
 }
 
-export const learningQuestionService = {
-  getQuestionsByKnowledgePoint,
-  getQuestions,
-  getRecommendedQuestions,
-  getQuestionById,
-  countQuestionsByKnowledgePoint
-};
+export const learningQuestionService = new LearningQuestionService();

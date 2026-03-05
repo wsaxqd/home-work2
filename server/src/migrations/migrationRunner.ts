@@ -1,10 +1,11 @@
 import { query, getClient } from '../config/database';
+import { PoolClient } from 'pg';
 
 export interface Migration {
   id: string;
   name: string;
-  up: () => Promise<void>;
-  down: () => Promise<void>;
+  up: (client?: PoolClient) => Promise<void>;
+  down: (client?: PoolClient) => Promise<void>;
 }
 
 export const createMigrationsTable = async () => {
@@ -34,7 +35,7 @@ export const runMigration = async (migration: Migration) => {
   const client = await getClient();
   try {
     await client.query('BEGIN');
-    await migration.up();
+    await migration.up(client);
     await recordMigration(migration.name);
     await client.query('COMMIT');
     console.log(`✅ Migration ${migration.name} completed`);
@@ -51,7 +52,7 @@ export const rollbackMigration = async (migration: Migration) => {
   const client = await getClient();
   try {
     await client.query('BEGIN');
-    await migration.down();
+    await migration.down(client);
     await removeMigrationRecord(migration.name);
     await client.query('COMMIT');
     console.log(`✅ Rollback ${migration.name} completed`);

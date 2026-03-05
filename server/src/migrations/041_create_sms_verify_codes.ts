@@ -1,13 +1,11 @@
-import { Pool } from 'pg';
+import { Migration } from './migrationRunner';
 
-export async function up(pool: Pool): Promise<void> {
-  const client = await pool.connect();
-
-  try {
-    await client.query('BEGIN');
-
+export const migration_041_create_sms_verify_codes: Migration = {
+  id: '041',
+  name: '041_create_sms_verify_codes',
+  async up(client) {
     // 创建短信验证码表
-    await client.query(`
+    await client!.query(`
       CREATE TABLE IF NOT EXISTS sms_verify_codes (
         id SERIAL PRIMARY KEY,
         phone VARCHAR(20) NOT NULL,
@@ -24,23 +22,23 @@ export async function up(pool: Pool): Promise<void> {
     `);
 
     // 创建索引
-    await client.query(`
+    await client!.query(`
       CREATE INDEX IF NOT EXISTS idx_sms_verify_codes_phone
       ON sms_verify_codes(phone);
     `);
 
-    await client.query(`
+    await client!.query(`
       CREATE INDEX IF NOT EXISTS idx_sms_verify_codes_expires_at
       ON sms_verify_codes(expires_at);
     `);
 
-    await client.query(`
+    await client!.query(`
       CREATE INDEX IF NOT EXISTS idx_sms_verify_codes_created_at
       ON sms_verify_codes(created_at);
     `);
 
     // 创建短信发送记录表(用于统计和防刷)
-    await client.query(`
+    await client!.query(`
       CREATE TABLE IF NOT EXISTS sms_send_logs (
         id SERIAL PRIMARY KEY,
         phone VARCHAR(20) NOT NULL,
@@ -55,43 +53,23 @@ export async function up(pool: Pool): Promise<void> {
     `);
 
     // 创建索引
-    await client.query(`
+    await client!.query(`
       CREATE INDEX IF NOT EXISTS idx_sms_send_logs_phone
       ON sms_send_logs(phone);
     `);
 
-    await client.query(`
+    await client!.query(`
       CREATE INDEX IF NOT EXISTS idx_sms_send_logs_created_at
       ON sms_send_logs(created_at);
     `);
 
-    await client.query('COMMIT');
     console.log('✅ 短信验证码表创建成功');
-  } catch (error) {
-    await client.query('ROLLBACK');
-    console.error('❌ 短信验证码表创建失败:', error);
-    throw error;
-  } finally {
-    client.release();
-  }
-}
+  },
 
-export async function down(pool: Pool): Promise<void> {
-  const client = await pool.connect();
+  async down(client) {
+    await client!.query('DROP TABLE IF EXISTS sms_send_logs CASCADE;');
+    await client!.query('DROP TABLE IF EXISTS sms_verify_codes CASCADE;');
 
-  try {
-    await client.query('BEGIN');
-
-    await client.query('DROP TABLE IF EXISTS sms_send_logs CASCADE;');
-    await client.query('DROP TABLE IF EXISTS sms_verify_codes CASCADE;');
-
-    await client.query('COMMIT');
     console.log('✅ 短信验证码表删除成功');
-  } catch (error) {
-    await client.query('ROLLBACK');
-    console.error('❌ 短信验证码表删除失败:', error);
-    throw error;
-  } finally {
-    client.release();
   }
-}
+};

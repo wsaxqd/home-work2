@@ -1,11 +1,11 @@
 import express from 'express';
 import * as rankingController from '../controllers/rankingController';
-import { authMiddleware } from '../middleware/authMiddleware';
+import { authenticateToken } from '../middleware/auth';
 
 const router = express.Router();
 
 // 所有排位路由都需要认证
-router.use(authMiddleware);
+router.use(authenticateToken);
 
 // 获取用户段位信息
 router.get('/rank/:gameType', rankingController.getUserRank);

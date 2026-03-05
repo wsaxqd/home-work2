@@ -2,7 +2,7 @@ import { Router } from 'express';
 import multer from 'multer';
 import path from 'path';
 import { uploadService } from '../services/uploadService';
-import { authMiddleware, AuthRequest } from '../middlewares/auth';
+import { authenticateToken, AuthRequest } from '../middlewares/auth';
 import { asyncHandler } from '../utils/errorHandler';
 import { sendSuccess } from '../utils/response';
 
@@ -35,7 +35,7 @@ if (!fs.existsSync(tempDir)) {
 }
 
 // 上传单个图片
-router.post('/image', authMiddleware, upload.single('image'), asyncHandler(async (req: AuthRequest, res) => {
+router.post('/image', authenticateToken, upload.single('image'), asyncHandler(async (req: AuthRequest, res) => {
   if (!req.file) {
     return res.status(400).json({ success: false, message: '请选择要上传的图片' });
   }
@@ -47,7 +47,7 @@ router.post('/image', authMiddleware, upload.single('image'), asyncHandler(async
 }));
 
 // 批量上传图片
-router.post('/images', authMiddleware, upload.array('images', 9), asyncHandler(async (req: AuthRequest, res) => {
+router.post('/images', authenticateToken, upload.array('images', 9), asyncHandler(async (req: AuthRequest, res) => {
   if (!req.files || (req.files as Express.Multer.File[]).length === 0) {
     return res.status(400).json({ success: false, message: '请选择要上传的图片' });
   }
@@ -59,7 +59,7 @@ router.post('/images', authMiddleware, upload.array('images', 9), asyncHandler(a
 }));
 
 // 上传音频
-router.post('/audio', authMiddleware, upload.single('audio'), asyncHandler(async (req: AuthRequest, res) => {
+router.post('/audio', authenticateToken, upload.single('audio'), asyncHandler(async (req: AuthRequest, res) => {
   if (!req.file) {
     return res.status(400).json({ success: false, message: '请选择要上传的音频' });
   }
@@ -70,7 +70,7 @@ router.post('/audio', authMiddleware, upload.single('audio'), asyncHandler(async
 }));
 
 // 上传头像
-router.post('/avatar', authMiddleware, upload.single('avatar'), asyncHandler(async (req: AuthRequest, res) => {
+router.post('/avatar', authenticateToken, upload.single('avatar'), asyncHandler(async (req: AuthRequest, res) => {
   if (!req.file) {
     return res.status(400).json({ success: false, message: '请选择要上传的头像' });
   }
@@ -81,7 +81,7 @@ router.post('/avatar', authMiddleware, upload.single('avatar'), asyncHandler(asy
 }));
 
 // 删除文件
-router.delete('/', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.delete('/', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const { url } = req.body;
 
   if (!url) {

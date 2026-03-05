@@ -11,6 +11,7 @@ import { Migration } from './migrationRunner';
  */
 
 export const migration_030_create_pk_system: Migration = {
+  id: '030',
   name: '030_create_pk_system',
   async up(client) {
     await client.query('BEGIN')

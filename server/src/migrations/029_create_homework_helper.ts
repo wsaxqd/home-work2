@@ -1,6 +1,7 @@
 import { Migration } from './migrationRunner';
 
 export const migration_029_create_homework_helper: Migration = {
+  id: '029',
   name: '029_create_homework_helper',
   async up(client) {
     // 作业题目表

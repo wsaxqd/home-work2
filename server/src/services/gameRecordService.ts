@@ -1,4 +1,4 @@
-import db from '../config/database';
+import { query } from '../config/database';
 
 export interface GameRecord {
   id?: string;
@@ -43,9 +43,14 @@ export interface LeaderboardEntry {
 class GameRecordService {
   // 保存游戏记录
   async saveGameRecord(record: GameRecord): Promise<GameRecord> {
-    const [savedRecord] = await db('game_records')
-      .insert(record)
-      .returning('*');
+    const result = await query(
+      `INSERT INTO game_records (user_id, game_type, difficulty, score, time_spent, best_streak, accuracy, metadata)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+       RETURNING *`,
+      [record.user_id, record.game_type, record.difficulty, record.score, record.time_spent, record.best_streak, record.accuracy, record.metadata]
+    );
+
+    const savedRecord = result.rows[0];
 
     // 更新游戏统计
     await this.updateGameStatistics(record.user_id, record.game_type);
@@ -59,10 +64,12 @@ class GameRecordService {
   // 更新游戏统计
   async updateGameStatistics(userId: string, gameType: string): Promise<void> {
     // 获取该用户该游戏的所有记录
-    const records = await db('game_records')
-      .where({ user_id: userId, game_type: gameType })
-      .select('*');
+    const result = await query(
+      'SELECT * FROM game_records WHERE user_id = $1 AND game_type = $2',
+      [userId, gameType]
+    );
 
+    const records = result.rows;
     if (records.length === 0) return;
 
     // 计算统计数据
@@ -74,66 +81,56 @@ class GameRecordService {
     const bestStreak = Math.max(...records.map(r => r.best_streak));
     const averageAccuracy = records.reduce((sum, r) => sum + r.accuracy, 0) / totalPlays;
 
-    // 更新或插入统计数据
-    const existing = await db('game_statistics')
-      .where({ user_id: userId, game_type: gameType })
-      .first();
+    // 检查是否已有统计记录
+    const existingResult = await query(
+      'SELECT * FROM game_statistics WHERE user_id = $1 AND game_type = $2',
+      [userId, gameType]
+    );
 
-    if (existing) {
-      await db('game_statistics')
-        .where({ user_id: userId, game_type: gameType })
-        .update({
-          total_plays: totalPlays,
-          total_score: totalScore,
-          highest_score: highestScore,
-          average_score: averageScore,
-          total_time: totalTime,
-          best_streak: bestStreak,
-          average_accuracy: averageAccuracy,
-          last_played_at: db.fn.now(),
-          updated_at: db.fn.now()
-        });
+    if (existingResult.rows.length > 0) {
+      // 更新统计数据
+      await query(
+        `UPDATE game_statistics
+         SET total_plays = $1, total_score = $2, highest_score = $3, average_score = $4,
+             total_time = $5, best_streak = $6, average_accuracy = $7,
+             last_played_at = NOW(), updated_at = NOW()
+         WHERE user_id = $8 AND game_type = $9`,
+        [totalPlays, totalScore, highestScore, averageScore, totalTime, bestStreak, averageAccuracy, userId, gameType]
+      );
     } else {
-      await db('game_statistics').insert({
-        user_id: userId,
-        game_type: gameType,
-        total_plays: totalPlays,
-        total_score: totalScore,
-        highest_score: highestScore,
-        average_score: averageScore,
-        total_time: totalTime,
-        best_streak: bestStreak,
-        average_accuracy: averageAccuracy
-      });
+      // 插入新统计数据
+      await query(
+        `INSERT INTO game_statistics
+         (user_id, game_type, total_plays, total_score, highest_score, average_score, total_time, best_streak, average_accuracy)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+        [userId, gameType, totalPlays, totalScore, highestScore, averageScore, totalTime, bestStreak, averageAccuracy]
+      );
     }
   }
 
   // 更新排行榜
   async updateLeaderboard(userId: string, gameType: string, difficulty: string, score: number): Promise<void> {
     // 检查是否已有记录
-    const existing = await db('global_leaderboard')
-      .where({ user_id: userId, game_type: gameType, difficulty: difficulty })
-      .first();
+    const existingResult = await query(
+      'SELECT * FROM global_leaderboard WHERE user_id = $1 AND game_type = $2 AND difficulty = $3',
+      [userId, gameType, difficulty]
+    );
 
-    if (existing) {
+    if (existingResult.rows.length > 0) {
+      const existing = existingResult.rows[0];
       // 如果新分数更高,更新记录
       if (score > existing.score) {
-        await db('global_leaderboard')
-          .where({ user_id: userId, game_type: gameType, difficulty: difficulty })
-          .update({
-            score: score,
-            updated_at: db.fn.now()
-          });
+        await query(
+          'UPDATE global_leaderboard SET score = $1, updated_at = NOW() WHERE user_id = $2 AND game_type = $3 AND difficulty = $4',
+          [score, userId, gameType, difficulty]
+        );
       }
     } else {
       // 插入新记录
-      await db('global_leaderboard').insert({
-        user_id: userId,
-        game_type: gameType,
-        difficulty: difficulty,
-        score: score,
-        rank: 0 // 排名稍后计算
-      });
+      await query(
+        'INSERT INTO global_leaderboard (user_id, game_type, difficulty, score, rank) VALUES ($1, $2, $3, $4, 0)',
+        [userId, gameType, difficulty, score]
+      );
     }
 
     // 重新计算排名
@@ -142,29 +139,34 @@ class GameRecordService {
 
   // 重新计算排名
   async recalculateRanks(gameType: string, difficulty: string): Promise<void> {
-    const entries = await db('global_leaderboard')
-      .where({ game_type: gameType, difficulty: difficulty })
-      .orderBy('score', 'desc')
-      .select('id', 'score');
+    const result = await query(
+      'SELECT id, score FROM global_leaderboard WHERE game_type = $1 AND difficulty = $2 ORDER BY score DESC',
+      [gameType, difficulty]
+    );
+
+    const entries = result.rows;
 
     // 更新排名
     for (let i = 0; i < entries.length; i++) {
-      await db('global_leaderboard')
-        .where({ id: entries[i].id })
-        .update({ rank: i + 1 });
+      await query(
+        'UPDATE global_leaderboard SET rank = $1 WHERE id = $2',
+        [i + 1, entries[i].id]
+      );
     }
   }
 
   // 获取用户游戏统计
   async getUserGameStatistics(userId: string, gameType?: string): Promise<GameStatistics[]> {
-    const query = db('game_statistics')
-      .where({ user_id: userId });
+    let sql = 'SELECT * FROM game_statistics WHERE user_id = $1';
+    const params: any[] = [userId];
 
     if (gameType) {
-      query.where({ game_type: gameType });
+      sql += ' AND game_type = $2';
+      params.push(gameType);
     }
 
-    return await query.select('*');
+    const result = await query(sql, params);
+    return result.rows;
   }
 
   // 获取游戏排行榜
@@ -173,39 +175,30 @@ class GameRecordService {
     difficulty: string,
     limit: number = 100
   ): Promise<LeaderboardEntry[]> {
-    const entries = await db('global_leaderboard')
-      .join('users', 'global_leaderboard.user_id', 'users.id')
-      .where({
-        'global_leaderboard.game_type': gameType,
-        'global_leaderboard.difficulty': difficulty
-      })
-      .orderBy('global_leaderboard.rank', 'asc')
-      .limit(limit)
-      .select(
-        'global_leaderboard.*',
-        'users.username',
-        'users.avatar'
-      );
+    const result = await query(
+      `SELECT gl.*, u.username, u.avatar
+       FROM global_leaderboard gl
+       JOIN users u ON gl.user_id = u.id
+       WHERE gl.game_type = $1 AND gl.difficulty = $2
+       ORDER BY gl.rank ASC
+       LIMIT $3`,
+      [gameType, difficulty, limit]
+    );
 
-    return entries;
+    return result.rows;
   }
 
   // 获取用户在排行榜中的排名
   async getUserRank(userId: string, gameType: string, difficulty: string): Promise<LeaderboardEntry | null> {
-    const entry = await db('global_leaderboard')
-      .join('users', 'global_leaderboard.user_id', 'users.id')
-      .where({
-        'global_leaderboard.user_id': userId,
-        'global_leaderboard.game_type': gameType,
-        'global_leaderboard.difficulty': difficulty
-      })
-      .first(
-        'global_leaderboard.*',
-        'users.username',
-        'users.avatar'
-      );
+    const result = await query(
+      `SELECT gl.*, u.username, u.avatar
+       FROM global_leaderboard gl
+       JOIN users u ON gl.user_id = u.id
+       WHERE gl.user_id = $1 AND gl.game_type = $2 AND gl.difficulty = $3`,
+      [userId, gameType, difficulty]
+    );
 
-    return entry || null;
+    return result.rows.length > 0 ? result.rows[0] : null;
   }
 
   // 获取用户游戏记录
@@ -214,41 +207,41 @@ class GameRecordService {
     gameType?: string,
     limit: number = 50
   ): Promise<GameRecord[]> {
-    const query = db('game_records')
-      .where({ user_id: userId });
+    let sql = 'SELECT * FROM game_records WHERE user_id = $1';
+    const params: any[] = [userId];
 
     if (gameType) {
-      query.where({ game_type: gameType });
+      sql += ' AND game_type = $2';
+      params.push(gameType);
     }
 
-    return await query
-      .orderBy('created_at', 'desc')
-      .limit(limit)
-      .select('*');
+    sql += ' ORDER BY created_at DESC LIMIT $' + (params.length + 1);
+    params.push(limit);
+
+    const result = await query(sql, params);
+    return result.rows;
   }
 
   // 获取游戏类型列表
   async getGameTypes(): Promise<string[]> {
-    const types = await db('game_records')
-      .distinct('game_type')
-      .select('game_type');
-
-    return types.map(t => t.game_type);
+    const result = await query('SELECT DISTINCT game_type FROM game_records');
+    return result.rows.map(row => row.game_type);
   }
 
   // 获取全局游戏统计
   async getGlobalGameStatistics(gameType: string): Promise<any> {
-    const stats = await db('game_statistics')
-      .where({ game_type: gameType })
-      .select(
-        db.raw('COUNT(*) as total_players'),
-        db.raw('SUM(total_plays) as total_plays'),
-        db.raw('MAX(highest_score) as highest_score'),
-        db.raw('AVG(average_score) as average_score')
-      )
-      .first();
+    const result = await query(
+      `SELECT
+        COUNT(*) as total_players,
+        SUM(total_plays) as total_plays,
+        MAX(highest_score) as highest_score,
+        AVG(average_score) as average_score
+       FROM game_statistics
+       WHERE game_type = $1`,
+      [gameType]
+    );
 
-    return stats;
+    return result.rows[0];
   }
 }
 

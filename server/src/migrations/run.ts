@@ -33,6 +33,8 @@ import { migration_025_create_reading_progress } from './025_create_reading_prog
 import { migration_026_create_story_play_records } from './026_create_story_play_records';
 import { migration_027_create_conversation_history } from './027_create_conversation_history';
 import { migration_028_create_community_topics } from './028_create_community_topics';
+import { migration_029_create_homework_helper } from './029_create_homework_helper';
+import { migration_030_create_pk_system } from './030_create_pk_system';
 import { migration_031_create_adaptive_learning } from './031_create_adaptive_learning';
 import { migration_032_insert_knowledge_points } from './032_insert_knowledge_points';
 import { migration_033_create_questions_table } from './033_create_questions_table';
@@ -43,6 +45,12 @@ import { migration_037_create_learning_analytics } from './037_create_learning_a
 import { migration_038_enhance_notification_system } from './038_enhance_notification_system';
 import { migration_039_create_learning_plan } from './039_create_learning_plan';
 import { migration_040_create_skill_tree } from './040_create_skill_tree';
+import { migration_041_create_sms_verify_codes } from './041_create_sms_verify_codes';
+import { migration_042_create_feedback } from './042_create_feedback';
+import { migration_043_create_shop_system } from './043_create_shop_system';
+import { migration_044_create_bookmarks_notes } from './044_create_bookmarks_notes';
+import { migration_045_enhance_achievements } from './045_enhance_achievements';
+import { migration_046_create_game_records } from './046_create_game_records';
 
 const migrations: Migration[] = [
   migration_001_create_users,
@@ -73,6 +81,8 @@ const migrations: Migration[] = [
   migration_026_create_story_play_records,
   migration_027_create_conversation_history,
   migration_028_create_community_topics,
+  migration_029_create_homework_helper,
+  migration_030_create_pk_system,
   migration_031_create_adaptive_learning,
   migration_032_insert_knowledge_points,
   migration_033_create_questions_table,
@@ -83,6 +93,12 @@ const migrations: Migration[] = [
   migration_038_enhance_notification_system,
   migration_039_create_learning_plan,
   migration_040_create_skill_tree,
+  migration_041_create_sms_verify_codes,
+  migration_042_create_feedback,
+  migration_043_create_shop_system,
+  migration_044_create_bookmarks_notes,
+  migration_045_enhance_achievements,
+  migration_046_create_game_records,
 ];
 
 async function run() {

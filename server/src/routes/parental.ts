@@ -1,20 +1,20 @@
 import { Router } from 'express';
 import { parentalControlService } from '../services/parentalControlService';
-import { authMiddleware, AuthRequest } from '../middlewares/auth';
+import { authenticateToken, AuthRequest } from '../middlewares/auth';
 import { asyncHandler } from '../utils/errorHandler';
 import { sendSuccess } from '../utils/response';
 
 const router = Router();
 
 // 获取家长控制设置
-router.get('/settings', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.get('/settings', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
   const settings = await parentalControlService.getSettings(userId);
   sendSuccess(res, settings);
 }));
 
 // 更新家长控制设置
-router.put('/settings', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.put('/settings', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
   const settings = req.body;
   const updated = await parentalControlService.updateSettings(userId, settings);
@@ -22,7 +22,7 @@ router.put('/settings', authMiddleware, asyncHandler(async (req: AuthRequest, re
 }));
 
 // 记录使用时长
-router.post('/log-usage', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.post('/log-usage', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
   const { featureType, duration, activityData } = req.body;
 
@@ -35,14 +35,14 @@ router.post('/log-usage', authMiddleware, asyncHandler(async (req: AuthRequest, 
 }));
 
 // 获取今日使用时长
-router.get('/today-usage', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.get('/today-usage', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
   const totalDuration = await parentalControlService.getTodayUsage(userId);
   sendSuccess(res, { totalDuration });
 }));
 
 // 获取使用统计
-router.get('/usage-stats', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.get('/usage-stats', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
   const startDate = req.query.startDate ? new Date(req.query.startDate as string) : undefined;
   const endDate = req.query.endDate ? new Date(req.query.endDate as string) : undefined;
@@ -52,7 +52,7 @@ router.get('/usage-stats', authMiddleware, asyncHandler(async (req: AuthRequest,
 }));
 
 // 检查时长限制
-router.get('/check-limit', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.get('/check-limit', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
   const result = await parentalControlService.checkTimeLimit(userId);
   sendSuccess(res, result);

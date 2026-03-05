@@ -1,11 +1,11 @@
 import express from 'express';
 import * as bookmarkController from '../controllers/bookmarkController';
-import { authMiddleware } from '../middleware/authMiddleware';
+import { authenticateToken } from '../middleware/auth';
 
 const router = express.Router();
 
 // 所有书签路由都需要认证
-router.use(authMiddleware);
+router.use(authenticateToken);
 
 // 添加书签
 router.post('/', bookmarkController.createBookmark);

@@ -1,13 +1,13 @@
 import { Router } from 'express';
 import { assessmentService, AssessmentType } from '../services/assessmentService';
-import { authMiddleware, AuthRequest } from '../middlewares/auth';
+import { authenticateToken, AuthRequest } from '../middlewares/auth';
 import { asyncHandler } from '../utils/errorHandler';
 import { sendSuccess, sendPaginated } from '../utils/response';
 
 const router = Router();
 
 // 获取评估题目
-router.get('/questions', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.get('/questions', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const assessmentType = req.query.type as AssessmentType;
   const level = req.query.level as any;
 
@@ -20,7 +20,7 @@ router.get('/questions', authMiddleware, asyncHandler(async (req: AuthRequest, r
 }));
 
 // 提交评估
-router.post('/submit', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.post('/submit', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
   const { assessmentType, answers, totalTime } = req.body;
 
@@ -34,7 +34,7 @@ router.post('/submit', authMiddleware, asyncHandler(async (req: AuthRequest, res
 }));
 
 // 获取评估历史
-router.get('/history', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.get('/history', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
   const assessmentType = req.query.type as AssessmentType;
   const page = parseInt(req.query.page as string) || 1;
@@ -45,7 +45,7 @@ router.get('/history', authMiddleware, asyncHandler(async (req: AuthRequest, res
 }));
 
 // 获取学习进度报告
-router.get('/report', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.get('/report', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
 
   const report = await assessmentService.getProgressReport(userId);
@@ -53,7 +53,7 @@ router.get('/report', authMiddleware, asyncHandler(async (req: AuthRequest, res)
 }));
 
 // 获取能力雷达图数据
-router.get('/radar', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.get('/radar', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
 
   const radar = await assessmentService.getSkillRadar(userId);

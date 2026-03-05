@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { moderationService } from '../services/moderationService';
-import { authMiddleware, AuthRequest } from '../middlewares/auth';
+import { authenticateToken, AuthRequest } from '../middlewares/auth';
 import { asyncHandler } from '../utils/errorHandler';
 import { sendSuccess } from '../utils/response';
 import { AppError } from '../utils/errorHandler';
@@ -8,7 +8,7 @@ import { AppError } from '../utils/errorHandler';
 const router = Router();
 
 // 审核单个内容
-router.post('/check', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.post('/check', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
   const { content, contentType } = req.body;
 
@@ -21,7 +21,7 @@ router.post('/check', authMiddleware, asyncHandler(async (req: AuthRequest, res)
 }));
 
 // 批量审核
-router.post('/check-batch', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.post('/check-batch', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
   const { contents } = req.body;
 
@@ -34,14 +34,14 @@ router.post('/check-batch', authMiddleware, asyncHandler(async (req: AuthRequest
 }));
 
 // 检查用户行为模式
-router.get('/user-behavior', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.get('/user-behavior', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
   const behavior = await moderationService.checkUserBehavior(userId);
   sendSuccess(res, behavior);
 }));
 
 // 获取审核统计（管理员）
-router.get('/stats', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.get('/stats', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const { userId, days } = req.query;
 
   const stats = await moderationService.getModerationStats(
@@ -53,7 +53,7 @@ router.get('/stats', authMiddleware, asyncHandler(async (req: AuthRequest, res) 
 }));
 
 // 获取被标记的内容列表（管理员）
-router.get('/flagged', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.get('/flagged', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const { limit } = req.query;
 
   const flagged = await moderationService.getFlaggedContent(
@@ -64,7 +64,7 @@ router.get('/flagged', authMiddleware, asyncHandler(async (req: AuthRequest, res
 }));
 
 // 人工审核标记的内容（管理员）
-router.post('/review/:logId', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.post('/review/:logId', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
   const { logId } = req.params;
   const { decision, note } = req.body;

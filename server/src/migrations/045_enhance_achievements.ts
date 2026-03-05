@@ -1,13 +1,11 @@
-import { Pool } from 'pg';
+import { Migration } from './migrationRunner';
 
-export async function up(pool: Pool): Promise<void> {
-  const client = await pool.connect();
-
-  try {
-    await client.query('BEGIN');
-
+export const migration_045_enhance_achievements: Migration = {
+  id: '045',
+  name: '045_enhance_achievements',
+  async up(client) {
     // 添加成就进度追踪表
-    await client.query(`
+    await client!.query(`
       CREATE TABLE IF NOT EXISTS achievement_progress (
         id SERIAL PRIMARY KEY,
         user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -21,18 +19,18 @@ export async function up(pool: Pool): Promise<void> {
     `);
 
     // 创建索引
-    await client.query(`
+    await client!.query(`
       CREATE INDEX IF NOT EXISTS idx_achievement_progress_user_id
       ON achievement_progress(user_id);
     `);
 
-    await client.query(`
+    await client!.query(`
       CREATE INDEX IF NOT EXISTS idx_achievement_progress_code
       ON achievement_progress(achievement_code);
     `);
 
     // 插入更多成就数据
-    await client.query(`
+    await client!.query(`
       INSERT INTO achievements (code, name, description, category, icon, points, requirement) VALUES
       -- 学习类成就
       ('study_beginner', '学习新手', '完成第一次学习', 'learning', '📚', 10, '{"type": "study_count", "value": 1}'),
@@ -72,25 +70,12 @@ export async function up(pool: Pool): Promise<void> {
       ON CONFLICT (code) DO NOTHING;
     `);
 
-    await client.query('COMMIT');
     console.log('✅ 成就系统增强成功');
-  } catch (error) {
-    await client.query('ROLLBACK');
-    console.error('❌ 成就系统增强失败:', error);
-    throw error;
-  } finally {
-    client.release();
-  }
-}
+  },
 
-export async function down(pool: Pool): Promise<void> {
-  const client = await pool.connect();
-
-  try {
-    await client.query('BEGIN');
-
-    await client.query('DROP TABLE IF EXISTS achievement_progress CASCADE;');
-    await client.query(`
+  async down(client) {
+    await client!.query('DROP TABLE IF EXISTS achievement_progress CASCADE;');
+    await client!.query(`
       DELETE FROM achievements WHERE code IN (
         'study_beginner', 'study_enthusiast', 'study_master', 'study_streak_7', 'study_streak_30',
         'create_first', 'create_10', 'create_50', 'like_received_100',
@@ -101,13 +86,6 @@ export async function down(pool: Pool): Promise<void> {
       );
     `);
 
-    await client.query('COMMIT');
     console.log('✅ 成就系统增强回滚成功');
-  } catch (error) {
-    await client.query('ROLLBACK');
-    console.error('❌ 成就系统增强回滚失败:', error);
-    throw error;
-  } finally {
-    client.release();
   }
-}
+};

@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import * as userController from '../controllers/userController';
-import { authMiddleware, optionalAuth } from '../middlewares/auth';
+import { authenticateToken, optionalAuth } from '../middlewares/auth';
 import { followService } from '../services/followService';
 import { asyncHandler } from '../utils/errorHandler';
 import { sendSuccess, sendPaginated } from '../utils/response';
@@ -9,16 +9,16 @@ import { AuthRequest } from '../middlewares/auth';
 const router = Router();
 
 // 获取当前用户信息
-router.get('/profile', authMiddleware, userController.getProfile);
+router.get('/profile', authenticateToken, userController.getProfile);
 
 // 更新用户信息
-router.put('/profile', authMiddleware, userController.updateProfile);
+router.put('/profile', authenticateToken, userController.updateProfile);
 
 // 获取用户统计数据
-router.get('/stats', authMiddleware, userController.getUserStats);
+router.get('/stats', authenticateToken, userController.getUserStats);
 
 // 获取粉丝列表
-router.get('/followers', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.get('/followers', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
   const page = parseInt(req.query.page as string) || 1;
   const pageSize = parseInt(req.query.pageSize as string) || 20;
@@ -27,7 +27,7 @@ router.get('/followers', authMiddleware, asyncHandler(async (req: AuthRequest, r
 }));
 
 // 获取关注列表
-router.get('/following', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.get('/following', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
   const page = parseInt(req.query.page as string) || 1;
   const pageSize = parseInt(req.query.pageSize as string) || 20;
@@ -39,7 +39,7 @@ router.get('/following', authMiddleware, asyncHandler(async (req: AuthRequest, r
 router.get('/:id', optionalAuth, userController.getUserById);
 
 // 关注用户
-router.post('/:id/follow', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.post('/:id/follow', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const followerId = req.userId!;
   const followingId = req.params.id;
   const result = await followService.follow(followerId, followingId);
@@ -47,7 +47,7 @@ router.post('/:id/follow', authMiddleware, asyncHandler(async (req: AuthRequest,
 }));
 
 // 取消关注
-router.delete('/:id/follow', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.delete('/:id/follow', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const followerId = req.userId!;
   const followingId = req.params.id;
   const result = await followService.unfollow(followerId, followingId);
@@ -55,9 +55,9 @@ router.delete('/:id/follow', authMiddleware, asyncHandler(async (req: AuthReques
 }));
 
 // 绑定手机号
-router.post('/bind-phone', authMiddleware, userController.bindPhone);
+router.post('/bind-phone', authenticateToken, userController.bindPhone);
 
 // 绑定邮箱
-router.post('/bind-email', authMiddleware, userController.bindEmail);
+router.post('/bind-email', authenticateToken, userController.bindEmail);
 
 export default router;

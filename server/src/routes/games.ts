@@ -1,14 +1,14 @@
 import { Router } from 'express';
 import { gameService } from '../services/gameService';
 import { questionService, GameQuestionType } from '../services/questionService';
-import { authMiddleware, AuthRequest } from '../middlewares/auth';
+import { authenticateToken, AuthRequest } from '../middlewares/auth';
 import { asyncHandler } from '../utils/errorHandler';
 import { sendSuccess, sendPaginated } from '../utils/response';
 
 const router = Router();
 
 // 获取游戏题目
-router.get('/questions', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.get('/questions', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const gameType = req.query.gameType as GameQuestionType;
   const difficulty = req.query.difficulty ? parseInt(req.query.difficulty as string) : undefined;
   const limit = parseInt(req.query.limit as string) || 10;
@@ -35,7 +35,7 @@ router.get('/questions', authMiddleware, asyncHandler(async (req: AuthRequest, r
 }));
 
 // 验证答案
-router.post('/verify-answer', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.post('/verify-answer', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const { questionId, answer } = req.body;
 
   if (!questionId || answer === undefined) {
@@ -47,7 +47,7 @@ router.post('/verify-answer', authMiddleware, asyncHandler(async (req: AuthReque
 }));
 
 // 保存游戏成绩
-router.post('/score', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.post('/score', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
   const { gameType, score, level, accuracy, duration } = req.body;
   const result = await gameService.saveScore(userId, { gameType, score, level, accuracy, duration });
@@ -55,7 +55,7 @@ router.post('/score', authMiddleware, asyncHandler(async (req: AuthRequest, res)
 }));
 
 // 获取游戏进度
-router.get('/progress', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.get('/progress', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
   const gameType = req.query.gameType as string;
   const progress = await gameService.getProgress(userId, gameType as any);
@@ -76,7 +76,7 @@ router.get('/leaderboard', asyncHandler(async (req, res) => {
 }));
 
 // 获取用户排名
-router.get('/rank', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.get('/rank', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
   const gameType = req.query.gameType as string;
 
@@ -89,7 +89,7 @@ router.get('/rank', authMiddleware, asyncHandler(async (req: AuthRequest, res) =
 }));
 
 // 获取游戏历史记录
-router.get('/history', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.get('/history', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
   const gameType = req.query.gameType as string;
   const page = parseInt(req.query.page as string) || 1;

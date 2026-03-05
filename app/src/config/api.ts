@@ -5,7 +5,7 @@ export const API_CONFIG = {
 }
 
 // API响应接口
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   success: boolean
   data?: T
   message?: string
@@ -15,11 +15,11 @@ export interface ApiResponse<T = any> {
 // 请求配置接口
 export interface RequestConfig extends RequestInit {
   timeout?: number
-  params?: Record<string, any>
+  params?: Record<string, string | number | boolean>
 }
 
 // 基础请求函数
-export async function request<T = any>(
+export async function request<T = unknown>(
   endpoint: string,
   options: RequestConfig = {}
 ): Promise<ApiResponse<T>> {
@@ -66,48 +66,56 @@ export async function request<T = any>(
       data: data.data || data,
       message: data.message,
     }
-  } catch (error: any) {
+  } catch (error) {
     clearTimeout(timeoutId)
 
-    if (error.name === 'AbortError') {
+    if (error instanceof Error) {
+      if (error.name === 'AbortError') {
+        return {
+          success: false,
+          error: '请求超时',
+          message: '请求超时',
+        }
+      }
+
       return {
         success: false,
-        error: '请求超时',
-        message: '请求超时',
+        error: error.message || '网络错误',
+        message: error.message || '网络错误',
       }
     }
 
     return {
       success: false,
-      error: error.message || '网络错误',
-      message: error.message || '网络错误',
+      error: '未知错误',
+      message: '未知错误',
     }
   }
 }
 
 // 便捷方法
 export const api = {
-  get: <T = any>(endpoint: string, options?: RequestConfig) =>
+  get: <T = unknown>(endpoint: string, options?: RequestConfig) =>
     request<T>(endpoint, { ...options, method: 'GET' }),
 
-  post: <T = any>(endpoint: string, data?: any, options?: RequestConfig) =>
+  post: <T = unknown>(endpoint: string, data?: unknown, options?: RequestConfig) =>
     request<T>(endpoint, {
       ...options,
       method: 'POST',
       body: JSON.stringify(data),
     }),
 
-  put: <T = any>(endpoint: string, data?: any, options?: RequestConfig) =>
+  put: <T = unknown>(endpoint: string, data?: unknown, options?: RequestConfig) =>
     request<T>(endpoint, {
       ...options,
       method: 'PUT',
       body: JSON.stringify(data),
     }),
 
-  delete: <T = any>(endpoint: string, options?: RequestConfig) =>
+  delete: <T = unknown>(endpoint: string, options?: RequestConfig) =>
     request<T>(endpoint, { ...options, method: 'DELETE' }),
 
-  patch: <T = any>(endpoint: string, data?: any, options?: RequestConfig) =>
+  patch: <T = unknown>(endpoint: string, data?: unknown, options?: RequestConfig) =>
     request<T>(endpoint, {
       ...options,
       method: 'PATCH',

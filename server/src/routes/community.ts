@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { communityService } from '../services/communityService';
-import { authMiddleware, optionalAuth, AuthRequest } from '../middlewares/auth';
+import { authenticateToken, optionalAuth, AuthRequest } from '../middlewares/auth';
 import { asyncHandler } from '../utils/errorHandler';
 import { sendSuccess, sendPaginated } from '../utils/response';
 
@@ -28,7 +28,7 @@ router.get('/posts/:id', optionalAuth, asyncHandler(async (req: AuthRequest, res
 }));
 
 // 发布帖子
-router.post('/posts', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.post('/posts', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
   const { content, images, title } = req.body;
 
@@ -37,7 +37,7 @@ router.post('/posts', authMiddleware, asyncHandler(async (req: AuthRequest, res)
 }));
 
 // 删除帖子
-router.delete('/posts/:id', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.delete('/posts/:id', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const postId = req.params.id;
   const userId = req.userId!;
 
@@ -46,7 +46,7 @@ router.delete('/posts/:id', authMiddleware, asyncHandler(async (req: AuthRequest
 }));
 
 // 点赞帖子
-router.post('/posts/:id/like', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.post('/posts/:id/like', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const postId = req.params.id;
   const userId = req.userId!;
 
@@ -55,7 +55,7 @@ router.post('/posts/:id/like', authMiddleware, asyncHandler(async (req: AuthRequ
 }));
 
 // 取消点赞帖子
-router.delete('/posts/:id/like', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.delete('/posts/:id/like', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const postId = req.params.id;
   const userId = req.userId!;
 
@@ -92,7 +92,7 @@ router.get('/topics/:id/posts', optionalAuth, asyncHandler(async (req: AuthReque
 // ============ 点赞 ============
 
 // 点赞作品
-router.post('/works/:id/like', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.post('/works/:id/like', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const workId = req.params.id;
   const userId = req.userId!;
   const result = await communityService.likeWork(workId, userId);
@@ -100,7 +100,7 @@ router.post('/works/:id/like', authMiddleware, asyncHandler(async (req: AuthRequ
 }));
 
 // 取消点赞
-router.delete('/works/:id/like', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.delete('/works/:id/like', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const workId = req.params.id;
   const userId = req.userId!;
   const result = await communityService.unlikeWork(workId, userId);
@@ -110,7 +110,7 @@ router.delete('/works/:id/like', authMiddleware, asyncHandler(async (req: AuthRe
 // ============ 评论 ============
 
 // 发表评论
-router.post('/works/:id/comments', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.post('/works/:id/comments', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const workId = req.params.id;
   const userId = req.userId!;
   const { content, parentId } = req.body;
@@ -137,7 +137,7 @@ router.get('/comments/:id/replies', asyncHandler(async (req, res) => {
 }));
 
 // 删除评论
-router.delete('/comments/:id', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.delete('/comments/:id', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const commentId = req.params.id;
   const userId = req.userId!;
   const result = await communityService.deleteComment(commentId, userId);
@@ -147,7 +147,7 @@ router.delete('/comments/:id', authMiddleware, asyncHandler(async (req: AuthRequ
 // ============ 心愿墙 ============
 
 // 发布心愿
-router.post('/wishes', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.post('/wishes', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
   const { content } = req.body;
   const wish = await communityService.createWish(userId, content);
@@ -164,7 +164,7 @@ router.get('/wishes', asyncHandler(async (req, res) => {
 }));
 
 // 支持心愿
-router.post('/wishes/:id/support', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.post('/wishes/:id/support', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const wishId = req.params.id;
   const userId = req.userId!;
   const result = await communityService.supportWish(wishId, userId);
@@ -172,7 +172,7 @@ router.post('/wishes/:id/support', authMiddleware, asyncHandler(async (req: Auth
 }));
 
 // 更新心愿状态
-router.put('/wishes/:id/status', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.put('/wishes/:id/status', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const wishId = req.params.id;
   const userId = req.userId!;
   const { status } = req.body;

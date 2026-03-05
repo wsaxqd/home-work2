@@ -137,12 +137,6 @@ export const recordUsage = async (record: UsageRecord): Promise<void> => {
         ...record,
       }),
     });
-
-    console.log('✅ 使用数据记录成功:', {
-      type: record.activityType,
-      title: record.activityTitle,
-      duration: `${record.duration}秒`,
-    });
   } catch (error) {
     console.error('❌ 记录使用数据失败:', error);
     throw error;

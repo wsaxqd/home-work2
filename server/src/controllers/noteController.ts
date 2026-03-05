@@ -1,5 +1,5 @@
 import { Response } from 'express';
-import { AuthRequest } from '../middleware/authMiddleware';
+import { AuthRequest } from '../types/express';
 import { noteService } from '../services/noteService';
 import { asyncHandler } from '../middleware/errorHandler';
 import { sendSuccess } from '../utils/response';

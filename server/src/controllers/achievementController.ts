@@ -1,8 +1,9 @@
-import { Request, Response } from 'express';
-import * as achievementService from '../services/achievementService';
+import { Response } from 'express';
+import { AuthRequest } from '../types/express';
+import { achievementService } from '../services/achievementService';
 
 // 获取所有成就
-export const getAllAchievements = async (req: Request, res: Response) => {
+export const getAllAchievements = async (req: AuthRequest, res: Response) => {
   try {
     const { category } = req.query;
     const achievements = await achievementService.getAchievements(category as string);
@@ -21,9 +22,9 @@ export const getAllAchievements = async (req: Request, res: Response) => {
 };
 
 // 获取用户成就
-export const getUserAchievements = async (req: Request, res: Response) => {
+export const getUserAchievements = async (req: AuthRequest, res: Response) => {
   try {
-    const userId = (req as any).user.id;
+    const userId = req.user!.id;
     const { category } = req.query;
 
     const achievements = await achievementService.getUserAchievements(userId, category as string);
@@ -42,9 +43,9 @@ export const getUserAchievements = async (req: Request, res: Response) => {
 };
 
 // 获取成就统计
-export const getAchievementStats = async (req: Request, res: Response) => {
+export const getAchievementStats = async (req: AuthRequest, res: Response) => {
   try {
-    const userId = (req as any).user.id;
+    const userId = req.user!.id;
     const stats = await achievementService.getUserAchievementStats(userId);
 
     res.json({
@@ -61,9 +62,9 @@ export const getAchievementStats = async (req: Request, res: Response) => {
 };
 
 // 获取成就进度
-export const getAchievementProgress = async (req: Request, res: Response) => {
+export const getAchievementProgress = async (req: AuthRequest, res: Response) => {
   try {
-    const userId = (req as any).user.id;
+    const userId = req.user!.id;
     const progress = await achievementService.getAchievementProgress(userId);
 
     res.json({

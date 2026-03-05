@@ -8,7 +8,7 @@ function generateVerifyCode(): string {
 }
 
 // 发送邮箱验证码
-export async function sendVerifyCode(email: string): Promise<void> {
+export async function sendVerifyCode(email: string, purpose: string = 'register'): Promise<void> {
   // 检查发送频率限制 (60秒内只能发送一次)
   const recentResult = await query(
     `SELECT * FROM email_verify_codes
@@ -49,7 +49,7 @@ export async function sendVerifyCode(email: string): Promise<void> {
 }
 
 // 验证邮箱验证码
-export async function verifyCode(email: string, code: string): Promise<boolean> {
+export async function verifyCode(email: string, code: string, purpose: string = 'register'): Promise<boolean> {
   // 查找未使用且未过期的验证码
   const result = await query(
     `SELECT * FROM email_verify_codes

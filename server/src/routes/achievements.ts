@@ -1,11 +1,11 @@
 import express from 'express';
 import * as achievementController from '../controllers/achievementController';
-import { authMiddleware } from '../middleware/authMiddleware';
+import { authenticateToken } from '../middleware/auth';
 
 const router = express.Router();
 
 // 所有成就路由都需要认证
-router.use(authMiddleware);
+router.use(authenticateToken);
 
 // 获取所有成就
 router.get('/', achievementController.getAllAchievements);

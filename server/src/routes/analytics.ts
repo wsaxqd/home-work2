@@ -1,19 +1,19 @@
 import { Router } from 'express';
 import { analyticsService } from '../services/analyticsService';
-import { authMiddleware, AuthRequest } from '../middlewares/auth';
+import { authenticateToken, AuthRequest } from '../middlewares/auth';
 import { asyncHandler } from '../utils/errorHandler';
 import { sendSuccess } from '../utils/response';
 
 const router = Router();
 
 // 获取仪表板总览
-router.get('/dashboard/overview', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.get('/dashboard/overview', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const overview = await analyticsService.getDashboardOverview();
   sendSuccess(res, overview);
 }));
 
 // 获取用户参与度分析
-router.get('/engagement', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.get('/engagement', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const { days } = req.query;
   const engagement = await analyticsService.getUserEngagement(
     days ? parseInt(days as string) : undefined
@@ -22,13 +22,13 @@ router.get('/engagement', authMiddleware, asyncHandler(async (req: AuthRequest, 
 }));
 
 // 获取学习分析
-router.get('/learning', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.get('/learning', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const learning = await analyticsService.getLearningAnalytics();
   sendSuccess(res, learning);
 }));
 
 // 获取内容分析
-router.get('/content', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.get('/content', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const { limit } = req.query;
   const content = await analyticsService.getContentAnalytics(
     limit ? parseInt(limit as string) : undefined
@@ -37,7 +37,7 @@ router.get('/content', authMiddleware, asyncHandler(async (req: AuthRequest, res
 }));
 
 // 获取安全分析
-router.get('/safety', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.get('/safety', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const { days } = req.query;
   const safety = await analyticsService.getSafetyAnalytics(
     days ? parseInt(days as string) : undefined
@@ -46,21 +46,21 @@ router.get('/safety', authMiddleware, asyncHandler(async (req: AuthRequest, res)
 }));
 
 // 获取用户个人分析
-router.get('/user/:userId', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.get('/user/:userId', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const { userId } = req.params;
   const userAnalytics = await analyticsService.getUserPersonalAnalytics(userId);
   sendSuccess(res, userAnalytics);
 }));
 
 // 获取当前用户的个人分析
-router.get('/user/me/stats', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.get('/user/me/stats', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
   const userAnalytics = await analyticsService.getUserPersonalAnalytics(userId);
   sendSuccess(res, userAnalytics);
 }));
 
 // 生成并导出报告
-router.get('/report/:type', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.get('/report/:type', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const { type } = req.params;
   const { format } = req.query;
 

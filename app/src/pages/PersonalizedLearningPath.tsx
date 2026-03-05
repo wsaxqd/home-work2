@@ -136,7 +136,6 @@ function PersonalizedLearningPath() {
 
   const continueStep = (step: LearningStep) => {
     // TODO: 跳转到练习页面
-    console.log('继续学习:', step);
     // 这里可以跳转到相应的学习资源
   };
 

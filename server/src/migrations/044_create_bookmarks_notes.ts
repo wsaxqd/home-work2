@@ -1,13 +1,11 @@
-import { Pool } from 'pg';
+import { Migration } from './migrationRunner';
 
-export async function up(pool: Pool): Promise<void> {
-  const client = await pool.connect();
-
-  try {
-    await client.query('BEGIN');
-
+export const migration_044_create_bookmarks_notes: Migration = {
+  id: '044',
+  name: '044_create_bookmarks_notes',
+  async up(client) {
     // 创建书签表
-    await client.query(`
+    await client!.query(`
       CREATE TABLE IF NOT EXISTS bookmarks (
         id SERIAL PRIMARY KEY,
         user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -23,7 +21,7 @@ export async function up(pool: Pool): Promise<void> {
     `);
 
     // 创建笔记表
-    await client.query(`
+    await client!.query(`
       CREATE TABLE IF NOT EXISTS notes (
         id SERIAL PRIMARY KEY,
         user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -39,53 +37,33 @@ export async function up(pool: Pool): Promise<void> {
     `);
 
     // 创建索引
-    await client.query(`
+    await client!.query(`
       CREATE INDEX IF NOT EXISTS idx_bookmarks_user_id ON bookmarks(user_id);
     `);
 
-    await client.query(`
+    await client!.query(`
       CREATE INDEX IF NOT EXISTS idx_bookmarks_resource ON bookmarks(resource_type, resource_id);
     `);
 
-    await client.query(`
+    await client!.query(`
       CREATE INDEX IF NOT EXISTS idx_notes_user_id ON notes(user_id);
     `);
 
-    await client.query(`
+    await client!.query(`
       CREATE INDEX IF NOT EXISTS idx_notes_created_at ON notes(created_at DESC);
     `);
 
-    await client.query(`
+    await client!.query(`
       CREATE INDEX IF NOT EXISTS idx_notes_tags ON notes USING GIN(tags);
     `);
 
-    await client.query('COMMIT');
     console.log('✅ 书签和笔记表创建成功');
-  } catch (error) {
-    await client.query('ROLLBACK');
-    console.error('❌ 书签和笔记表创建失败:', error);
-    throw error;
-  } finally {
-    client.release();
-  }
-}
+  },
 
-export async function down(pool: Pool): Promise<void> {
-  const client = await pool.connect();
+  async down(client) {
+    await client!.query('DROP TABLE IF EXISTS notes CASCADE;');
+    await client!.query('DROP TABLE IF EXISTS bookmarks CASCADE;');
 
-  try {
-    await client.query('BEGIN');
-
-    await client.query('DROP TABLE IF EXISTS notes CASCADE;');
-    await client.query('DROP TABLE IF EXISTS bookmarks CASCADE;');
-
-    await client.query('COMMIT');
     console.log('✅ 书签和笔记表删除成功');
-  } catch (error) {
-    await client.query('ROLLBACK');
-    console.error('❌ 书签和笔记表删除失败:', error);
-    throw error;
-  } finally {
-    client.release();
   }
-}
+};

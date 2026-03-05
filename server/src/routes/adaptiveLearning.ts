@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { authMiddleware, AuthRequest } from '../middlewares/auth';
+import { authenticateToken, AuthRequest } from '../middlewares/auth';
 import { asyncHandler } from '../utils/errorHandler';
 import { sendSuccess, sendError } from '../utils/response';
 import { knowledgeGraphService } from '../services/knowledgeGraphService';
@@ -15,7 +15,7 @@ const router = Router();
  * 获取知识图谱
  * GET /api/adaptive-learning/knowledge-graph
  */
-router.get('/knowledge-graph', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.get('/knowledge-graph', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const { subject, grade } = req.query;
   const userId = req.userId!;
 
@@ -36,7 +36,7 @@ router.get('/knowledge-graph', authMiddleware, asyncHandler(async (req: AuthRequ
  * 获取知识点详情
  * GET /api/adaptive-learning/knowledge-point/:id
  */
-router.get('/knowledge-point/:id', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.get('/knowledge-point/:id', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const { id } = req.params;
   const userId = req.userId!;
 
@@ -48,7 +48,7 @@ router.get('/knowledge-point/:id', authMiddleware, asyncHandler(async (req: Auth
  * 搜索知识点
  * GET /api/adaptive-learning/knowledge-search
  */
-router.get('/knowledge-search', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.get('/knowledge-search', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const { keyword, subject, grade } = req.query;
 
   if (!keyword) {
@@ -70,7 +70,7 @@ router.get('/knowledge-search', authMiddleware, asyncHandler(async (req: AuthReq
  * 提交答题记录
  * POST /api/adaptive-learning/submit-answer
  */
-router.post('/submit-answer', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.post('/submit-answer', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
   const {
     questionId,
@@ -135,7 +135,7 @@ router.post('/submit-answer', authMiddleware, asyncHandler(async (req: AuthReque
  * 获取用户学习行为数据
  * GET /api/adaptive-learning/learning-behavior
  */
-router.get('/learning-behavior', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.get('/learning-behavior', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
   const { knowledgePointId } = req.query;
 
@@ -153,7 +153,7 @@ router.get('/learning-behavior', authMiddleware, asyncHandler(async (req: AuthRe
  * 获取薄弱点诊断
  * GET /api/adaptive-learning/weak-points
  */
-router.get('/weak-points', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.get('/weak-points', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
   const { subject, threshold } = req.query;
 
@@ -181,7 +181,7 @@ router.get('/weak-points', authMiddleware, asyncHandler(async (req: AuthRequest,
  * 生成个性化学习路径
  * POST /api/adaptive-learning/generate-path
  */
-router.post('/generate-path', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.post('/generate-path', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
   const { subject, grade, goal, timeConstraint, dailyTimeLimit } = req.body;
 
@@ -205,7 +205,7 @@ router.post('/generate-path', authMiddleware, asyncHandler(async (req: AuthReque
  * 获取用户学习路径
  * GET /api/adaptive-learning/learning-path/:pathId
  */
-router.get('/learning-path/:pathId', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.get('/learning-path/:pathId', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
   const { pathId } = req.params;
 
@@ -217,7 +217,7 @@ router.get('/learning-path/:pathId', authMiddleware, asyncHandler(async (req: Au
  * 更新学习路径进度
  * PUT /api/adaptive-learning/learning-path/:pathId/progress
  */
-router.put('/learning-path/:pathId/progress', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.put('/learning-path/:pathId/progress', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
   const { pathId } = req.params;
   const { completedStep } = req.body;
@@ -236,7 +236,7 @@ router.put('/learning-path/:pathId/progress', authMiddleware, asyncHandler(async
  * 获取智能推荐
  * GET /api/adaptive-learning/recommendations
  */
-router.get('/recommendations', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.get('/recommendations', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
   const { limit } = req.query;
 
@@ -254,7 +254,7 @@ router.get('/recommendations', authMiddleware, asyncHandler(async (req: AuthRequ
  * 获取学习分析报告
  * GET /api/adaptive-learning/analysis-report
  */
-router.get('/analysis-report', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.get('/analysis-report', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
   const { subject, timeRange } = req.query;
 
@@ -273,7 +273,7 @@ router.get('/analysis-report', authMiddleware, asyncHandler(async (req: AuthRequ
  * 获取知识点题目列表
  * GET /api/adaptive-learning/questions
  */
-router.get('/questions', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.get('/questions', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const {
     knowledgePointId,
     subject,
@@ -297,20 +297,12 @@ router.get('/questions', authMiddleware, asyncHandler(async (req: AuthRequest, r
       {
         difficulty: difficulty ? parseInt(difficulty as string) : undefined,
         questionType: questionType as string,
-        limit: limit ? parseInt(limit as string) : 10,
-        offset: offset ? parseInt(offset as string) : 0
+        count: limit ? parseInt(limit as string) : 10
       }
     );
   } else {
-    // 根据多个条件获取题目
-    questions = await learningQuestionService.getQuestions({
-      subject: subject as string,
-      grade: grade as string,
-      difficulty: difficulty ? parseInt(difficulty as string) : undefined,
-      questionType: questionType as string,
-      limit: limit ? parseInt(limit as string) : 10,
-      offset: offset ? parseInt(offset as string) : 0
-    });
+    // 如果没有指定知识点，返回空数组
+    questions = [];
   }
 
   sendSuccess(res, { questions, count: questions.length });
@@ -320,7 +312,7 @@ router.get('/questions', authMiddleware, asyncHandler(async (req: AuthRequest, r
  * 获取推荐题目
  * GET /api/adaptive-learning/recommended-questions
  */
-router.get('/recommended-questions', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.get('/recommended-questions', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
   const { knowledgePointId, count } = req.query;
 
@@ -328,10 +320,12 @@ router.get('/recommended-questions', authMiddleware, asyncHandler(async (req: Au
     return sendError(res, '缺少knowledgePointId参数', 400);
   }
 
-  const questions = await learningQuestionService.getRecommendedQuestions(
-    userId,
+  const questions = await learningQuestionService.getQuestionsByKnowledgePoint(
     knowledgePointId as string,
-    count ? parseInt(count as string) : 5
+    {
+      count: count ? parseInt(count as string) : 5,
+      orderBy: 'random'
+    }
   );
 
   sendSuccess(res, { questions, count: questions.length });
@@ -341,10 +335,10 @@ router.get('/recommended-questions', authMiddleware, asyncHandler(async (req: Au
  * 获取题目详情
  * GET /api/adaptive-learning/questions/:id
  */
-router.get('/questions/:id', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.get('/questions/:id', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const { id } = req.params;
 
-  const question = await learningQuestionService.getQuestionById(id);
+  const question = await learningQuestionService.getQuestionById(parseInt(id));
 
   if (!question) {
     return sendError(res, '题目不存在', 404);
@@ -357,19 +351,21 @@ router.get('/questions/:id', authMiddleware, asyncHandler(async (req: AuthReques
  * 统计知识点题目数量
  * GET /api/adaptive-learning/questions-count
  */
-router.get('/questions-count', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.get('/questions-count', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const { knowledgePointId, difficulty } = req.query;
 
   if (!knowledgePointId) {
     return sendError(res, '缺少knowledgePointId参数', 400);
   }
 
-  const count = await learningQuestionService.countQuestionsByKnowledgePoint(
+  const questions = await learningQuestionService.getQuestionsByKnowledgePoint(
     knowledgePointId as string,
-    difficulty ? parseInt(difficulty as string) : undefined
+    {
+      difficulty: difficulty ? parseInt(difficulty as string) : undefined
+    }
   );
 
-  sendSuccess(res, { count });
+  sendSuccess(res, { count: questions.length });
 }));
 
 export default router;

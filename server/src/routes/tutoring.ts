@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { tutoringService } from '../services/tutoringService';
-import { authMiddleware, AuthRequest } from '../middlewares/auth';
+import { authenticateToken, AuthRequest } from '../middlewares/auth';
 import { asyncHandler } from '../utils/errorHandler';
 import { sendSuccess } from '../utils/response';
 import { AppError } from '../utils/errorHandler';
@@ -8,13 +8,13 @@ import { AppError } from '../utils/errorHandler';
 const router = Router();
 
 // 获取可用科目列表
-router.get('/subjects', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.get('/subjects', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const subjects = tutoringService.getAvailableSubjects();
   sendSuccess(res, subjects);
 }));
 
 // 开始新的辅导会话
-router.post('/sessions/start', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.post('/sessions/start', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
   const { subject } = req.body;
 
@@ -27,14 +27,14 @@ router.post('/sessions/start', authMiddleware, asyncHandler(async (req: AuthRequ
 }));
 
 // 获取下一个问题
-router.get('/sessions/:sessionId/next-question', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.get('/sessions/:sessionId/next-question', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const { sessionId } = req.params;
   const question = await tutoringService.getNextQuestion(sessionId);
   sendSuccess(res, question);
 }));
 
 // 提交答案
-router.post('/sessions/:sessionId/submit-answer', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.post('/sessions/:sessionId/submit-answer', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const { sessionId } = req.params;
   const { question, answer } = req.body;
 
@@ -47,14 +47,14 @@ router.post('/sessions/:sessionId/submit-answer', authMiddleware, asyncHandler(a
 }));
 
 // 结束辅导会话
-router.post('/sessions/:sessionId/end', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.post('/sessions/:sessionId/end', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const { sessionId } = req.params;
   const summary = await tutoringService.endSession(sessionId);
   sendSuccess(res, summary);
 }));
 
 // 获取辅导历史
-router.get('/history', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.get('/history', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
   const { subject, limit } = req.query;
 
@@ -68,7 +68,7 @@ router.get('/history', authMiddleware, asyncHandler(async (req: AuthRequest, res
 }));
 
 // 获取学习统计
-router.get('/statistics', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.get('/statistics', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
   const { subject } = req.query;
 

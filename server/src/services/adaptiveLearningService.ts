@@ -72,17 +72,17 @@ export class AdaptiveLearningService {
       if (masteryLevel === 0) {
         // 未学习
         estimatedMinutes = 40;
-        resources = this.getFullResources(point);
+        resources = await this.getFullResources(point);
         stepReason = '新知识点学习';
       } else if (masteryLevel <= 2) {
         // 薄弱
         estimatedMinutes = 30;
-        resources = this.getPracticeResources(point);
+        resources = await this.getPracticeResources(point);
         stepReason = '薄弱点强化练习';
       } else {
         // 复习
         estimatedMinutes = 15;
-        resources = this.getReviewResources(point);
+        resources = await this.getReviewResources(point);
         stepReason = '复习巩固';
       }
 
@@ -195,23 +195,23 @@ export class AdaptiveLearningService {
   /**
    * 获取完整学习资源（新知识点）
    */
-  private getFullResources(knowledgePoint: any) {
+  private async getFullResources(knowledgePoint: any) {
     const resources = knowledgePoint.resources || {};
     return {
       videos: resources.videos || [],
       articles: resources.articles || [],
       games: resources.games || [],
-      questions: this.generateQuestionIds(knowledgePoint.id, 8),
+      questions: await this.generateQuestionIds(knowledgePoint.id, 8, knowledgePoint.difficulty),
     };
   }
 
   /**
    * 获取练习资源（薄弱点）
    */
-  private getPracticeResources(knowledgePoint: any) {
+  private async getPracticeResources(knowledgePoint: any) {
     return {
       videos: (knowledgePoint.resources?.videos || []).slice(0, 1), // 只推荐一个视频
-      questions: this.generateQuestionIds(knowledgePoint.id, 10),
+      questions: await this.generateQuestionIds(knowledgePoint.id, 10, knowledgePoint.difficulty),
       games: knowledgePoint.resources?.games || [],
     };
   }
@@ -219,18 +219,97 @@ export class AdaptiveLearningService {
   /**
    * 获取复习资源
    */
-  private getReviewResources(knowledgePoint: any) {
+  private async getReviewResources(knowledgePoint: any) {
     return {
-      questions: this.generateQuestionIds(knowledgePoint.id, 5),
+      questions: await this.generateQuestionIds(knowledgePoint.id, 5),
     };
   }
 
   /**
-   * 生成题目ID列表（模拟）
+   * 获取进阶学习资源
    */
-  private generateQuestionIds(knowledgePointId: string, count: number): number[] {
-    // TODO: 实际应该从题库中查询
-    return Array.from({ length: count }, (_, i) => i + 1);
+  private async getAdvanceResources(knowledgePoint: any) {
+    return {
+      videos: (knowledgePoint.resources?.videos || []).slice(0, 2), // 推荐两个视频
+      questions: await this.generateQuestionIds(knowledgePoint.id, 8, knowledgePoint.difficulty),
+      articles: knowledgePoint.resources?.articles || [],
+    };
+  }
+
+  /**
+   * 从数据库查询题目ID列表
+   * @param knowledgePointId 知识点ID
+   * @param count 需要的题目数量
+   * @param difficulty 难度等级（可选，1-5）
+   * @param excludeIds 排除的题目ID（可选）
+   */
+  private async generateQuestionIds(
+    knowledgePointId: string,
+    count: number,
+    difficulty?: number,
+    excludeIds: number[] = []
+  ): Promise<number[]> {
+    try {
+      // 构建查询条件
+      let whereClause = 'WHERE knowledge_point_id = $1 AND is_active = true';
+      const params: any[] = [knowledgePointId];
+      let paramIndex = 2;
+
+      // 添加难度筛选
+      if (difficulty) {
+        whereClause += ` AND difficulty = $${paramIndex}`;
+        params.push(difficulty);
+        paramIndex++;
+      }
+
+      // 排除已做过的题目
+      if (excludeIds.length > 0) {
+        whereClause += ` AND id NOT IN (${excludeIds.join(',')})`;
+      }
+
+      // 查询题目，优先选择正确率较低的题目（更有练习价值）
+      const result = await query(
+        `SELECT id FROM questions
+         ${whereClause}
+         ORDER BY
+           CASE
+             WHEN total_attempts > 0 THEN (correct_attempts::float / total_attempts)
+             ELSE 0.5
+           END ASC,
+           RANDOM()
+         LIMIT $${paramIndex}`,
+        [...params, count]
+      );
+
+      // 如果查询到的题目不足，尝试放宽条件
+      if (result.rows.length < count) {
+        console.warn(
+          `知识点 ${knowledgePointId} 的题目不足，需要 ${count} 道，实际找到 ${result.rows.length} 道`
+        );
+
+        // 如果设置了难度，尝试不限难度再查询
+        if (difficulty && result.rows.length < count) {
+          const additionalResult = await query(
+            `SELECT id FROM questions
+             WHERE knowledge_point_id = $1
+               AND is_active = true
+               AND id NOT IN (${result.rows.map((r: any) => r.id).join(',') || '0'})
+               ${excludeIds.length > 0 ? `AND id NOT IN (${excludeIds.join(',')})` : ''}
+             ORDER BY RANDOM()
+             LIMIT $2`,
+            [knowledgePointId, count - result.rows.length]
+          );
+
+          result.rows.push(...additionalResult.rows);
+        }
+      }
+
+      return result.rows.map((row: any) => row.id);
+    } catch (error: any) {
+      console.error('查询题目失败:', error);
+      // 如果查询失败，返回空数组而不是抛出错误
+      return [];
+    }
   }
 
   /**
@@ -507,8 +586,53 @@ export class AdaptiveLearningService {
       }
     }
 
-    // 3. 进阶学习推荐
-    // TODO: 实现基于知识图谱的进阶推荐
+    // 3. 进阶学习推荐（基于知识图谱）
+    const masteredPoints = behaviors.filter(b => b.mastery_level >= 4);
+    for (const behavior of masteredPoints.slice(0, 3)) {
+      // 获取当前知识点的详细信息
+      const kp = await knowledgeGraphService.getKnowledgePoint(behavior.knowledge_point_id, userId);
+
+      // 推荐后续知识点（依赖当前知识点的）
+      if (kp.nextKnowledgePoints && kp.nextKnowledgePoints.length > 0) {
+        for (const nextKp of kp.nextKnowledgePoints.slice(0, 2)) {
+          // 检查用户是否已经掌握
+          const existingBehavior = behaviors.find(b => b.knowledge_point_id === nextKp.id);
+          if (!existingBehavior || existingBehavior.mastery_level < 3) {
+            recommendations.push({
+              type: 'advance',
+              priority: 5 + nextKp.difficulty,
+              knowledgePointId: nextKp.id,
+              knowledgePointName: nextKp.name,
+              subject: behavior.subject,
+              grade: behavior.grade,
+              reason: `已掌握前置知识点"${behavior.knowledge_point_name}"，可以学习进阶内容`,
+              resources: this.getAdvanceResources(nextKp),
+              estimatedMinutes: 25,
+            });
+          }
+        }
+      }
+
+      // 推荐相关知识点（横向扩展）
+      if (kp.relatedKnowledgePoints && kp.relatedKnowledgePoints.length > 0) {
+        for (const relatedKp of kp.relatedKnowledgePoints.slice(0, 1)) {
+          const existingBehavior = behaviors.find(b => b.knowledge_point_id === relatedKp.id);
+          if (!existingBehavior || existingBehavior.mastery_level < 3) {
+            recommendations.push({
+              type: 'advance',
+              priority: 4,
+              knowledgePointId: relatedKp.id,
+              knowledgePointName: relatedKp.name,
+              subject: behavior.subject,
+              grade: behavior.grade,
+              reason: `与已掌握的"${behavior.knowledge_point_name}"相关，建议拓展学习`,
+              resources: this.getAdvanceResources(relatedKp),
+              estimatedMinutes: 20,
+            });
+          }
+        }
+      }
+    }
 
     // 排序和去重
     recommendations.sort((a, b) => b.priority - a.priority);

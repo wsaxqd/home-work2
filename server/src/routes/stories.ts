@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { authMiddleware, optionalAuth, AuthRequest } from '../middlewares/auth';
+import { authenticateToken, optionalAuth, AuthRequest } from '../middlewares/auth';
 import { asyncHandler } from '../utils/errorHandler';
 import { sendSuccess } from '../utils/response';
 import { storiesService } from '../services/storiesService';
@@ -140,7 +140,7 @@ router.post('/play', optionalAuth, asyncHandler(async (req: AuthRequest, res) =>
 }));
 
 // 获取推荐故事
-router.get('/recommended', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.get('/recommended', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
   const { limit = 10 } = req.query;
 
@@ -149,7 +149,7 @@ router.get('/recommended', authMiddleware, asyncHandler(async (req: AuthRequest,
 }));
 
 // 获取播放历史
-router.get('/history', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.get('/history', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
   const { limit = 50 } = req.query;
 

@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { authMiddleware, optionalAuth, AuthRequest } from '../middlewares/auth';
+import { authenticateToken, optionalAuth, AuthRequest } from '../middlewares/auth';
 import { asyncHandler } from '../utils/errorHandler';
 import { sendSuccess } from '../utils/response';
 import { encyclopediaService } from '../services/encyclopediaService';
@@ -53,7 +53,7 @@ router.get('/questions/:id', optionalAuth, asyncHandler(async (req: AuthRequest,
 /**
  * 收藏/取消收藏问题
  */
-router.post('/questions/:id/favorite', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.post('/questions/:id/favorite', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
   const questionId = parseInt(req.params.id);
 
@@ -64,7 +64,7 @@ router.post('/questions/:id/favorite', authMiddleware, asyncHandler(async (req: 
 /**
  * 获取用户收藏的问题
  */
-router.get('/favorites', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.get('/favorites', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
 
   const favorites = await encyclopediaService.getUserFavorites(userId);
@@ -74,7 +74,7 @@ router.get('/favorites', authMiddleware, asyncHandler(async (req: AuthRequest, r
 /**
  * 智能搜索
  */
-router.post('/search', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.post('/search', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
   const { question } = req.body;
 
@@ -114,7 +114,7 @@ router.get('/classics/:classicId', optionalAuth, asyncHandler(async (req: AuthRe
 /**
  * 记录阅读进度
  */
-router.post('/classics/reading', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.post('/classics/reading', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
   const { classicId, chapterId } = req.body;
 
@@ -125,7 +125,7 @@ router.post('/classics/reading', authMiddleware, asyncHandler(async (req: AuthRe
 /**
  * 获取阅读进度
  */
-router.get('/classics/reading', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.get('/classics/reading', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
 
   const progress = await encyclopediaService.getReadingProgress(userId);
