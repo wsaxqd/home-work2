@@ -1,6 +1,7 @@
 import express, { Request, Response } from 'express'
 import { pool } from '../config/database'
 import { authenticateToken } from '../middleware/auth'
+import { learningMapService } from '../services/learningMapService'
 
 const router = express.Router()
 
@@ -137,7 +138,14 @@ router.post('/stages/:stageId/start', authenticateToken, async (req: AuthRequest
     const stage = stageResult.rows[0]
 
     // 检查是否解锁
-    // TODO: 实现解锁逻辑检查
+    const unlockStatus = await learningMapService.checkStageUnlock(String(userId), Number(stageId))
+
+    if (!unlockStatus.isUnlocked) {
+      return res.status(403).json({
+        success: false,
+        message: unlockStatus.reason || '关卡未解锁'
+      })
+    }
 
     // 初始化用户进度（如果不存在）
     await pool.query(
@@ -223,7 +231,7 @@ router.post('/stages/:stageId/complete', authenticateToken, async (req: AuthRequ
       }
 
       // 检查勋章解锁
-      // TODO: 实现勋章检查逻辑
+      const awardedBadges = await learningMapService.checkAndAwardBadges(String(userId), stage.map_id)
 
       await client.query('COMMIT')
 
@@ -234,7 +242,8 @@ router.post('/stages/:stageId/complete', authenticateToken, async (req: AuthRequ
           score,
           stars_earned: starsEarned,
           is_perfect: isPerfect,
-          rewards
+          rewards,
+          new_badges: awardedBadges.length > 0 ? awardedBadges : undefined
         }
       })
     } catch (error) {

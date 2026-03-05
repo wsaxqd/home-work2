@@ -62,7 +62,9 @@
       "Bash(git config:*)",
       "Bash(ls:*)",
       "Bash(tasklist:*)",
-      "Bash(if exist \"node_modules\\.vite\" rmdir /s /q \"node_modules\\.vite\")"
+      "Bash(if exist \"node_modules\\.vite\" rmdir /s /q \"node_modules\\.vite\")",
+      "Bash(find:*)",
+      "Bash(start http://localhost:5174)"
     ],
     "deny": [],
     "ask": []

@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { contentGenerationService } from '../services/contentGenerationService';
-import { authMiddleware, AuthRequest } from '../middlewares/auth';
+import { authenticateToken, AuthRequest } from '../middlewares/auth';
 import { asyncHandler } from '../utils/errorHandler';
 import { sendSuccess } from '../utils/response';
 import { AppError } from '../utils/errorHandler';
@@ -8,7 +8,7 @@ import { AppError } from '../utils/errorHandler';
 const router = Router();
 
 // 生成增强版故事
-router.post('/story/enhanced', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.post('/story/enhanced', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
   const options = req.body;
 
@@ -17,7 +17,7 @@ router.post('/story/enhanced', authMiddleware, asyncHandler(async (req: AuthRequ
 }));
 
 // 生成诗歌/儿歌
-router.post('/poetry', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.post('/poetry', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
   const { topic, style, mood, length } = req.body;
 
@@ -36,7 +36,7 @@ router.post('/poetry', authMiddleware, asyncHandler(async (req: AuthRequest, res
 }));
 
 // 生成绘画提示词
-router.post('/art-prompt', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.post('/art-prompt', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
   const { subject, style, mood, colors, details } = req.body;
 
@@ -56,7 +56,7 @@ router.post('/art-prompt', authMiddleware, asyncHandler(async (req: AuthRequest,
 }));
 
 // 生成编程代码
-router.post('/code', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.post('/code', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
   const { task, language, difficulty, includeComments } = req.body;
 
@@ -75,7 +75,7 @@ router.post('/code', authMiddleware, asyncHandler(async (req: AuthRequest, res) 
 }));
 
 // 生成学习卡片
-router.post('/learning-card', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.post('/learning-card', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
   const { topic, subject } = req.body;
 
@@ -88,7 +88,7 @@ router.post('/learning-card', authMiddleware, asyncHandler(async (req: AuthReque
 }));
 
 // 生成互动故事
-router.post('/interactive-story', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.post('/interactive-story', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
   const { theme, currentChoice } = req.body;
 
@@ -101,7 +101,7 @@ router.post('/interactive-story', authMiddleware, asyncHandler(async (req: AuthR
 }));
 
 // 获取生成历史
-router.get('/history', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.get('/history', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
   const { type, limit } = req.query;
 
@@ -115,7 +115,7 @@ router.get('/history', authMiddleware, asyncHandler(async (req: AuthRequest, res
 }));
 
 // 点赞生成的内容
-router.post('/:generationId/like', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.post('/:generationId/like', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
   const { generationId } = req.params;
 

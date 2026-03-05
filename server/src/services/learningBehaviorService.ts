@@ -388,6 +388,21 @@ export class LearningBehaviorService {
     // 生成学习趋势数据（每天的正确率）
     const trendData = this.generateLearningTrend(attempts, timeRange);
 
+    // 计算每个知识点的趋势
+    const knowledgeMasteryWithTrend = await Promise.all(
+      knowledgeMasteryResult.rows.map(async (k) => {
+        const trend = await this.calculateKnowledgePointTrend(userId, k.knowledge_point_id, timeRange);
+        return {
+          knowledgePointId: k.knowledge_point_id,
+          knowledgePointName: k.knowledge_point_name,
+          masteryLevel: k.mastery_level,
+          masteryProgress: k.mastery_level / 5,
+          accuracyRate: parseFloat(k.accuracy_rate),
+          status: trend,
+        };
+      })
+    );
+
     return {
       period: `${startDate.toISOString().split('T')[0]} ~ ${new Date().toISOString().split('T')[0]}`,
       summary: {
@@ -399,16 +414,62 @@ export class LearningBehaviorService {
         knowledgePointsMastered,
         averageAnswerTime: Math.round(averageAnswerTime),
       },
-      knowledgeMastery: knowledgeMasteryResult.rows.map(k => ({
-        knowledgePointId: k.knowledge_point_id,
-        knowledgePointName: k.knowledge_point_name,
-        masteryLevel: k.mastery_level,
-        masteryProgress: k.mastery_level / 5,
-        accuracyRate: parseFloat(k.accuracy_rate),
-        status: 'stable', // TODO: 计算趋势
-      })),
+      knowledgeMastery: knowledgeMasteryWithTrend,
       learningTrend: trendData,
     };
+  }
+
+  /**
+   * 计算知识点掌握趋势
+   */
+  private async calculateKnowledgePointTrend(
+    userId: string,
+    knowledgePointId: string,
+    timeRange: string
+  ): Promise<'improving' | 'stable' | 'declining'> {
+    const days = timeRange === 'week' ? 7 : 30;
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - days);
+
+    // 获取该知识点在时间范围内的答题记录
+    const result = await query(
+      `SELECT is_correct, created_at
+       FROM question_attempts
+       WHERE user_id = $1 AND knowledge_point_id = $2 AND created_at >= $3
+       ORDER BY created_at ASC`,
+      [userId, knowledgePointId, startDate]
+    );
+
+    const attempts = result.rows;
+
+    // 如果记录太少，返回稳定
+    if (attempts.length < 5) {
+      return 'stable';
+    }
+
+    // 将记录分为前半段和后半段
+    const midPoint = Math.floor(attempts.length / 2);
+    const firstHalf = attempts.slice(0, midPoint);
+    const secondHalf = attempts.slice(midPoint);
+
+    // 计算前半段和后半段的正确率
+    const firstHalfCorrect = firstHalf.filter(a => a.is_correct).length;
+    const firstHalfAccuracy = (firstHalfCorrect / firstHalf.length) * 100;
+
+    const secondHalfCorrect = secondHalf.filter(a => a.is_correct).length;
+    const secondHalfAccuracy = (secondHalfCorrect / secondHalf.length) * 100;
+
+    // 计算差异
+    const difference = secondHalfAccuracy - firstHalfAccuracy;
+
+    // 根据差异判断趋势
+    if (difference > 10) {
+      return 'improving'; // 提升超过10%
+    } else if (difference < -10) {
+      return 'declining'; // 下降超过10%
+    } else {
+      return 'stable'; // 变化在±10%以内
+    }
   }
 
   /**

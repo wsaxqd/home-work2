@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { templateService } from '../services/templateService';
 import { topicService } from '../services/topicService';
-import { authMiddleware, AuthRequest } from '../middlewares/auth';
+import { authenticateToken, AuthRequest } from '../middlewares/auth';
 import { asyncHandler } from '../utils/errorHandler';
 import { sendSuccess, sendPaginated } from '../utils/response';
 
@@ -18,7 +18,7 @@ router.get('/templates', asyncHandler(async (req, res) => {
 }));
 
 // 使用模板
-router.post('/templates/:id/use', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.post('/templates/:id/use', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const templateId = req.params.id;
   await templateService.useTemplate(templateId);
   sendSuccess(res, null, '模板使用成功');
@@ -27,7 +27,7 @@ router.post('/templates/:id/use', authMiddleware, asyncHandler(async (req: AuthR
 // ============ 收藏功能 ============
 
 // 收藏/取消收藏
-router.post('/favorites', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.post('/favorites', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
   const { itemType, itemId } = req.body;
 
@@ -40,7 +40,7 @@ router.post('/favorites', authMiddleware, asyncHandler(async (req: AuthRequest, 
 }));
 
 // 获取收藏列表
-router.get('/favorites', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.get('/favorites', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
   const itemType = req.query.itemType as string;
   const favorites = await templateService.getUserFavorites(userId, itemType);
@@ -58,7 +58,7 @@ router.get('/topics', asyncHandler(async (req, res) => {
 }));
 
 // 参与话题
-router.post('/topics/:id/participate', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.post('/topics/:id/participate', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const topicId = req.params.id;
   const userId = req.userId!;
   const { workId } = req.body;

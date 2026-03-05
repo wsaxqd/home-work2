@@ -1,9 +1,19 @@
 import express from 'express';
 import cors from 'cors';
 import path from 'path';
+import { createServer } from 'http';
+import swaggerUi from 'swagger-ui-express';
 import config from './config';
 import { errorHandler, notFoundHandler } from './utils/errorHandler';
 import { moderateRateLimit } from './middleware/rateLimit';
+import { metricsMiddleware, metricsEndpoint } from './middleware/metrics';
+import { initSocketService } from './services/socketService';
+import { setupPKHandlers } from './services/pkSocketHandler';
+import { initSentry, Sentry } from './services/sentryService';
+import { swaggerSpec } from './config/swagger';
+
+// 初始化 Sentry
+initSentry();
 
 // 导入路由
 import authRoutes from './routes/auth';
@@ -53,6 +63,9 @@ import gameRecordsRoutes from './routes/gameRecords';
 
 const app = express();
 
+// Sentry 请求处理器
+app.use(Sentry.Handlers.requestHandler());
+
 // 中间件
 app.use(cors({
   origin: config.cors.origin,
@@ -61,11 +74,20 @@ app.use(cors({
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
+// 监控中间件
+app.use(metricsMiddleware);
+
 // 全局限流中间件
 app.use('/api', moderateRateLimit);
 
 // 静态文件服务（上传的文件）
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+
+// API 文档
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+// Prometheus metrics
+app.get('/metrics', metricsEndpoint);
 
 // 健康检查（放在/api路径下）
 app.get('/health', (req, res) => {
@@ -133,13 +155,21 @@ app.use('/api', homeRoutes);
 // 404处理
 app.use(notFoundHandler);
 
+// Sentry 错误处理器
+app.use(Sentry.Handlers.errorHandler());
+
 // 错误处理
 app.use(errorHandler);
 
 // 启动服务器
 const PORT = config.port;
+const httpServer = createServer(app);
 
-app.listen(PORT, () => {
+// 初始化 WebSocket
+const socketService = initSocketService(httpServer);
+setupPKHandlers(socketService.getIO());
+
+httpServer.listen(PORT, () => {
   console.log(`
 ╔════════════════════════════════════════════════════════╗
 ║                                                        ║
@@ -147,9 +177,12 @@ app.listen(PORT, () => {
 ║                                                        ║
 ║   端口: ${PORT}                                          ║
 ║   环境: ${config.nodeEnv}                                ║
+║   WebSocket: 已启用                                     ║
 ║   时间: ${new Date().toLocaleString()}                   ║
 ║                                                        ║
-║   API文档: http://localhost:${PORT}/health               ║
+║   健康检查: http://localhost:${PORT}/health              ║
+║   API文档: http://localhost:${PORT}/api-docs            ║
+║   监控指标: http://localhost:${PORT}/metrics            ║
 ║                                                        ║
 ╚════════════════════════════════════════════════════════╝
   `);

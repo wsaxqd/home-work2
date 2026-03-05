@@ -8,6 +8,11 @@ import { sendVerifyCode } from '../services/emailVerifyService';
 const router = Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
 
+interface ParentJwtPayload {
+  parentId: number;
+  type: string;
+}
+
 // 家长认证中间件
 export interface ParentRequest extends Request {
   parentId?: number;
@@ -21,7 +26,7 @@ const parentAuthMiddleware = async (req: ParentRequest, res: Response, next: Nex
       return res.status(401).json({ success: false, message: '未提供认证token' });
     }
 
-    const decoded = jwt.verify(token, JWT_SECRET) as any;
+    const decoded = jwt.verify(token, JWT_SECRET) as ParentJwtPayload;
 
     if (decoded.type !== 'parent') {
       return res.status(401).json({ success: false, message: '无效的认证类型' });

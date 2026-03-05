@@ -1,13 +1,11 @@
-import { Pool } from 'pg';
+import { Migration } from './migrationRunner';
 
-export async function up(pool: Pool): Promise<void> {
-  const client = await pool.connect();
-
-  try {
-    await client.query('BEGIN');
-
+export const migration_042_create_feedback: Migration = {
+  id: '042',
+  name: '042_create_feedback',
+  async up(client) {
     // 创建反馈表
-    await client.query(`
+    await client!.query(`
       CREATE TABLE IF NOT EXISTS feedback (
         id SERIAL PRIMARY KEY,
         user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -24,47 +22,27 @@ export async function up(pool: Pool): Promise<void> {
     `);
 
     // 创建索引
-    await client.query(`
+    await client!.query(`
       CREATE INDEX IF NOT EXISTS idx_feedback_user_id
       ON feedback(user_id);
     `);
 
-    await client.query(`
+    await client!.query(`
       CREATE INDEX IF NOT EXISTS idx_feedback_status
       ON feedback(status);
     `);
 
-    await client.query(`
+    await client!.query(`
       CREATE INDEX IF NOT EXISTS idx_feedback_created_at
       ON feedback(created_at DESC);
     `);
 
-    await client.query('COMMIT');
     console.log('✅ 反馈表创建成功');
-  } catch (error) {
-    await client.query('ROLLBACK');
-    console.error('❌ 反馈表创建失败:', error);
-    throw error;
-  } finally {
-    client.release();
-  }
-}
+  },
 
-export async function down(pool: Pool): Promise<void> {
-  const client = await pool.connect();
+  async down(client) {
+    await client!.query('DROP TABLE IF EXISTS feedback CASCADE;');
 
-  try {
-    await client.query('BEGIN');
-
-    await client.query('DROP TABLE IF EXISTS feedback CASCADE;');
-
-    await client.query('COMMIT');
     console.log('✅ 反馈表删除成功');
-  } catch (error) {
-    await client.query('ROLLBACK');
-    console.error('❌ 反馈表删除失败:', error);
-    throw error;
-  } finally {
-    client.release();
   }
-}
+};

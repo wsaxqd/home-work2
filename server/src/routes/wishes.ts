@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { authMiddleware, AuthRequest } from '../middlewares/auth';
+import { authenticateToken, AuthRequest } from '../middlewares/auth';
 import { asyncHandler } from '../utils/errorHandler';
 import { sendSuccess, sendPaginated } from '../utils/response';
 import { wishesService } from '../services/wishesService';
@@ -7,7 +7,7 @@ import { wishesService } from '../services/wishesService';
 const router = Router();
 
 // 创建心愿
-router.post('/', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.post('/', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
   const { content, category } = req.body;
 
@@ -16,7 +16,7 @@ router.post('/', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
 }));
 
 // 获取心愿列表
-router.get('/', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.get('/', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
   const status = req.query.status as string;
   const category = req.query.category as string;
@@ -26,7 +26,7 @@ router.get('/', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
 }));
 
 // 获取单个心愿
-router.get('/:wishId', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.get('/:wishId', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
   const { wishId } = req.params;
 
@@ -35,7 +35,7 @@ router.get('/:wishId', authMiddleware, asyncHandler(async (req: AuthRequest, res
 }));
 
 // 更新心愿
-router.put('/:wishId', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.put('/:wishId', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
   const { wishId } = req.params;
   const { content, category, status } = req.body;
@@ -45,7 +45,7 @@ router.put('/:wishId', authMiddleware, asyncHandler(async (req: AuthRequest, res
 }));
 
 // 删除心愿
-router.delete('/:wishId', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.delete('/:wishId', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
   const { wishId } = req.params;
 
@@ -54,7 +54,7 @@ router.delete('/:wishId', authMiddleware, asyncHandler(async (req: AuthRequest, 
 }));
 
 // 获取心愿统计
-router.get('/stats', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.get('/stats', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
 
   const stats = await wishesService.getStats(userId);

@@ -1,74 +1,79 @@
-import { Knex } from 'knex';
+import { Migration } from './migrationRunner';
 
-export async function up(knex: Knex): Promise<void> {
-  // 创建游戏记录表
-  await knex.schema.createTable('game_records', (table) => {
-    table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid()'));
-    table.uuid('user_id').notNullable().references('id').inTable('users').onDelete('CASCADE');
-    table.string('game_type', 50).notNullable(); // 'math' | 'idiom' | 'english' | 'science' | 'fruit' | 'tank' | etc.
-    table.string('difficulty', 20).notNullable(); // 'easy' | 'medium' | 'hard'
-    table.integer('score').notNullable().defaultTo(0);
-    table.integer('time_spent').notNullable().defaultTo(0); // 游戏时长(秒)
-    table.integer('best_streak').notNullable().defaultTo(0); // 最高连击
-    table.decimal('accuracy', 5, 2).defaultTo(0); // 准确率(百分比)
-    table.jsonb('metadata').defaultTo('{}'); // 额外数据(如答对题数、总题数等)
-    table.timestamp('created_at').defaultTo(knex.fn.now());
+export const migration_046_create_game_records: Migration = {
+  id: '046',
+  name: '046_create_game_records',
+  async up(client) {
+    // 创建游戏记录表
+    await client!.query(`
+      CREATE TABLE IF NOT EXISTS game_records (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        game_type VARCHAR(50) NOT NULL,
+        difficulty VARCHAR(20) NOT NULL,
+        score INTEGER NOT NULL DEFAULT 0,
+        time_spent INTEGER NOT NULL DEFAULT 0,
+        best_streak INTEGER NOT NULL DEFAULT 0,
+        accuracy DECIMAL(5, 2) DEFAULT 0,
+        metadata JSONB DEFAULT '{}',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
 
-    // 索引
-    table.index(['user_id', 'game_type']);
-    table.index(['game_type', 'score']);
-    table.index('created_at');
-  });
+      CREATE INDEX IF NOT EXISTS idx_game_records_user_game ON game_records(user_id, game_type);
+      CREATE INDEX IF NOT EXISTS idx_game_records_game_score ON game_records(game_type, score);
+      CREATE INDEX IF NOT EXISTS idx_game_records_created ON game_records(created_at);
+    `);
 
-  // 创建游戏统计表
-  await knex.schema.createTable('game_statistics', (table) => {
-    table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid()'));
-    table.uuid('user_id').notNullable().references('id').inTable('users').onDelete('CASCADE');
-    table.string('game_type', 50).notNullable();
-    table.integer('total_plays').notNullable().defaultTo(0); // 总游戏次数
-    table.bigInteger('total_score').notNullable().defaultTo(0); // 总得分
-    table.integer('highest_score').notNullable().defaultTo(0); // 最高分
-    table.decimal('average_score', 10, 2).defaultTo(0); // 平均分
-    table.bigInteger('total_time').notNullable().defaultTo(0); // 总游戏时长(秒)
-    table.integer('best_streak').notNullable().defaultTo(0); // 最高连击
-    table.decimal('average_accuracy', 5, 2).defaultTo(0); // 平均准确率
-    table.timestamp('last_played_at').defaultTo(knex.fn.now());
-    table.timestamp('updated_at').defaultTo(knex.fn.now());
+    // 创建游戏统计表
+    await client!.query(`
+      CREATE TABLE IF NOT EXISTS game_statistics (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        game_type VARCHAR(50) NOT NULL,
+        total_plays INTEGER NOT NULL DEFAULT 0,
+        total_score BIGINT NOT NULL DEFAULT 0,
+        highest_score INTEGER NOT NULL DEFAULT 0,
+        average_score DECIMAL(10, 2) DEFAULT 0,
+        total_time BIGINT NOT NULL DEFAULT 0,
+        best_streak INTEGER NOT NULL DEFAULT 0,
+        average_accuracy DECIMAL(5, 2) DEFAULT 0,
+        last_played_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE(user_id, game_type)
+      );
 
-    // 唯一约束
-    table.unique(['user_id', 'game_type']);
+      CREATE INDEX IF NOT EXISTS idx_game_statistics_game_score ON game_statistics(game_type, highest_score);
+      CREATE INDEX IF NOT EXISTS idx_game_statistics_last_played ON game_statistics(last_played_at);
+    `);
 
-    // 索引
-    table.index(['game_type', 'highest_score']);
-    table.index('last_played_at');
-  });
+    // 创建全局排行榜表
+    await client!.query(`
+      CREATE TABLE IF NOT EXISTS global_leaderboard (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        game_type VARCHAR(50) NOT NULL,
+        difficulty VARCHAR(20) NOT NULL,
+        score INTEGER NOT NULL,
+        rank INTEGER NOT NULL,
+        achieved_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE(user_id, game_type, difficulty)
+      );
 
-  // 创建全局排行榜表
-  await knex.schema.createTable('global_leaderboard', (table) => {
-    table.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid()'));
-    table.uuid('user_id').notNullable().references('id').inTable('users').onDelete('CASCADE');
-    table.string('game_type', 50).notNullable();
-    table.string('difficulty', 20).notNullable();
-    table.integer('score').notNullable();
-    table.integer('rank').notNullable(); // 排名
-    table.timestamp('achieved_at').defaultTo(knex.fn.now());
-    table.timestamp('updated_at').defaultTo(knex.fn.now());
+      CREATE INDEX IF NOT EXISTS idx_global_leaderboard_game_score ON global_leaderboard(game_type, difficulty, score);
+      CREATE INDEX IF NOT EXISTS idx_global_leaderboard_game_rank ON global_leaderboard(game_type, difficulty, rank);
+    `);
 
-    // 唯一约束
-    table.unique(['user_id', 'game_type', 'difficulty']);
+    console.log('✅ 游戏记录相关表创建成功');
+  },
 
-    // 索引
-    table.index(['game_type', 'difficulty', 'score']);
-    table.index(['game_type', 'difficulty', 'rank']);
-  });
+  async down(client) {
+    await client!.query(`
+      DROP TABLE IF EXISTS global_leaderboard;
+      DROP TABLE IF EXISTS game_statistics;
+      DROP TABLE IF EXISTS game_records;
+    `);
 
-  console.log('✅ 游戏记录相关表创建成功');
-}
-
-export async function down(knex: Knex): Promise<void> {
-  await knex.schema.dropTableIfExists('global_leaderboard');
-  await knex.schema.dropTableIfExists('game_statistics');
-  await knex.schema.dropTableIfExists('game_records');
-
-  console.log('✅ 游戏记录相关表删除成功');
-}
+    console.log('✅ 游戏记录相关表删除成功');
+  }
+};

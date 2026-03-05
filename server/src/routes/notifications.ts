@@ -1,13 +1,13 @@
 import { Router } from 'express';
 import { notificationService, NotificationType } from '../services/notificationService';
-import { authMiddleware, AuthRequest } from '../middlewares/auth';
+import { authenticateToken, AuthRequest } from '../middlewares/auth';
 import { asyncHandler } from '../utils/errorHandler';
 import { sendSuccess, sendPaginated } from '../utils/response';
 
 const router = Router();
 
 // 获取通知列表
-router.get('/', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.get('/', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
   const page = parseInt(req.query.page as string) || 1;
   const pageSize = parseInt(req.query.pageSize as string) || 20;
@@ -18,7 +18,7 @@ router.get('/', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
 }));
 
 // 获取未读通知数量
-router.get('/unread-count', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.get('/unread-count', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
 
   const result = await notificationService.getUnreadCount(userId);
@@ -26,7 +26,7 @@ router.get('/unread-count', authMiddleware, asyncHandler(async (req: AuthRequest
 }));
 
 // 标记单个通知为已读
-router.put('/:id/read', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.put('/:id/read', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
   const notificationId = req.params.id;
 
@@ -35,7 +35,7 @@ router.put('/:id/read', authMiddleware, asyncHandler(async (req: AuthRequest, re
 }));
 
 // 标记所有通知为已读
-router.put('/read-all', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.put('/read-all', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
 
   const result = await notificationService.markAllAsRead(userId);
@@ -43,7 +43,7 @@ router.put('/read-all', authMiddleware, asyncHandler(async (req: AuthRequest, re
 }));
 
 // 删除单个通知
-router.delete('/:id', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.delete('/:id', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
   const notificationId = req.params.id;
 
@@ -52,7 +52,7 @@ router.delete('/:id', authMiddleware, asyncHandler(async (req: AuthRequest, res)
 }));
 
 // 清空已读通知
-router.delete('/clear/read', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.delete('/clear/read', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
 
   const result = await notificationService.clearReadNotifications(userId);

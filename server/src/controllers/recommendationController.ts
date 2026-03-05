@@ -1,11 +1,12 @@
-import { Request, Response } from 'express';
+import { Response } from 'express';
+import { AuthRequest } from '../types/express';
 import { enhancedRecommendationService } from '../services/enhancedRecommendationService';
 import { recommendationService } from '../services/recommendationService';
 
 // 获取个性化推荐
-export const getPersonalizedRecommendations = async (req: Request, res: Response) => {
+export const getPersonalizedRecommendations = async (req: AuthRequest, res: Response) => {
   try {
-    const userId = (req as any).user.id;
+    const userId = req.user!.id;
     const { limit = 20 } = req.query;
 
     const recommendations = await enhancedRecommendationService.hybridRecommendation(
@@ -27,9 +28,9 @@ export const getPersonalizedRecommendations = async (req: Request, res: Response
 };
 
 // 获取用户画像
-export const getUserProfile = async (req: Request, res: Response) => {
+export const getUserProfile = async (req: AuthRequest, res: Response) => {
   try {
-    const userId = (req as any).user.id;
+    const userId = req.user!.id;
 
     const profile = await enhancedRecommendationService.buildUserProfile(userId);
 
@@ -47,9 +48,9 @@ export const getUserProfile = async (req: Request, res: Response) => {
 };
 
 // 协同过滤推荐
-export const getCollaborativeRecommendations = async (req: Request, res: Response) => {
+export const getCollaborativeRecommendations = async (req: AuthRequest, res: Response) => {
   try {
-    const userId = (req as any).user.id;
+    const userId = req.user!.id;
     const { limit = 10 } = req.query;
 
     const recommendations = await enhancedRecommendationService.collaborativeFiltering(
@@ -71,9 +72,9 @@ export const getCollaborativeRecommendations = async (req: Request, res: Respons
 };
 
 // 基于内容的推荐
-export const getContentBasedRecommendations = async (req: Request, res: Response) => {
+export const getContentBasedRecommendations = async (req: AuthRequest, res: Response) => {
   try {
-    const userId = (req as any).user.id;
+    const userId = req.user!.id;
     const { limit = 10 } = req.query;
 
     const userProfile = await enhancedRecommendationService.buildUserProfile(userId);
@@ -96,9 +97,9 @@ export const getContentBasedRecommendations = async (req: Request, res: Response
 };
 
 // 学习路径推荐
-export const getLearningPathRecommendations = async (req: Request, res: Response) => {
+export const getLearningPathRecommendations = async (req: AuthRequest, res: Response) => {
   try {
-    const userId = (req as any).user.id;
+    const userId = req.user!.id;
 
     const learningPath = await enhancedRecommendationService.recommendLearningPath(userId);
 
@@ -116,9 +117,9 @@ export const getLearningPathRecommendations = async (req: Request, res: Response
 };
 
 // 首页推荐(兼容旧接口)
-export const getHomeRecommendations = async (req: Request, res: Response) => {
+export const getHomeRecommendations = async (req: AuthRequest, res: Response) => {
   try {
-    const userId = (req as any).user?.id;
+    const userId = req.user?.id;
 
     if (!userId) {
       // 未登录用户返回热门内容

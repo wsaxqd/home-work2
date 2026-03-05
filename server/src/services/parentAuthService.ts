@@ -6,6 +6,11 @@ import { verifyCode as verifyEmailCode } from './emailVerifyService';
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
 const JWT_EXPIRES_IN = '7d';
 
+interface ParentJwtPayload {
+  parentId: number;
+  type: string;
+}
+
 export interface ParentRegisterData {
   phone: string;
   password: string;
@@ -133,7 +138,7 @@ class ParentAuthService {
   // 验证token
   async verifyToken(token: string) {
     try {
-      const decoded = jwt.verify(token, JWT_SECRET) as any;
+      const decoded = jwt.verify(token, JWT_SECRET) as ParentJwtPayload;
 
       if (decoded.type !== 'parent') {
         throw new Error('无效的token类型');

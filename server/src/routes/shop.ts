@@ -1,11 +1,11 @@
 import express from 'express';
 import * as shopController from '../controllers/shopController';
-import { authMiddleware } from '../middleware/authMiddleware';
+import { authenticateToken } from '../middleware/auth';
 
 const router = express.Router();
 
 // 所有商城路由都需要认证
-router.use(authMiddleware);
+router.use(authenticateToken);
 
 // 获取商城商品列表
 router.get('/items', shopController.getShopItems);

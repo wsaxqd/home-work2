@@ -2,6 +2,7 @@ import { Router } from 'express'
 import { Pool } from 'pg'
 import { pool } from '../config/database'
 import { authenticateToken } from '../middleware/auth'
+import { getPKQuestions } from '../services/pkQuestionService'
 
 const router = Router()
 
@@ -194,12 +195,21 @@ router.post('/rooms/:roomId/ready', authenticateToken, async (req: any, res) => 
         WHERE id = $1
       `, [roomId])
 
-      // 生成题目（这里简化处理，实际应该从题库中随机选择）
+      // 从题库中获取题目
       const roomResult = await pool.query('SELECT * FROM pk_rooms WHERE id = $1', [roomId])
       const room = roomResult.rows[0]
 
-      // TODO: 从题库中选择题目
-      // 这里暂时返回准备完成状态
+      // 从题库中选择题目
+      const questions = await getPKQuestions(room.subject, room.difficulty, room.question_count)
+
+      // 将题目保存到数据库
+      for (let i = 0; i < questions.length; i++) {
+        const question = questions[i]
+        await pool.query(`
+          INSERT INTO pk_questions (room_id, question_number, question_data, correct_answer)
+          VALUES ($1, $2, $3, $4)
+        `, [roomId, i + 1, JSON.stringify(question), question.correctAnswer])
+      }
 
       res.json({
         success: true,
@@ -637,23 +647,25 @@ router.get('/rooms/:roomId/questions', authenticateToken, async (req: any, res) 
     const roomResult = await pool.query('SELECT * FROM pk_rooms WHERE id = $1', [roomId])
     const room = roomResult.rows[0]
 
-    // TODO: 从真实题库中获取题目，这里使用模拟数据
-    const questions = []
-    for (let i = 1; i <= room.question_count; i++) {
-      const question = generateMockQuestion(i, room.subject, room.difficulty)
+    // 从真实题库中获取题目
+    const questions = await getPKQuestions(room.subject, room.difficulty, room.question_count)
 
+    // 将题目保存到数据库
+    const savedQuestions = []
+    for (let i = 0; i < questions.length; i++) {
+      const question = questions[i]
       const result = await pool.query(`
         INSERT INTO pk_questions (room_id, question_number, question_data, correct_answer)
         VALUES ($1, $2, $3, $4)
         RETURNING *
-      `, [roomId, i, JSON.stringify(question), question.correctAnswer])
+      `, [roomId, i + 1, JSON.stringify(question), question.correctAnswer])
 
-      questions.push(result.rows[0])
+      savedQuestions.push(result.rows[0])
     }
 
     res.json({
       success: true,
-      data: questions
+      data: savedQuestions
     })
   } catch (error) {
     console.error('获取题目失败:', error)

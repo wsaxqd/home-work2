@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { authMiddleware, optionalAuth, AuthRequest } from '../middlewares/auth';
+import { authenticateToken, optionalAuth, AuthRequest } from '../middlewares/auth';
 import { asyncHandler } from '../utils/errorHandler';
 import { sendSuccess } from '../utils/response';
 import { conversationService } from '../services/conversationService';
@@ -16,7 +16,7 @@ router.post('/messages', optionalAuth, asyncHandler(async (req: AuthRequest, res
 }));
 
 // 获取对话历史（需要认证）
-router.get('/history', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.get('/history', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
   const { companionId, limit } = req.query;
 
@@ -30,7 +30,7 @@ router.get('/history', authMiddleware, asyncHandler(async (req: AuthRequest, res
 }));
 
 // 清空对话历史（需要认证）
-router.delete('/history', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.delete('/history', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
   const { companionId } = req.query;
 

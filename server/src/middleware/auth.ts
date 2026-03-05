@@ -1,11 +1,18 @@
-import { Request, Response, NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
+import { AuthRequest } from '../types/express';
+
+// 重新导出AuthRequest类型供其他模块使用
+export { AuthRequest } from '../types/express';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
 
-export interface AuthRequest extends Request {
+interface JwtPayload {
+  id?: string;
   userId?: string;
-  userType?: string;
+  email?: string;
+  type?: string;
+  role?: string;
 }
 
 // 用户认证中间件
@@ -20,9 +27,15 @@ export const authenticateToken = (req: AuthRequest, res: Response, next: NextFun
       });
     }
 
-    const decoded = jwt.verify(token, JWT_SECRET) as any;
-    req.userId = decoded.userId || decoded.id;
-    req.userType = decoded.type || 'user';
+    const decoded = jwt.verify(token, JWT_SECRET) as JwtPayload;
+    const userId = decoded.userId || decoded.id || '';
+    req.userId = userId;
+    req.user = {
+      id: userId,
+      userId: userId,
+      email: decoded.email,
+      role: decoded.role || decoded.type || 'user'
+    };
 
     next();
   } catch (error) {
@@ -39,9 +52,15 @@ export const optionalAuth = (req: AuthRequest, res: Response, next: NextFunction
     const token = req.headers.authorization?.replace('Bearer ', '');
 
     if (token) {
-      const decoded = jwt.verify(token, JWT_SECRET) as any;
-      req.userId = decoded.userId || decoded.id;
-      req.userType = decoded.type || 'user';
+      const decoded = jwt.verify(token, JWT_SECRET) as JwtPayload;
+      const userId = decoded.userId || decoded.id || '';
+      req.userId = userId;
+      req.user = {
+        id: userId,
+        userId: userId,
+        email: decoded.email,
+        role: decoded.role || decoded.type || 'user'
+      };
     }
 
     next();

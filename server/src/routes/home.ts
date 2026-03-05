@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { authMiddleware, optionalAuth, AuthRequest } from '../middlewares/auth';
+import { authenticateToken, optionalAuth, AuthRequest } from '../middlewares/auth';
 import { asyncHandler } from '../utils/errorHandler';
 import { sendSuccess } from '../utils/response';
 import { query } from '../config/database';
@@ -12,7 +12,7 @@ const router = Router();
  * 首页推荐内容
  * 包括：推荐作品、学习进度、AI助手问候等
  */
-router.get('/home', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.get('/home', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
 
   // 1. 获取用户基本信息

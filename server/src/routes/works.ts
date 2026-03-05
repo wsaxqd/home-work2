@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { workService } from '../services/workService';
-import { authMiddleware, optionalAuth, AuthRequest } from '../middlewares/auth';
+import { authenticateToken, optionalAuth, AuthRequest } from '../middlewares/auth';
 import { asyncHandler } from '../utils/errorHandler';
 import { sendSuccess, sendPaginated } from '../utils/response';
 
@@ -24,7 +24,7 @@ router.get('/trending', asyncHandler(async (req, res) => {
 }));
 
 // 创建作品
-router.post('/', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.post('/', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
   const { type, title, content, coverImage, audioUrl } = req.body;
   const work = await workService.create(userId, { type, title, content, coverImage, audioUrl });
@@ -32,7 +32,7 @@ router.post('/', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
 }));
 
 // 获取用户作品列表
-router.get('/', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.get('/', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
   const type = req.query.type as string;
   const status = req.query.status as string;
@@ -52,7 +52,7 @@ router.get('/:id', optionalAuth, asyncHandler(async (req: AuthRequest, res) => {
 }));
 
 // 更新作品
-router.put('/:id', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.put('/:id', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const workId = req.params.id;
   const userId = req.userId!;
   const { title, content, coverImage, audioUrl } = req.body;
@@ -61,7 +61,7 @@ router.put('/:id', authMiddleware, asyncHandler(async (req: AuthRequest, res) =>
 }));
 
 // 删除作品
-router.delete('/:id', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.delete('/:id', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const workId = req.params.id;
   const userId = req.userId!;
   await workService.delete(workId, userId);
@@ -69,7 +69,7 @@ router.delete('/:id', authMiddleware, asyncHandler(async (req: AuthRequest, res)
 }));
 
 // 发布作品
-router.post('/:id/publish', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.post('/:id/publish', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const workId = req.params.id;
   const userId = req.userId!;
   const work = await workService.publish(workId, userId);
@@ -77,7 +77,7 @@ router.post('/:id/publish', authMiddleware, asyncHandler(async (req: AuthRequest
 }));
 
 // 取消发布
-router.post('/:id/unpublish', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.post('/:id/unpublish', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const workId = req.params.id;
   const userId = req.userId!;
   const work = await workService.unpublish(workId, userId);

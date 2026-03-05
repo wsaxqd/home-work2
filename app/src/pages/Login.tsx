@@ -82,8 +82,6 @@ export default function Login() {
     }
 
     setCountdown(60)
-    // 模拟发送验证码（实际应调用API）
-    console.log('发送验证码到:', phone)
     // TODO: 实际项目中调用 await authApi.sendSms({ phone })
   }
 
@@ -103,7 +101,6 @@ export default function Login() {
       if (response.success) {
         setCountdown(60)
         setError('')
-        console.log('✅ 验证码已发送到:', email)
       } else {
         setError('❌ ' + (response.error || '发送验证码失败'))
       }

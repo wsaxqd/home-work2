@@ -1,6 +1,10 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { ToastProvider } from './components/Toast'
+import { AuthProvider } from './contexts/AuthContext'
+import { ErrorBoundary } from './components/ErrorBoundary'
+import { LoadingSpinner } from './components/LoadingSpinner'
+import { ProtectedRoute } from './components/ProtectedRoute'
 import {
   Splash,
   Login,
@@ -104,58 +108,10 @@ import ContentProtectedRoute from './components/ContentProtectedRoute'
 import { timeControlManager } from './services/timeControl'
 import './styles/global.css'
 
-// 路由守卫组件：检查用户是否已登录
-function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const [isChecking, setIsChecking] = useState(true)
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
-
-  useEffect(() => {
-    const userProfile = localStorage.getItem('userProfile')
-    setIsLoggedIn(!!userProfile)
-    setIsChecking(false)
-  }, [])
-
-  if (isChecking) {
-    return <div>Loading...</div>
-  }
-
-  return isLoggedIn ? <>{children}</> : <Navigate to="/splash" replace />
-}
-
-// 家长端路由守卫组件：检查家长是否已登录
-function ParentProtectedRoute({ children }: { children: React.ReactNode }) {
-  const [isChecking, setIsChecking] = useState(true)
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
-
-  useEffect(() => {
-    const parentProfile = localStorage.getItem('parentProfile')
-    setIsLoggedIn(!!parentProfile)
-    setIsChecking(false)
-  }, [])
-
-  if (isChecking) {
-    return <div>Loading...</div>
-  }
-
-  return isLoggedIn ? <>{children}</> : <Navigate to="/parent/login" replace />
-}
-
-// 初始路由组件：决定显示Splash还是Create
+// 初始路由组件：决定显示Splash还是Home
 function InitialRoute() {
-  const [isChecking, setIsChecking] = useState(true)
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
-
-  useEffect(() => {
-    const userProfile = localStorage.getItem('userProfile')
-    setIsLoggedIn(!!userProfile)
-    setIsChecking(false)
-  }, [])
-
-  if (isChecking) {
-    return <div>Loading...</div>
-  }
-
-  return isLoggedIn ? <Navigate to="/home" replace /> : <Navigate to="/splash" replace />
+  const userProfile = localStorage.getItem('userProfile')
+  return userProfile ? <Navigate to="/home" replace /> : <Navigate to="/splash" replace />
 }
 
 function App() {
@@ -196,16 +152,19 @@ function App() {
   }
 
   return (
-    <ToastProvider>
-      <BrowserRouter>
-        {showTimeLock && (
-          <TimeLockModal
-            remainingTime={remainingTime}
-            reason={lockReason}
-            onUnlock={handleUnlock}
-          />
-        )}
-        <Routes>
+    <ErrorBoundary>
+      <AuthProvider>
+        <ToastProvider>
+          <BrowserRouter>
+            <Suspense fallback={<LoadingSpinner size="large" text="加载中..." />}>
+              {showTimeLock && (
+                <TimeLockModal
+                  remainingTime={remainingTime}
+                  reason={lockReason}
+                  onUnlock={handleUnlock}
+                />
+              )}
+              <Routes>
         <Route path="/" element={<InitialRoute />} />
         <Route path="/splash" element={<Splash />} />
         <Route path="/login" element={<Login />} />
@@ -358,7 +317,7 @@ function App() {
 
         {/* 家长端路由 */}
         <Route path="/parent/login" element={<ParentLogin />} />
-        <Route path="/parent" element={<ParentProtectedRoute><ParentLayout /></ParentProtectedRoute>}>
+        <Route path="/parent" element={<ProtectedRoute type="parent"><ParentLayout /></ProtectedRoute>}>
           <Route path="dashboard" element={<ParentDashboard />} />
           <Route path="children" element={<ChildrenManagement />} />
           <Route path="data" element={<LearningData />} />
@@ -368,14 +327,17 @@ function App() {
         </Route>
 
         {/* 家长端新增功能 */}
-        <Route path="/parent/monitor" element={<ParentProtectedRoute><ParentMonitor /></ParentProtectedRoute>} />
-        <Route path="/parent/child/:childId/reminders" element={<ParentProtectedRoute><ParentReminders /></ParentProtectedRoute>} />
+        <Route path="/parent/monitor" element={<ProtectedRoute type="parent"><ParentMonitor /></ProtectedRoute>} />
+        <Route path="/parent/child/:childId/reminders" element={<ProtectedRoute type="parent"><ParentReminders /></ProtectedRoute>} />
 
         {/* 未匹配的路由重定向到首页 */}
         <Route path="*" element={<Navigate to="/home" replace />} />
       </Routes>
-    </BrowserRouter>
-    </ToastProvider>
+            </Suspense>
+          </BrowserRouter>
+        </ToastProvider>
+      </AuthProvider>
+    </ErrorBoundary>
   )
 }
 

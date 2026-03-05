@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { aiService, AITaskType } from '../services/aiService';
-import { authMiddleware, optionalAuth, AuthRequest } from '../middlewares/auth';
+import { authenticateToken, optionalAuth, AuthRequest } from '../middlewares/auth';
 import { asyncHandler } from '../utils/errorHandler';
 import { sendSuccess, sendPaginated } from '../utils/response';
 
@@ -16,7 +16,7 @@ router.post('/chat', optionalAuth, asyncHandler(async (req: AuthRequest, res) =>
 }));
 
 // AI生成故事
-router.post('/story', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.post('/story', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
   const { prompt, theme, length, style } = req.body;
 
@@ -25,7 +25,7 @@ router.post('/story', authMiddleware, asyncHandler(async (req: AuthRequest, res)
 }));
 
 // 图像识别
-router.post('/image/recognize', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.post('/image/recognize', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
   const { imageUrl, taskType } = req.body;
 
@@ -34,7 +34,7 @@ router.post('/image/recognize', authMiddleware, asyncHandler(async (req: AuthReq
 }));
 
 // 情感分析
-router.post('/emotion/analyze', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.post('/emotion/analyze', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
   const { text } = req.body;
 
@@ -43,7 +43,7 @@ router.post('/emotion/analyze', authMiddleware, asyncHandler(async (req: AuthReq
 }));
 
 // 语音转文字
-router.post('/voice/to-text', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.post('/voice/to-text', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
   const { voiceUrl } = req.body;
 
@@ -52,7 +52,7 @@ router.post('/voice/to-text', authMiddleware, asyncHandler(async (req: AuthReque
 }));
 
 // 文字转语音
-router.post('/voice/to-speech', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.post('/voice/to-speech', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
   const { text, voice } = req.body;
 
@@ -61,7 +61,7 @@ router.post('/voice/to-speech', authMiddleware, asyncHandler(async (req: AuthReq
 }));
 
 // 获取AI使用历史
-router.get('/history', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.get('/history', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
   const taskType = req.query.taskType as AITaskType;
   const page = parseInt(req.query.page as string) || 1;
@@ -72,7 +72,7 @@ router.get('/history', authMiddleware, asyncHandler(async (req: AuthRequest, res
 }));
 
 // 获取AI使用统计
-router.get('/stats', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.get('/stats', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
 
   const stats = await aiService.getUsageStats(userId);
@@ -80,7 +80,7 @@ router.get('/stats', authMiddleware, asyncHandler(async (req: AuthRequest, res) 
 }));
 
 // 获取对话上下文
-router.get('/conversation/context', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.get('/conversation/context', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
   const taskType = (req.query.taskType as any) || 'chat';
 
@@ -89,7 +89,7 @@ router.get('/conversation/context', authMiddleware, asyncHandler(async (req: Aut
 }));
 
 // 清除对话上下文
-router.delete('/conversation/context', authMiddleware, asyncHandler(async (req: AuthRequest, res) => {
+router.delete('/conversation/context', authenticateToken, asyncHandler(async (req: AuthRequest, res) => {
   const userId = req.userId!;
   const taskType = (req.query.taskType as any) || 'chat';
 

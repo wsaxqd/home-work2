@@ -1,13 +1,11 @@
-import { Pool } from 'pg';
+import { Migration } from './migrationRunner';
 
-export async function up(pool: Pool): Promise<void> {
-  const client = await pool.connect();
-
-  try {
-    await client.query('BEGIN');
-
+export const migration_043_create_shop_system: Migration = {
+  id: '043',
+  name: '043_create_shop_system',
+  async up(client) {
     // 创建商城物品表
-    await client.query(`
+    await client!.query(`
       CREATE TABLE IF NOT EXISTS shop_items (
         id SERIAL PRIMARY KEY,
         name VARCHAR(100) NOT NULL,
@@ -24,7 +22,7 @@ export async function up(pool: Pool): Promise<void> {
     `);
 
     // 创建用户物品表
-    await client.query(`
+    await client!.query(`
       CREATE TABLE IF NOT EXISTS user_items (
         id SERIAL PRIMARY KEY,
         user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -36,7 +34,7 @@ export async function up(pool: Pool): Promise<void> {
     `);
 
     // 创建购买记录表
-    await client.query(`
+    await client!.query(`
       CREATE TABLE IF NOT EXISTS purchase_history (
         id SERIAL PRIMARY KEY,
         user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -48,23 +46,23 @@ export async function up(pool: Pool): Promise<void> {
     `);
 
     // 创建索引
-    await client.query(`
+    await client!.query(`
       CREATE INDEX IF NOT EXISTS idx_shop_items_category
       ON shop_items(category);
     `);
 
-    await client.query(`
+    await client!.query(`
       CREATE INDEX IF NOT EXISTS idx_user_items_user_id
       ON user_items(user_id);
     `);
 
-    await client.query(`
+    await client!.query(`
       CREATE INDEX IF NOT EXISTS idx_purchase_history_user_id
       ON purchase_history(user_id);
     `);
 
     // 插入初始商品数据
-    await client.query(`
+    await client!.query(`
       INSERT INTO shop_items (name, description, icon, category, price, stock) VALUES
       ('学习加速卡', '使用后可获得双倍学习经验，持续30分钟', '🎴', '道具', 100, -1),
       ('经验加倍卡', '使用后可获得双倍经验值，持续1小时', '⭐', '道具', 200, -1),
@@ -77,34 +75,14 @@ export async function up(pool: Pool): Promise<void> {
       ON CONFLICT DO NOTHING;
     `);
 
-    await client.query('COMMIT');
     console.log('✅ 商城系统表创建成功');
-  } catch (error) {
-    await client.query('ROLLBACK');
-    console.error('❌ 商城系统表创建失败:', error);
-    throw error;
-  } finally {
-    client.release();
-  }
-}
+  },
 
-export async function down(pool: Pool): Promise<void> {
-  const client = await pool.connect();
+  async down(client) {
+    await client!.query('DROP TABLE IF EXISTS purchase_history CASCADE;');
+    await client!.query('DROP TABLE IF EXISTS user_items CASCADE;');
+    await client!.query('DROP TABLE IF EXISTS shop_items CASCADE;');
 
-  try {
-    await client.query('BEGIN');
-
-    await client.query('DROP TABLE IF EXISTS purchase_history CASCADE;');
-    await client.query('DROP TABLE IF EXISTS user_items CASCADE;');
-    await client.query('DROP TABLE IF EXISTS shop_items CASCADE;');
-
-    await client.query('COMMIT');
     console.log('✅ 商城系统表删除成功');
-  } catch (error) {
-    await client.query('ROLLBACK');
-    console.error('❌ 商城系统表删除失败:', error);
-    throw error;
-  } finally {
-    client.release();
   }
-}
+};

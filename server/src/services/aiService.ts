@@ -4,6 +4,7 @@ import { difyAdapter } from './difyAdapter';
 import { zhipuAdapter } from './zhipuAdapter';
 import { deepseekAdapter } from './deepseekAdapter';
 import { getTencentVoiceService } from './tencentVoiceService';
+import { getTencentImageService } from './tencentImageService';
 import path from 'path';
 import fs from 'fs';
 
@@ -196,17 +197,52 @@ export class AIService {
    * @param userId 用户ID
    * @param imageUrl 图像URL
    * @param taskType 识别类型
+   * @param imageBase64 图像Base64编码（可选，与imageUrl二选一）
    */
-  async recognizeImage(userId: string, imageUrl: string, taskType: 'object' | 'emotion' | 'scene') {
+  async recognizeImage(
+    userId: string,
+    imageUrl: string,
+    taskType: 'object' | 'emotion' | 'scene',
+    imageBase64?: string
+  ) {
     try {
-      // TODO: 这里需要根据Dify是否支持图像识别来实现
-      // 如果Dify不支持，可以对接其他视觉AI服务（如百度AI、腾讯AI等）
+      // 使用腾讯云图像识别服务
+      const imageService = getTencentImageService();
 
-      // 临时返回模拟数据
+      // 调用对应的识别服务
+      const result = await imageService.recognize(taskType, imageUrl, imageBase64);
+
+      if (!result.success) {
+        // 如果识别失败，返回友好的错误信息
+        console.warn('Image recognition failed:', result.error);
+
+        // 返回模拟数据作为降级方案
+        const fallbackResponse = {
+          objects: taskType === 'object' ? ['未识别'] : undefined,
+          emotions: taskType === 'emotion' ? ['中性'] : undefined,
+          scenes: taskType === 'scene' ? ['未知场景'] : undefined,
+          confidence: 0,
+          description: `图像识别暂时不可用：${result.error}`,
+        };
+
+        // 保存识别记录
+        await query(
+          `INSERT INTO ai_generations (user_id, generation_type, input_data, output_data)
+           VALUES ($1, 'image_recognition', $2, $3)`,
+          [userId, JSON.stringify({ imageUrl, taskType }), JSON.stringify(fallbackResponse)]
+        );
+
+        return fallbackResponse;
+      }
+
+      // 构建返回数据
       const response = {
-        objects: ['示例对象'],
-        confidence: 0.95,
-        description: '图像识别功能开发中，敬请期待',
+        objects: result.objects,
+        emotions: result.emotions,
+        scenes: result.scenes,
+        confidence: result.confidence,
+        description: result.description,
+        details: result.details,
       };
 
       // 保存识别记录
@@ -219,6 +255,18 @@ export class AIService {
       return response;
     } catch (error: any) {
       console.error('Image recognition error:', error);
+
+      // 如果是配置错误，返回友好提示
+      if (error.message?.includes('未配置')) {
+        return {
+          objects: taskType === 'object' ? ['示例对象'] : undefined,
+          emotions: taskType === 'emotion' ? ['开心'] : undefined,
+          scenes: taskType === 'scene' ? ['室内'] : undefined,
+          confidence: 0,
+          description: '图像识别功能需要配置腾讯云密钥，请联系管理员',
+        };
+      }
+
       throw new AppError('图像识别失败，请稍后再试', 500);
     }
   }

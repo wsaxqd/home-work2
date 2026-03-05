@@ -1,10 +1,11 @@
-import { Request, Response } from 'express';
+import { Response } from 'express';
+import { AuthRequest } from '../types/express';
 import gameRecordService from '../services/gameRecordService';
 
 // 保存游戏记录
-export const saveGameRecord = async (req: Request, res: Response) => {
+export const saveGameRecord = async (req: AuthRequest, res: Response) => {
   try {
-    const userId = (req as any).user.id;
+    const userId = req.user!.id;
     const { game_type, difficulty, score, time_spent, best_streak, accuracy, metadata } = req.body;
 
     // 验证必填字段
@@ -42,9 +43,9 @@ export const saveGameRecord = async (req: Request, res: Response) => {
 };
 
 // 获取用户游戏统计
-export const getUserGameStatistics = async (req: Request, res: Response) => {
+export const getUserGameStatistics = async (req: AuthRequest, res: Response) => {
   try {
-    const userId = req.params.userId || (req as any).user.id;
+    const userId = req.params.userId || req.user!.id;
     const { game_type } = req.query;
 
     const statistics = await gameRecordService.getUserGameStatistics(
@@ -67,7 +68,7 @@ export const getUserGameStatistics = async (req: Request, res: Response) => {
 };
 
 // 获取游戏排行榜
-export const getGameLeaderboard = async (req: Request, res: Response) => {
+export const getGameLeaderboard = async (req: AuthRequest, res: Response) => {
   try {
     const { gameType, difficulty } = req.params;
     const limit = parseInt(req.query.limit as string) || 100;
@@ -93,9 +94,9 @@ export const getGameLeaderboard = async (req: Request, res: Response) => {
 };
 
 // 获取用户排名
-export const getUserRank = async (req: Request, res: Response) => {
+export const getUserRank = async (req: AuthRequest, res: Response) => {
   try {
-    const userId = (req as any).user.id;
+    const userId = req.user!.id;
     const { gameType, difficulty } = req.params;
 
     const rank = await gameRecordService.getUserRank(userId, gameType, difficulty);
@@ -115,9 +116,9 @@ export const getUserRank = async (req: Request, res: Response) => {
 };
 
 // 获取用户游戏记录
-export const getUserGameRecords = async (req: Request, res: Response) => {
+export const getUserGameRecords = async (req: AuthRequest, res: Response) => {
   try {
-    const userId = req.params.userId || (req as any).user.id;
+    const userId = req.params.userId || req.user!.id;
     const { game_type, limit } = req.query;
 
     const records = await gameRecordService.getUserGameRecords(
@@ -141,7 +142,7 @@ export const getUserGameRecords = async (req: Request, res: Response) => {
 };
 
 // 获取游戏类型列表
-export const getGameTypes = async (req: Request, res: Response) => {
+export const getGameTypes = async (req: AuthRequest, res: Response) => {
   try {
     const types = await gameRecordService.getGameTypes();
 
@@ -160,7 +161,7 @@ export const getGameTypes = async (req: Request, res: Response) => {
 };
 
 // 获取全局游戏统计
-export const getGlobalGameStatistics = async (req: Request, res: Response) => {
+export const getGlobalGameStatistics = async (req: AuthRequest, res: Response) => {
   try {
     const { gameType } = req.params;
 

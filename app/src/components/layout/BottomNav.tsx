@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from 'react-router-dom'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback, memo } from 'react'
 import { contentControlManager, type ContentControlSettings } from '../../services/contentControl'
 import { useToast } from '../Toast'
 import './BottomNav.css'
@@ -47,7 +47,7 @@ const navItems = [
   },
 ]
 
-export default function BottomNav() {
+function BottomNav() {
   const toast = useToast()
   const navigate = useNavigate()
   const location = useLocation()
@@ -68,7 +68,7 @@ export default function BottomNav() {
     loadSettings()
   }, [])
 
-  const handleNavClick = async (item: typeof navItems[0]) => {
+  const handleNavClick = useCallback(async (item: typeof navItems[0]) => {
     // 如果有内容类型限制，检查是否允许访问
     if (item.contentType) {
       try {
@@ -83,7 +83,7 @@ export default function BottomNav() {
       }
     }
     navigate(item.path)
-  }
+  }, [navigate, toast])
 
   return (
     <div className="bottom-nav">
@@ -117,3 +117,5 @@ export default function BottomNav() {
     </div>
   )
 }
+
+export default memo(BottomNav)

@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom'
+import { memo, useCallback } from 'react'
 import './Header.css'
 
 interface HeaderProps {
@@ -11,7 +12,7 @@ interface HeaderProps {
   onBack?: () => void | Promise<void> // 支持自定义返回逻辑
 }
 
-export default function Header({
+function Header({
   title,
   subtitle,
   gradient = 'linear-gradient(135deg, #4caf50 0%, #8bc34a 100%)',
@@ -21,7 +22,7 @@ export default function Header({
 }: HeaderProps) {
   const navigate = useNavigate()
 
-  const goBack = () => {
+  const goBack = useCallback(() => {
     if (onBack) {
       onBack()
     } else if (window.history.length > 1) {
@@ -29,7 +30,7 @@ export default function Header({
     } else {
       navigate('/create')
     }
-  }
+  }, [onBack, navigate])
 
   return (
     <div className={`header ${subtitle ? 'header-with-subtitle' : ''}`} style={{ background: gradient }}>
@@ -48,3 +49,5 @@ export default function Header({
     </div>
   )
 }
+
+export default memo(Header)

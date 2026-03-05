@@ -1,11 +1,11 @@
 import express from 'express';
 import * as feedbackController from '../controllers/feedbackController';
-import { authMiddleware } from '../middleware/authMiddleware';
+import { authenticateToken } from '../middleware/auth';
 
 const router = express.Router();
 
 // 所有反馈路由都需要认证
-router.use(authMiddleware);
+router.use(authenticateToken);
 
 // 提交反馈
 router.post('/', feedbackController.createFeedback);

@@ -1,11 +1,11 @@
 import express from 'express';
 import * as noteController from '../controllers/noteController';
-import { authMiddleware } from '../middleware/authMiddleware';
+import { authenticateToken } from '../middleware/auth';
 
 const router = express.Router();
 
 // 所有笔记路由都需要认证
-router.use(authMiddleware);
+router.use(authenticateToken);
 
 // 创建笔记
 router.post('/', noteController.createNote);

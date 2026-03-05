@@ -3,10 +3,15 @@
  * 支持小学和初中作业辅导
  */
 
-import { Request, Response } from 'express';
+import { Response } from 'express';
+import { AuthRequest } from '../types/express';
 import { homeworkHelperService } from '../services/homeworkHelperService';
+import { AIService } from '../services/aiService';
+import { query } from '../config/database';
 import multer from 'multer';
 import path from 'path';
+
+const aiService = new AIService();
 
 // 配置文件上传
 const storage = multer.memoryStorage();
@@ -33,9 +38,9 @@ export class HomeworkHelperController {
    * 上传题目图片并识别
    * POST /api/homework/upload
    */
-  async uploadQuestion(req: Request, res: Response) {
+  async uploadQuestion(req: AuthRequest, res: Response) {
     try {
-      const userId = (req as any).user?.id;
+      const userId = req.user?.id;
       if (!userId) {
         return res.status(401).json({
           success: false,
@@ -80,9 +85,9 @@ export class HomeworkHelperController {
    * AI解答题目
    * POST /api/homework/answer/:questionId
    */
-  async answerQuestion(req: Request, res: Response) {
+  async answerQuestion(req: AuthRequest, res: Response) {
     try {
-      const userId = (req as any).user?.id;
+      const userId = req.user?.id;
       if (!userId) {
         return res.status(401).json({
           success: false,
@@ -115,9 +120,9 @@ export class HomeworkHelperController {
    * 获取题目历史
    * GET /api/homework/history
    */
-  async getHistory(req: Request, res: Response) {
+  async getHistory(req: AuthRequest, res: Response) {
     try {
-      const userId = (req as any).user?.id;
+      const userId = req.user?.id;
       if (!userId) {
         return res.status(401).json({
           success: false,
@@ -152,9 +157,9 @@ export class HomeworkHelperController {
    * 收藏题目
    * POST /api/homework/favorite/:questionId
    */
-  async favoriteQuestion(req: Request, res: Response) {
+  async favoriteQuestion(req: AuthRequest, res: Response) {
     try {
-      const userId = (req as any).user?.id;
+      const userId = req.user?.id;
       if (!userId) {
         return res.status(401).json({
           success: false,
@@ -184,9 +189,9 @@ export class HomeworkHelperController {
    * 获取收藏的题目
    * GET /api/homework/favorites
    */
-  async getFavorites(req: Request, res: Response) {
+  async getFavorites(req: AuthRequest, res: Response) {
     try {
-      const userId = (req as any).user?.id;
+      const userId = req.user?.id;
       if (!userId) {
         return res.status(401).json({
           success: false,
@@ -214,9 +219,9 @@ export class HomeworkHelperController {
    * 苏格拉底式AI讲解
    * POST /api/homework/socratic-explain/:questionId
    */
-  async socraticExplain(req: Request, res: Response) {
+  async socraticExplain(req: AuthRequest, res: Response) {
     try {
-      const userId = (req as any).user?.id;
+      const userId = req.user?.id;
       if (!userId) {
         return res.status(401).json({
           success: false,
@@ -238,29 +243,49 @@ export class HomeworkHelperController {
 
 学生的疑问：${userQuestion}`;
 
-      // TODO: 调用Dify API生成回复
-      // 这里先返回示例回复
-      const aiResponse = `这是一个很好的问题！在回答之前，我想先问你几个问题：
+      // 调用AI服务生成回复
+      let aiResponse: string;
+      try {
+        const messages = [
+          ...conversationHistory,
+          { role: 'user' as const, content: systemPrompt }
+        ];
+
+        const result = await aiService.chat(userId, messages, { conversationId: questionId });
+        aiResponse = result.reply;
+      } catch (error) {
+        console.error('AI服务调用失败，使用默认回复:', error);
+        // 如果AI服务失败，使用默认回复
+        aiResponse = `这是一个很好的问题！在回答之前，我想先问你几个问题：
 
 1. 你能先告诉我，这道题目主要考查的是什么知识点吗？
 2. 你在解题时，第一步想到的是什么？
 3. 是什么让你觉得困惑了呢？
 
 别着急，慢慢思考，我们一起来解决这个问题！`;
+      }
 
-      // 保存对话记录
-      // TODO: 保存到数据库
+      // 保存对话记录到数据库
+      const updatedHistory = [
+        ...conversationHistory,
+        { role: 'user', content: userQuestion },
+        { role: 'assistant', content: aiResponse }
+      ];
+
+      await query(
+        `INSERT INTO homework_conversations (user_id, question_id, conversation_history, created_at)
+         VALUES ($1, $2, $3, NOW())
+         ON CONFLICT (user_id, question_id)
+         DO UPDATE SET conversation_history = $3, updated_at = NOW()`,
+        [userId, questionId || 'general', JSON.stringify(updatedHistory)]
+      );
 
       res.json({
         success: true,
         message: 'AI讲解生成成功',
         data: {
           response: aiResponse,
-          conversationHistory: [
-            ...conversationHistory,
-            { role: 'user', content: userQuestion },
-            { role: 'assistant', content: aiResponse }
-          ]
+          conversationHistory: updatedHistory
         }
       });
     } catch (error: any) {
@@ -276,9 +301,9 @@ export class HomeworkHelperController {
    * 一步一步讲解
    * POST /api/homework/step-by-step/:questionId
    */
-  async stepByStepExplain(req: Request, res: Response) {
+  async stepByStepExplain(req: AuthRequest, res: Response) {
     try {
-      const userId = (req as any).user?.id;
+      const userId = req.user?.id;
       if (!userId) {
         return res.status(401).json({
           success: false,
@@ -288,42 +313,107 @@ export class HomeworkHelperController {
 
       const { questionId } = req.params;
 
-      // TODO: 获取题目信息并生成分步讲解
-      const steps = [
-        {
-          step: 1,
-          title: '理解题意',
-          content: '首先，我们要仔细阅读题目，找出关键信息...',
-          keyPoints: ['题目给出的已知条件', '需要求解的问题']
-        },
-        {
-          step: 2,
-          title: '分析思路',
-          content: '根据题目信息，我们可以使用...方法来解决',
-          keyPoints: ['适用的公式或定理', '解题的关键步骤']
-        },
-        {
-          step: 3,
-          title: '计算过程',
-          content: '让我们一步一步进行计算...',
-          formula: 'y = mx + b',
-          calculation: '代入数值计算...'
-        },
-        {
-          step: 4,
-          title: '验证答案',
-          content: '最后，我们要检查答案是否合理...',
-          verification: '将答案代入原式验证'
+      // 获取题目信息并生成分步讲解
+      let questionInfo: any = null;
+      try {
+        const result = await query(
+          'SELECT * FROM questions WHERE id = $1',
+          [questionId]
+        );
+        if (result.rows.length > 0) {
+          questionInfo = result.rows[0];
         }
-      ];
+      } catch (error) {
+        console.error('获取题目信息失败:', error);
+      }
+
+      // 构建分步讲解提示词
+      const prompt = questionInfo
+        ? `请为以下题目生成详细的分步讲解：
+
+题目：${questionInfo.question_text}
+科目：${questionInfo.subject}
+难度：${questionInfo.difficulty}
+
+要求：
+1. 将解题过程分为4-6个清晰的步骤
+2. 每个步骤包含：标题、详细说明、关键要点
+3. 如果涉及计算，展示计算过程和公式
+4. 最后提供答案验证方法
+5. 列出相关知识点
+
+请以JSON格式返回，包含steps数组和summary字段。`
+        : `请生成一个通用的解题步骤模板，包含：理解题意、分析思路、计算过程、验证答案四个步骤。`;
+
+      // 调用AI服务生成分步讲解
+      let steps: any[];
+      let summary: string;
+      let relatedKnowledge: string[];
+
+      try {
+        const messages = [{ role: 'user' as const, content: prompt }];
+        const result = await aiService.chat(userId, messages);
+
+        // 尝试解析AI返回的JSON
+        try {
+          const parsed = JSON.parse(result.reply);
+          steps = parsed.steps || [];
+          summary = parsed.summary || '通过以上步骤，我们成功解决了这道题。';
+          relatedKnowledge = parsed.relatedKnowledge || [];
+        } catch {
+          // 如果解析失败，使用默认结构
+          steps = [
+            {
+              step: 1,
+              title: '理解题意',
+              content: result.reply.substring(0, 200),
+              keyPoints: ['仔细阅读题目', '找出关键信息']
+            }
+          ];
+          summary = '请仔细理解每个步骤的内容。';
+          relatedKnowledge = questionInfo ? [questionInfo.subject] : [];
+        }
+      } catch (error) {
+        console.error('AI服务调用失败，使用默认讲解:', error);
+        // 使用默认的分步讲解
+        steps = [
+          {
+            step: 1,
+            title: '理解题意',
+            content: '首先，我们要仔细阅读题目，找出关键信息...',
+            keyPoints: ['题目给出的已知条件', '需要求解的问题']
+          },
+          {
+            step: 2,
+            title: '分析思路',
+            content: '根据题目信息，我们可以使用...方法来解决',
+            keyPoints: ['适用的公式或定理', '解题的关键步骤']
+          },
+          {
+            step: 3,
+            title: '计算过程',
+            content: '让我们一步一步进行计算...',
+            formula: 'y = mx + b',
+            calculation: '代入数值计算...'
+          },
+          {
+            step: 4,
+            title: '验证答案',
+            content: '最后，我们要检查答案是否合理...',
+            verification: '将答案代入原式验证'
+          }
+        ];
+        summary = '通过这4个步骤，我们成功解决了这道题。你学会了吗？';
+        relatedKnowledge = questionInfo ? [questionInfo.subject] : ['基础知识'];
+      }
 
       res.json({
         success: true,
         message: '分步讲解生成成功',
         data: {
           steps,
-          summary: '通过这4个步骤，我们成功解决了这道题。你学会了吗？',
-          relatedKnowledge: ['一次函数', '斜率', '截距']
+          summary,
+          relatedKnowledge
         }
       });
     } catch (error: any) {

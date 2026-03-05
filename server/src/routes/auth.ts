@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import * as authController from '../controllers/authController';
-import { authMiddleware } from '../middlewares/auth';
+import { authenticateToken } from '../middlewares/auth';
 
 const router = Router();
 
@@ -11,13 +11,13 @@ router.post('/register', authController.register);
 router.post('/login', authController.login);
 
 // 退出登录
-router.post('/logout', authMiddleware, authController.logout);
+router.post('/logout', authenticateToken, authController.logout);
 
 // 刷新令牌
 router.post('/refresh-token', authController.refreshToken);
 
 // 修改密码
-router.post('/change-password', authMiddleware, authController.changePassword);
+router.post('/change-password', authenticateToken, authController.changePassword);
 
 // 发送邮箱验证码
 router.post('/send-email-code', authController.sendEmailVerifyCode);
