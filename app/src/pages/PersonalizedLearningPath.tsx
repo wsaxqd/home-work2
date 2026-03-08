@@ -135,8 +135,7 @@ function PersonalizedLearningPath() {
   };
 
   const continueStep = (step: LearningStep) => {
-    // TODO: 跳转到练习页面
-    // 这里可以跳转到相应的学习资源
+    navigate(`/learning/practice/${step.id}`)
   };
 
   if (loading) {

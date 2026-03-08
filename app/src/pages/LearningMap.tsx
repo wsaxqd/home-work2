@@ -110,7 +110,6 @@ export default function LearningMap() {
       toast.info('请先完成前置关卡！')
       return
     }
-    // TODO: 跳转到关卡详情页
     navigate(`/learning/stage/${stage.id}`)
   }
 
@@ -165,6 +164,65 @@ export default function LearningMap() {
             <div className="tool-info">
               <div className="tool-title">薄弱点诊断</div>
               <div className="tool-desc">AI分析·个性学习</div>
+            </div>
+            <div className="tool-arrow">→</div>
+          </div>
+        </div>
+
+        {/* 学习游戏 */}
+        <div className="section-header" style={{ marginTop: '24px' }}>
+          <div className="section-left">
+            <span className="section-icon">🎮</span>
+            <span className="section-title">学习游戏</span>
+          </div>
+          <span className="section-right">寓教于乐</span>
+        </div>
+        <div className="learning-tools">
+          <div
+            className="tool-card"
+            style={{ borderColor: '#667eea', background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%)' }}
+            onClick={() => navigate('/math-speed-game')}
+          >
+            <div className="tool-icon">🔢</div>
+            <div className="tool-info">
+              <div className="tool-title">数学速算挑战</div>
+              <div className="tool-desc">60秒极速计算</div>
+            </div>
+            <div className="tool-arrow">→</div>
+          </div>
+          <div
+            className="tool-card"
+            style={{ borderColor: '#f093fb', background: 'linear-gradient(135deg, rgba(240, 147, 251, 0.05) 0%, rgba(245, 87, 108, 0.05) 100%)' }}
+            onClick={() => navigate('/idiom-chain-game')}
+          >
+            <div className="tool-icon">📚</div>
+            <div className="tool-info">
+              <div className="tool-title">成语接龙挑战</div>
+              <div className="tool-desc">学习中华文化</div>
+            </div>
+            <div className="tool-arrow">→</div>
+          </div>
+          <div
+            className="tool-card"
+            style={{ borderColor: '#4facfe', background: 'linear-gradient(135deg, rgba(79, 172, 254, 0.05) 0%, rgba(0, 242, 254, 0.05) 100%)' }}
+            onClick={() => navigate('/english-spelling-game')}
+          >
+            <div className="tool-icon">📝</div>
+            <div className="tool-info">
+              <div className="tool-title">单词拼写大师</div>
+              <div className="tool-desc">词汇积累</div>
+            </div>
+            <div className="tool-arrow">→</div>
+          </div>
+          <div
+            className="tool-card"
+            style={{ borderColor: '#a8edea', background: 'linear-gradient(135deg, rgba(168, 237, 234, 0.05) 0%, rgba(0, 242, 254, 0.05) 100%)' }}
+            onClick={() => navigate('/science-quiz-game')}
+          >
+            <div className="tool-icon">🔬</div>
+            <div className="tool-info">
+              <div className="tool-title">科学知识问答</div>
+              <div className="tool-desc">探索科学世界</div>
             </div>
             <div className="tool-arrow">→</div>
           </div>

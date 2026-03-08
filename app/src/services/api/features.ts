@@ -1,4 +1,4 @@
-import api from './index';
+import { api } from '../../config/api';
 
 // 反馈相关API
 export const feedbackApi = {

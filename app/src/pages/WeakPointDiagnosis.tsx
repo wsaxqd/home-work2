@@ -110,8 +110,7 @@ function WeakPointDiagnosis() {
   };
 
   const startPractice = async (weakPoint: WeakPoint) => {
-    // TODO: 跳转到针对性练习页面
-    // 或者生成个性化学习路径
+    navigate(`/learning/practice?subject=${weakPoint.subject}&topic=${weakPoint.knowledge_point}`)
     try {
       const token = localStorage.getItem('token');
       const response = await fetch(
