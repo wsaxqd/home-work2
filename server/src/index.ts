@@ -9,7 +9,7 @@ import { moderateRateLimit } from './middleware/rateLimit';
 import { metricsMiddleware, metricsEndpoint } from './middleware/metrics';
 import { initSocketService } from './services/socketService';
 import { setupPKHandlers } from './services/pkSocketHandler';
-import { initSentry, Sentry } from './services/sentryService';
+import { initSentry, Handlers } from './services/sentryService';
 import { swaggerSpec } from './config/swagger';
 
 // 初始化 Sentry
@@ -64,7 +64,7 @@ import gameRecordsRoutes from './routes/gameRecords';
 const app = express();
 
 // Sentry 请求处理器
-app.use(Sentry.Handlers.requestHandler());
+app.use(Handlers.requestHandler());
 
 // 中间件
 app.use(cors({
@@ -156,7 +156,7 @@ app.use('/api', homeRoutes);
 app.use(notFoundHandler);
 
 // Sentry 错误处理器
-app.use(Sentry.Handlers.errorHandler());
+app.use(Handlers.errorHandler());
 
 // 错误处理
 app.use(errorHandler);

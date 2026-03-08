@@ -5,10 +5,6 @@ import './Games.css'
 
 const gameItems = [
   { icon: '⚔️', title: '多人竞技PK', desc: '1v1实时答题对战，挑战全国玩家', path: '/pk-battle', color: '#f5576c', bgColor: '#ffe5f0', difficulty: '热门', tips: '段位系统，排行榜争霸', category: '竞技' },
-  { icon: '🔢', title: '数学速算挑战', desc: '60秒极速计算，挑战你的数学能力', path: '/math-speed-game', color: '#667eea', bgColor: '#e8e4ff', difficulty: '简单', tips: '三种难度，连击加分', category: '学习' },
-  { icon: '📚', title: '成语接龙挑战', desc: '根据成语接龙，学习中华文化', path: '/idiom-chain-game', color: '#f093fb', bgColor: '#ffeef8', difficulty: '中等', tips: '三种难度，成语解释', category: '学习' },
-  { icon: '📝', title: '单词拼写大师', desc: '根据释义拼写英文单词', path: '/english-spelling-game', color: '#4facfe', bgColor: '#e3f5ff', difficulty: '中等', tips: '提示功能，词汇积累', category: '学习' },
-  { icon: '🔬', title: '科学知识问答', desc: '探索科学世界，学习科学知识', path: '/science-quiz-game', color: '#a8edea', bgColor: '#e3f9f8', difficulty: '中等', tips: '答案解析，知识拓展', category: '学习' },
   { icon: '🃏', title: '记忆翻牌', desc: '翻开卡片找到相同图案，挑战记忆力', path: '/memory-card-game', color: '#667eea', bgColor: '#e8e4ff', difficulty: '简单', tips: '三种难度，锻炼记忆力', category: '益智' },
   { icon: '🎮', title: '俄罗斯方块', desc: '经典方块消除游戏，挑战高分', path: '/tetris-game', color: '#0f3460', bgColor: '#e8f4f8', difficulty: '中等', tips: '键盘操控，消除得分', category: '益智' },
   { icon: '🐍', title: '贪吃蛇', desc: '控制蛇吃食物，越长越难', path: '/snake-game', color: '#11998e', bgColor: '#e8fff8', difficulty: '简单', tips: '经典游戏，挑战长度', category: '益智' },
@@ -27,7 +23,7 @@ export default function Games() {
   const navigate = useNavigate()
   const [selectedCategory, setSelectedCategory] = useState('全部')
 
-  const categories = ['全部', '竞技', '学习', '益智', '动作', '策略']
+  const categories = ['全部', '竞技', '益智', '动作', '策略']
 
   const filteredGames = selectedCategory === '全部'
     ? gameItems

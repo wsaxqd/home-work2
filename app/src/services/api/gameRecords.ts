@@ -1,4 +1,4 @@
-import api from './index';
+import { api } from '../../config/api';
 
 export interface GameRecord {
   game_type: string;

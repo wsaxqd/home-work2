@@ -13,3 +13,7 @@ export function initSentry() {
 }
 
 export { Sentry }
+export const Handlers = {
+  requestHandler: () => (req: any, res: any, next: any) => next(),
+  errorHandler: () => (err: any, req: any, res: any, next: any) => next(err)
+}

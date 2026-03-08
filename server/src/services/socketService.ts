@@ -1,4 +1,4 @@
-import { Server as SocketServer } from 'socket.io'
+import { Server as SocketServer, Socket } from 'socket.io'
 import { Server as HttpServer } from 'http'
 import { logger } from '../utils/logger'
 import jwt from 'jsonwebtoken'

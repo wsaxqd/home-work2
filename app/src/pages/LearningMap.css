@@ -6,10 +6,39 @@
   padding: 20px;
 }
 
+/* 区块头部 */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.section-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.section-icon {
+  font-size: 20px;
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: #2d3748;
+}
+
+.section-right {
+  font-size: 13px;
+  color: #94a3b8;
+}
+
 /* 学习工具快捷入口 */
 .learning-tools {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 16px;
   margin-bottom: 24px;
 }
@@ -457,6 +486,7 @@
   }
 
   .learning-tools {
+    grid-template-columns: 1fr;
     gap: 12px;
   }
 

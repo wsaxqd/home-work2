@@ -82,7 +82,9 @@ export default function Login() {
     }
 
     setCountdown(60)
-    // TODO: 实际项目中调用 await authApi.sendSms({ phone })
+    // 实际项目中需要配置腾讯云短信服务
+    // await authApi.sendSms({ phone })
+    toast.info('验证码已发送（演示模式：123456）')
   }
 
   // 发送邮箱验证码

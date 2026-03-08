@@ -224,6 +224,56 @@ export default function ChessGame() {
     return moves;
   }, []);
 
+  // 检查国王是否被将军
+  const isKingInCheck = (board: (Piece | null)[][], color: 'white' | 'black'): boolean => {
+    let kingPos: { row: number; col: number } | null = null;
+    for (let r = 0; r < 8; r++) {
+      for (let c = 0; c < 8; c++) {
+        if (board[r][c]?.type === 'king' && board[r][c]?.color === color) {
+          kingPos = { row: r, col: c };
+          break;
+        }
+      }
+      if (kingPos) break;
+    }
+    if (!kingPos) return false;
+
+    const opponentColor = color === 'white' ? 'black' : 'white';
+    for (let r = 0; r < 8; r++) {
+      for (let c = 0; c < 8; c++) {
+        const piece = board[r][c];
+        if (piece && piece.color === opponentColor) {
+          const moves = getPossibleMoves(piece, { row: r, col: c }, board);
+          if (moves.some(m => m.row === kingPos!.row && m.col === kingPos!.col)) {
+            return true;
+          }
+        }
+      }
+    }
+    return false;
+  };
+
+  // 检查是否将死
+  const checkIsCheckmate = (board: (Piece | null)[][], color: 'white' | 'black'): boolean => {
+    for (let r = 0; r < 8; r++) {
+      for (let c = 0; c < 8; c++) {
+        const piece = board[r][c];
+        if (piece && piece.color === color) {
+          const moves = getPossibleMoves(piece, { row: r, col: c }, board);
+          for (const move of moves) {
+            const testBoard = board.map(row => [...row]);
+            testBoard[move.row][move.col] = testBoard[r][c];
+            testBoard[r][c] = null;
+            if (!isKingInCheck(testBoard, color)) {
+              return false;
+            }
+          }
+        }
+      }
+    }
+    return true;
+  };
+
   // 处理方块点击
   const handleSquareClick = (row: number, col: number) => {
     if (gameOver) return;
@@ -272,9 +322,21 @@ export default function ChessGame() {
         setBoard(newBoard);
         setSelectedSquare(null);
         setValidMoves([]);
-        setCurrentPlayer(currentPlayer === 'white' ? 'black' : 'white');
 
-        // TODO: 检查将军和将死
+        // 检查将军和将死
+        const nextPlayer = currentPlayer === 'white' ? 'black' : 'white';
+        const isCheck = isKingInCheck(newBoard, nextPlayer);
+        if (isCheck) {
+          const isCheckmateResult = checkIsCheckmate(newBoard, nextPlayer);
+          if (isCheckmateResult) {
+            setGameOver(true);
+            toast.success(`${currentPlayer === 'white' ? '白方' : '黑方'}获胜！将死！`);
+          } else {
+            toast.info(`${nextPlayer === 'white' ? '白方' : '黑方'}被将军！`);
+          }
+        }
+
+        setCurrentPlayer(nextPlayer);
       } else if (piece && piece.color === currentPlayer) {
         // 选择新的棋子
         setSelectedSquare({ row, col });

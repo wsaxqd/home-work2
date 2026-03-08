@@ -108,8 +108,12 @@ export default function ParentLogin() {
     setError('')
 
     try {
-      // TODO: 调用验证码登录API
-      navigate('/parent/dashboard')
+      // 验证码登录（演示模式）
+      if (code === '123456') {
+        navigate('/parent/dashboard')
+      } else {
+        setError('验证码错误')
+      }
     } catch (err: any) {
       setError(err.message || '登录失败')
     } finally {
