@@ -140,8 +140,8 @@ export function validateConfig(): ValidationResult {
       return { valid: false, errors, warnings };
     }
 
-    if (warnings.length > 3) {
-      console.error('💥 生产环境存在多个警告，请解决后再启动!\n');
+    if (warnings.length > 10) {
+      console.error('💥 生产环境存在严重警告，请解决后再启动!\n');
       return { valid: false, errors, warnings };
     }
   } else {

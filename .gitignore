@@ -66,6 +66,10 @@ server/uploads/*
 # Security keys backup (重要：不要上传到 GitHub！)
 .security-keys-backup.txt
 *.security-keys-backup.txt
+authorized_keys_fixed.txt
+authorized_keys*
+connect-server.bat
+check-env.sh
 
 # Lock files (package-lock.json 可选择性上传)
 # package-lock.json  # 如果需要精确版本控制，可以注释掉这行

@@ -613,39 +613,7 @@ export default function Login() {
                 )}
               </div>
 
-              <div className="input-wrapper">
-                <label className="input-label">
-                  <span className="label-icon">😊</span>
-                  选择头像
-                </label>
-                <div className="avatar-grid-new">
-                  {avatars.map((avatar) => (
-                    <div
-                      key={avatar}
-                      className={`avatar-option ${selectedAvatar === avatar ? 'selected' : ''}`}
-                      onClick={() => setSelectedAvatar(avatar)}
-                    >
-                      {avatar}
-                    </div>
-                  ))}
-                </div>
-              </div>
-
               <div className="input-row">
-                <div className="input-wrapper half">
-                  <label className="input-label">
-                    <span className="label-icon">👤</span>
-                    昵称
-                  </label>
-                  <input
-                    type="text"
-                    className="input-field"
-                    placeholder="给自己起个名字"
-                    value={nickname}
-                    onChange={(e) => setNickname(e.target.value)}
-                  />
-                </div>
-
                 <div className="input-wrapper half">
                   <label className="input-label">
                     <span className="label-icon">🎂</span>

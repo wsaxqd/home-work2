@@ -1,0 +1,14 @@
+# Dr. 邵 DevOps Assistant Configuration
+# 此文件用于存储配置信息（如需要）
+
+# 示例：如果需要连接特定服务器，可以在这里配置
+# SERVER_IP=your_server_ip
+# SERVER_USER=root
+# SERVER_PORT=22
+
+# 示例：如果需要配置域名
+# DOMAIN=example.com
+
+# 示例：SSL 证书路径
+# SSL_CERT_PATH=/etc/letsencrypt/live/example.com/fullchain.pem
+# SSL_KEY_PATH=/etc/letsencrypt/live/example.com/privkey.pem
