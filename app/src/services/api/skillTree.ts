@@ -93,7 +93,7 @@ export const getNodeDetail = (nodeId: string) => {
 
 // 获取我的技能进度
 export const getMyProgress = (subject?: string) => {
-  const params = subject ? { subject } : {};
+  const params: Record<string, any> = subject ? { subject } : {};
   return api.get<UserSkillProgress[]>('/skill-tree/my-progress', { params });
 };
 
@@ -123,7 +123,7 @@ export const rateNode = (nodeId: string, rating: number) => {
 
 // 获取推荐学习路径
 export const getRecommendedPaths = (subject?: string) => {
-  const params = subject ? { subject } : {};
+  const params: Record<string, any> = subject ? { subject } : {};
   return api.get<LearningPath[]>('/skill-tree/paths/recommended', { params });
 };
 

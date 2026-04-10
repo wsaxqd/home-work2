@@ -110,7 +110,7 @@ function WeakPointDiagnosis() {
   };
 
   const startPractice = async (weakPoint: WeakPoint) => {
-    navigate(`/learning/practice?subject=${weakPoint.subject}&topic=${weakPoint.knowledge_point}`)
+    navigate(`/learning/practice?subject=${weakPoint.subject}&topic=${weakPoint.knowledgePointId}`)
     try {
       const token = localStorage.getItem('token');
       const response = await fetch(

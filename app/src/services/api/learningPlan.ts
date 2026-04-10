@@ -49,7 +49,7 @@ export interface AbilityAssessment {
 
 // 获取我的学习计划列表
 export const getMyPlans = (status?: string) => {
-  const params = status ? { status } : {};
+  const params: Record<string, any> = status ? { status } : {};
   return api.get<LearningPlan[]>('/learning-plan/my-plans', { params });
 };
 
@@ -84,7 +84,7 @@ export const getPlanDetail = (planId: string) => {
 
 // 获取计划任务列表
 export const getPlanTasks = (planId: string, date?: string) => {
-  const params = date ? { date } : {};
+  const params: Record<string, any> = date ? { date } : {};
   return api.get<LearningPlanTask[]>(`/learning-plan/plan/${planId}/tasks`, { params });
 };
 
@@ -118,7 +118,7 @@ export const completeTask = (taskId: string, completionData: {
 
 // 获取能力评估
 export const getAbilityAssessment = (subject?: string) => {
-  const params = subject ? { subject } : {};
+  const params: Record<string, any> = subject ? { subject } : {};
   return api.get<AbilityAssessment[]>('/learning-plan/ability-assessment', { params });
 };
 

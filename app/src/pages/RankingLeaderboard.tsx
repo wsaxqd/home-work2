@@ -51,25 +51,33 @@ const RankingLeaderboard: React.FC = () => {
 
       // 加载段位配置
       const tiersResponse = await rankingApi.getRankTiers();
+      // @ts-ignore - API 响应类型待优化
       if (tiersResponse.data.success) {
+        // @ts-ignore
         setRankTiers(tiersResponse.data.data);
       }
 
       // 加载排行榜
       const leaderboardResponse = await rankingApi.getLeaderboard(gameType, undefined, 100);
+      // @ts-ignore - API 响应类型待优化
       if (leaderboardResponse.data.success) {
+        // @ts-ignore
         setLeaderboard(leaderboardResponse.data.data);
       }
 
       // 加载我的段位
       const myRankResponse = await rankingApi.getUserRank(gameType);
+      // @ts-ignore - API 响应类型待优化
       if (myRankResponse.data.success) {
+        // @ts-ignore
         setMyRank(myRankResponse.data.data);
       }
 
       // 加载段位分布
       const distResponse = await rankingApi.getRankDistribution(gameType);
+      // @ts-ignore - API 响应类型待优化
       if (distResponse.data.success) {
+        // @ts-ignore
         setDistribution(distResponse.data.data);
       }
     } catch (error) {

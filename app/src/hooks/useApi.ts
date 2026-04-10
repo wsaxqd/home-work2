@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react'
-import { ApiResponse } from '../config/api'
+import type { ApiResponse } from '../config/api'
 
 interface UseApiState<T> {
   data: T | null

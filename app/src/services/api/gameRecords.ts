@@ -39,7 +39,9 @@ export const saveGameRecord = async (record: GameRecord) => {
 // 获取用户游戏统计
 export const getUserGameStatistics = async (userId?: string, gameType?: string) => {
   const url = userId ? `/game-records/statistics/${userId}` : '/game-records/statistics';
-  const response = await api.get(url, { params: { game_type: gameType } });
+  const params: Record<string, any> = {};
+  if (gameType) params.game_type = gameType;
+  const response = await api.get(url, { params });
   return response.data;
 };
 
@@ -60,7 +62,9 @@ export const getUserRank = async (gameType: string, difficulty: string) => {
 // 获取用户游戏记录
 export const getUserGameRecords = async (userId?: string, gameType?: string, limit: number = 50) => {
   const url = userId ? `/game-records/records/${userId}` : '/game-records/records';
-  const response = await api.get(url, { params: { game_type: gameType, limit } });
+  const params: Record<string, any> = { limit };
+  if (gameType) params.game_type = gameType;
+  const response = await api.get(url, { params });
   return response.data;
 };
 
